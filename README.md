@@ -55,9 +55,6 @@
 * Vanilla JavaScript (ES6+)
 * 无需后端，纯前端运行
 
-## 📸 截图 (Screenshots)
-
-*(建议发布后在这里放一张工具运行时的截图，效果会更好)*
 
 ## 📄 许可证 (License)
 
