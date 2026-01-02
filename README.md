@@ -4,7 +4,7 @@
 
 ![Version](https://img.shields.io/badge/version-1.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-[![Author](https://img.shields.io/badge/author-Nick%20Collect-orange)](https://github.com/MontageSubs)
+[![Author](https://img.shields.io/badge/author-Nick20Collect-orange)](https://github.com/MontageSubs)
 
 **一个现代化、高精度的 Aegisub 绘图指令转换工具**
 
