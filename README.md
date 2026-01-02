@@ -63,4 +63,4 @@
 
 ---
 
-**Designed & Built by [Nick Collect](https://github.com/MontageSubs)**
+**Designed & Built by [NickCollect](https://github.com/MontageSubs)**
