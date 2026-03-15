@@ -4,9 +4,54 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SVG 转 ASS 绘图指令 · 蒙太奇字幕组 MontageSubs</title>
-<meta name="description" content="基于浏览器端实现的 SVG 转 ASS 绘图指令工具。支持将 SVG 路径数据一键转化为 ASS 矢量绘图代码，纯前端本地处理。由蒙太奇字幕组 MontageSubs 开发。">
+<meta name="description" content="现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放、实时矢量预览，纯前端本地处理，无需安装。由蒙太奇字幕组 MontageSubs 开发。">
+<meta name="keywords" content="SVG转ASS,SVG to ASS,ASS绘图指令,Aegisub绘图,矢量转字幕,ASS draw,svg-to-ass,MontageSubs,蒙太奇字幕组,字幕特效,Typesetter,在线工具,贝塞尔曲线,路径转换,ASS特效,字幕制作">
+<meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
+<link rel="icon" type="image/jpeg" href="https://montagesubs.github.io/assets/images/montagesubs_logo-256.jpg">
+<meta name="version" content="2.3">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
+<meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
+<meta property="og:url" content="https://montagesubs.github.io/svg-to-ass/">
+<meta property="og:site_name" content="MontageSubs (蒙太奇字幕组)">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
+<meta name="twitter:description" content="浏览器端 SVG 转 ASS 绘图指令：智能脏数据清洗 + 8x/16x 高精度 + 实时预览，纯前端本地处理，零服务器。">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SVG转ASS">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SVG 转 ASS 绘图指令",
+  "alternateName": "SVG to ASS Converter",
+  "url": "https://montagesubs.github.io/svg-to-ass/",
+  "description": "现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放与实时矢量预览，所有处理均在本地浏览器完成，无需安装。",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "author": {
+    "@type": "Organization",
+    "name": "MontageSubs",
+    "alternateName": "蒙太奇字幕组",
+    "url": "https://github.com/MontageSubs"
+  },
+  "featureList": [
+    "SVG 路径数据转 ASS 绘图指令",
+    "智能脏数据清洗与路径合并",
+    "8x (\\p4) 与 16x (\\p5) 高精度缩放",
+    "实时矢量效果预览",
+    "纯前端处理，文件不离开浏览器"
+  ]
+}
+</script>
 
 <style>
 :root {
@@ -42,7 +87,6 @@
     --hd-fg: #dddad2;
   }
 }
-
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--paper);
@@ -55,7 +99,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
 .site-header {
   border-bottom: 1px solid var(--rule);
   padding: 1rem 2rem;
@@ -89,19 +132,48 @@ h1.brand-title {
   line-height: inherit;
   display: inline;
 }
-.site-header .sub { font-size: 0.78rem; color: var(--ink2); border-left: 1px solid var(--rule); padding-left: 1.25rem; }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+.site-header .sub {
+  font-size: 0.78rem;
+  color: var(--ink2);
+  border-left: 1px solid var(--rule);
+  padding-left: 1.25rem;
+}
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 .btn-hdr {
-  display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--mono);
-  font-size: 0.72rem; font-weight: 500; color: var(--ink); background: transparent;
-  border: 1px solid var(--rule); border-radius: var(--r); padding: 0.3rem 0.75rem;
-  text-decoration: none; transition: all 0.15s; cursor: pointer; white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 0.3rem 0.75rem;
+  text-decoration: none;
+  transition: border-color 0.15s;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn-hdr:hover { border-color: var(--ink); background: var(--rule2); }
 .btn-hdr:active { background: var(--rule); border-color: var(--ink); }
 .btn-hdr svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
-
-.main { max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+.main {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 .layout-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -114,153 +186,276 @@ h1.brand-title {
   gap: 1.25rem;
   min-height: 0;
 }
-
 .step {
-  border: 1px solid var(--rule); border-radius: var(--r);
-  background: var(--card); overflow: hidden; transition: border-color 0.2s;
-  display: flex; flex-direction: column;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  background: var(--card);
+  overflow: hidden;
+  transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
 }
 .step.active { border-color: var(--ink); }
 .step-head {
-  display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.25rem;
-  border-bottom: 1px solid var(--rule); background: var(--paper); flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+  flex-shrink: 0;
 }
 .step.active .step-head { background: var(--hd-bg); color: var(--hd-fg); border-color: var(--hd-bg); }
 .step-num {
-  font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
-  width: 20px; height: 20px; border-radius: 50%; border: 1px solid currentColor;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.6;
 }
-h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; display: inline; }
+.step.active .step-num { opacity: 1; border-color: rgba(255,255,255,0.4); }
+h2.step-title {
+  font-weight: 600;
+  font-size: 0.83rem;
+  margin: 0; padding: 0;
+  line-height: inherit;
+  display: inline;
+}
 .step-subtitle { font-size: 0.75rem; opacity: 0.45; margin-left: auto; font-family: var(--mono); }
 .step-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
-
-.step-input { flex: 1; }      
-.step-settings { flex: 0 0 auto; } 
-.step-result { flex: 1; }     
-
+.step-input { flex: 1; }
+.step-settings { flex: 0 0 auto; }
+.step-result { flex: 1; }
 .btn {
-  display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem;
-  border: 1px solid transparent; border-radius: var(--r); font-family: var(--sans);
-  font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  -webkit-tap-highlight-color: transparent;
 }
 .btn-primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .btn-primary:hover { opacity: 0.85; }
 .btn-primary:active { opacity: 0.7; transform: translateY(1px); }
-
 .custom-textarea {
-  width: 100%; padding: 0.875rem;
-  background: var(--paper); color: var(--ink); border: 1px solid var(--rule);
-  border-radius: var(--r); font-family: var(--mono); font-size: 0.8rem;
-  line-height: 1.5; resize: none; outline: none; transition: border-color 0.15s;
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
 }
 .custom-textarea:focus { border-color: var(--accent); background: var(--card); }
-#svgInput { flex: 1; min-height: 200px; } 
+#svgInput { flex: 1; min-height: 200px; }
 #assOutput { color: var(--accent); height: 120px; min-height: 120px; flex-shrink: 0; }
-
 .flex-gap { display: flex; flex-direction: row; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
 .mt2 { margin-top: 1.25rem; }
-
 .input-group { display: flex; flex-direction: column; gap: 0.35rem; }
 .input-group label { font-size: 0.78rem; font-weight: 600; color: var(--ink2); }
 .custom-input, .custom-select {
-  padding: 0.5rem 0.75rem; background: var(--paper); color: var(--ink);
-  border: 1px solid var(--rule); border-radius: var(--r); font-family: var(--mono);
-  font-size: 0.8rem; outline: none; transition: border-color 0.15s;
+  padding: 0.5rem 0.75rem;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.15s;
 }
 .custom-input:focus, .custom-select:focus { border-color: var(--accent); background: var(--card); }
-
 .result-header {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 0.5rem; flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-shrink: 0;
 }
 .preview-box {
-  flex: 1; min-height: 200px; border: 1px solid var(--rule); border-radius: var(--r);
-  overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--card);
-  background-image: linear-gradient(45deg, var(--rule2) 25%, transparent 25%), 
-                    linear-gradient(-45deg, var(--rule2) 25%, transparent 25%), 
-                    linear-gradient(45deg, transparent 75%, var(--rule2) 75%), 
+  background-image: linear-gradient(45deg, var(--rule2) 25%, transparent 25%),
+                    linear-gradient(-45deg, var(--rule2) 25%, transparent 25%),
+                    linear-gradient(45deg, transparent 75%, var(--rule2) 75%),
                     linear-gradient(-45deg, transparent 75%, var(--rule2) 75%);
   background-size: 20px 20px;
   background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
 }
 #previewBg {
-  position: absolute; inset: 0; background: rgba(255,255,255,0.9);
-  z-index: 0; pointer-events: none; transition: background 0.15s;
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.9);
+  z-index: 0;
+  pointer-events: none;
+  transition: background 0.15s;
 }
 svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible; }
 .slider-group { display: flex; align-items: center; gap: 0.5rem; }
 .slider-group label { font-size: 0.75rem; font-family: var(--mono); color: var(--ink2); }
-
 #toast {
-  position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-100px);
-  background: var(--ink); color: var(--paper); padding: 0.6rem 1.25rem;
-  border-radius: 40px; font-size: 0.85rem; font-family: var(--sans); font-weight: 500;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; z-index: 9999;
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.6rem 1.25rem;
+  border-radius: 40px;
+  font-size: 0.85rem;
+  font-family: var(--sans);
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  z-index: 9999;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.success { background: var(--ok); color: #fff; }
 #toast.error { background: var(--err); color: #fff; }
 #toast.warn { background: var(--warn); color: #fff; }
-
+#discuss-section {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+}
+#discuss-section .discuss-header {
+  font-size: 0.78rem;
+  font-family: var(--mono);
+  color: var(--ink2);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+#discuss-loading {
+  font-size: 0.83rem;
+  color: var(--ink2);
+  font-family: var(--mono);
+  padding: 1.5rem 0;
+}
 .site-footer {
-  border-top: 1px solid var(--rule); padding: 1.5rem 2rem;
-  display: flex; justify-content: space-between; align-items: stretch; background: var(--card);
+  border-top: 1px solid var(--rule);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  background: var(--card);
   flex-shrink: 0;
 }
-.footer-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
-.footer-nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  align-items: center;
+}
 .footer-nav a { color: var(--ink2); text-decoration: none; font-size: 0.75rem; }
 .footer-nav a:hover { color: var(--ink); text-decoration: underline; }
 .footer-sep { color: var(--rule); }
 .footer-brand { display: inline-flex; flex-direction: column; align-items: center; }
 .footer-org { font-weight: 600; color: var(--ink); font-size: 0.8rem; }
 .footer-slogan { font-size: 0.65rem; color: var(--ink2); }
-.footer-right { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; gap: 0.25rem; }
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
 .footer-line { font-size: 0.72rem; color: var(--ink2); }
 .footer-line a { color: var(--ink2); text-decoration: none; }
 .footer-line a:hover { color: var(--ink); text-decoration: underline; }
-
-.footer-btns { display: flex; gap: 0.5rem; margin-top: 0.25rem; }
+.footer-btns { display: flex; gap: 0.5rem; }
 .footer-btn {
-  display: inline-flex; align-items: center; font-size: 0.72rem;
-  font-weight: 500; color: var(--ink2); background: transparent;
-  border: 1px solid var(--rule); border-radius: var(--r);
-  padding: 0.25rem 0.7rem; text-decoration: none;
-  transition: border-color 0.15s, color 0.15s; font-family: var(--mono);
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ink2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 0.25rem 0.7rem;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+  font-family: var(--mono);
+  -webkit-tap-highlight-color: transparent;
 }
 .footer-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--rule2); }
 .footer-btn:active { background: var(--rule); border-color: var(--ink); color: var(--ink); }
-
+.hidden { display: none !important; }
 @media (max-width: 900px) {
   .layout-grid { grid-template-columns: 1fr; }
   .col-left, .col-right { gap: 1.25rem; }
   #svgInput { min-height: 200px; }
   .preview-box { min-height: 220px; }
-  
   .site-header { padding: 0.75rem 1rem; gap: 0.5rem; flex-wrap: wrap; }
   .site-header .sub { display: none; }
   .brand-link { width: 100%; align-items: center; }
-  .header-right { width: 100%; justify-content: center; }
+  .header-right { margin-left: 0; width: 100%; justify-content: center; flex-wrap: wrap; gap: 0.4rem; }
   .main { padding: 1.25rem 1rem; }
-  .site-footer { flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; }
+  .site-footer { flex-direction: column; align-items: center; text-align: center; gap: 1.25rem; padding: 1.5rem 1rem; }
   .footer-left { order: 2; align-items: center; gap: 0.75rem; }
   .footer-right { order: 1; align-items: center; gap: 0.75rem; }
+  .footer-nav { justify-content: center; }
   .footer-btns { justify-content: center; }
+  .footer-brand { align-items: center; }
+  .footer-line { text-align: center; }
+  #discuss-section { padding: 0 1rem; }
 }
 </style>
 </head>
 <body>
 
+<noscript>
+  <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--paper,#f6f5f2);z-index:9999;font-family:sans-serif;text-align:center;padding:2rem;">
+    <div style="max-width:400px;">
+      <p style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;">需要启用 JavaScript</p>
+      <p style="font-size:0.9rem;color:#555;line-height:1.6;">本工具在浏览器本地运行，依赖 JavaScript 处理路径转换。请在浏览器设置中启用 JavaScript 后刷新页面。</p>
+      <p style="font-size:0.8rem;color:#888;margin-top:0.75rem;">JavaScript is required. Please enable it in your browser settings and reload.</p>
+    </div>
+  </div>
+</noscript>
+
 <header class="site-header">
-  <a href="#" class="brand-link">
+  <a href="https://montagesubs.github.io/svg-to-ass/" class="brand-link">
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub">SVG to ASS Draw 2.3</span>
+  <span class="sub">SVG to ASS Draw · 智能转换 · 高精度</span>
   <div class="header-right">
+    <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()">讨论</button>
     <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr">ASS 子集化工具</a>
     <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="btn-hdr">
       <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
@@ -315,7 +510,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
         <div class="step-head">
           <span class="step-num">3</span>
           <h2 class="step-title">结果与预览</h2>
-          <span class="step-subtitle">Result & Preview</span>
+          <span class="step-subtitle">Result &amp; Preview</span>
         </div>
         <div class="step-body">
           <div class="result-header">
@@ -345,6 +540,11 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 
 <div id="toast"></div>
 
+<div id="discuss-section" class="hidden">
+  <div class="discuss-header">讨论 · Discussion</div>
+  <div id="discuss-loading">加载中…</div>
+</div>
+
 <footer class="site-footer">
   <div class="footer-left">
     <nav class="footer-nav">
@@ -365,9 +565,9 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </div>
   <div class="footer-right">
     <div class="footer-line">
-      作者：<a href="https://github.com/MontageSubs" target="_blank" rel="noopener">NickCollect</a>
+      以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/MontageSubs" target="_blank" rel="noopener">NickCollect</a>
     </div>
-    <div class="footer-line" style="margin-bottom: 0.25rem;">基于原生 JavaScript 构建 · 纯本地转换</div>
+    <div class="footer-line"><span id="ver">用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
     <div class="footer-btns">
       <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn">反馈</a>
       <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">查看源代码</a>
@@ -378,262 +578,293 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <script>
 'use strict';
 
-function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    el.innerText = msg;
-    el.className = type + ' show';
-    if(el.timer) clearTimeout(el.timer);
-    el.timer = setTimeout(() => { el.className = ''; }, 3000);
+document.addEventListener('DOMContentLoaded', function() {
+  var v = document.querySelector('meta[name="version"]');
+  if (v) document.getElementById('ver').textContent += ' v' + v.content;
+});
+
+var discussLoaded = false;
+function loadDiscuss() {
+  var section = document.getElementById('discuss-section');
+  section.classList.remove('hidden');
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (discussLoaded) return;
+  discussLoaded = true;
+  var theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  var script = document.createElement('script');
+  script.src = 'https://giscus.app/client.js';
+  script.setAttribute('data-repo', 'MontageSubs/svg-to-ass');
+  script.setAttribute('data-repo-id', 'R_kgDOQyDRpA');
+  script.setAttribute('data-category', 'General');
+  script.setAttribute('data-category-id', 'DIC_kwDOQyDRpM4C4dOl');
+  script.setAttribute('data-mapping', 'pathname');
+  script.setAttribute('data-reactions-enabled', '0');
+  script.setAttribute('data-emit-metadata', '0');
+  script.setAttribute('data-theme', theme);
+  script.setAttribute('data-lang', 'zh-CN');
+  script.crossOrigin = 'anonymous';
+  script.async = true;
+  script.onload = function() {
+    var loader = document.getElementById('discuss-loading');
+    if (loader) loader.remove();
+  };
+  document.getElementById('discuss-section').appendChild(script);
+}
+
+function showToast(msg, type) {
+  type = type || 'success';
+  var el = document.getElementById('toast');
+  el.innerText = msg;
+  el.className = type + ' show';
+  if (el.timer) clearTimeout(el.timer);
+  el.timer = setTimeout(function() { el.className = ''; }, 3000);
 }
 
 document.getElementById('bgSlider').addEventListener('input', function(e) {
-    const val = e.target.value;
-    const bg = document.getElementById('previewBg');
-    const color = val > 50 ? 255 : 0;
-    const opacity = Math.abs(val - 50) / 50;
-    bg.style.background = `rgba(${color},${color},${color}, ${opacity})`;
+  var val = e.target.value;
+  var bg = document.getElementById('previewBg');
+  var color = val > 50 ? 255 : 0;
+  var opacity = Math.abs(val - 50) / 50;
+  bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ', ' + opacity + ')';
 });
 
 (function() {
-    function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
-        var curves = [];
-        if (rx === 0 || ry === 0) return null; 
-        var phi = xAxisRotation * (Math.PI / 180);
-        var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
-        var pxp = cosPhi * (px - cx) / 2 + sinPhi * (py - cy) / 2;
-        var pyp = -sinPhi * (px - cx) / 2 + cosPhi * (py - cy) / 2;
-        if (pxp === 0 && pyp === 0) return [];
-        rx = Math.abs(rx); ry = Math.abs(ry);
-        var lambda = (pxp * pxp) / (rx * rx) + (pyp * pyp) / (ry * ry);
-        if (lambda > 1) { rx *= Math.sqrt(lambda); ry *= Math.sqrt(lambda); }
-        var radicant = (rx * rx * ry * ry) - (rx * rx * pyp * pyp) - (ry * ry * pxp * pxp);
-        if (radicant < 0) radicant = 0;
-        radicant /= (rx * rx * pyp * pyp) + (ry * ry * pxp * pxp);
-        radicant = Math.sqrt(radicant) * (largeArcFlag === sweepFlag ? -1 : 1);
-        var centerx = radicant * rx / ry * pyp;
-        var centery = radicant * -ry / rx * pxp;
-        var centerx_orig = cosPhi * centerx - sinPhi * centery + (px + cx) / 2;
-        var centery_orig = sinPhi * centerx + cosPhi * centery + (py + cy) / 2;
-        var ang1 = Math.atan2((pyp - centery) / ry, (pxp - centerx) / rx);
-        var ang2 = Math.atan2((-pyp - centery) / ry, (-pxp - centerx) / rx);
-        var angDiff = ang2 - ang1;
-        if (sweepFlag === 0 && angDiff > 0) angDiff -= 2 * Math.PI;
-        else if (sweepFlag === 1 && angDiff < 0) angDiff += 2 * Math.PI;
-        var segments = Math.ceil(Math.abs(angDiff) / (Math.PI / 2));
-        var segmentAngle = angDiff / segments;
-        var k = (4 / 3) * Math.tan(segmentAngle / 4);
-        var currentAng = ang1;
-        for (var i = 0; i < segments; i++) {
-            var nextAng = currentAng + segmentAngle;
-            var cos1 = Math.cos(currentAng), sin1 = Math.sin(currentAng);
-            var cos2 = Math.cos(nextAng), sin2 = Math.sin(nextAng);
-            var p1x = rx * (cos1 - k * sin1), p1y = ry * (sin1 + k * cos1);
-            var p2x = rx * (cos2 + k * sin2), p2y = ry * (sin2 - k * cos2);
-            var p3x = rx * cos2, p3y = ry * sin2;
-            curves.push({
-                x1: centerx_orig + cosPhi * p1x - sinPhi * p1y, y1: centery_orig + sinPhi * p1x + cosPhi * p1y,
-                x2: centerx_orig + cosPhi * p2x - sinPhi * p2y, y2: centery_orig + sinPhi * p2x + cosPhi * p2y,
-                x: centerx_orig + cosPhi * p3x - sinPhi * p3y, y: centery_orig + sinPhi * p3x + cosPhi * p3y
-            });
-            currentAng = nextAng;
-        }
-        return curves;
+  function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
+    var curves = [];
+    if (rx === 0 || ry === 0) return null;
+    var phi = xAxisRotation * (Math.PI / 180);
+    var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
+    var pxp = cosPhi * (px - cx) / 2 + sinPhi * (py - cy) / 2;
+    var pyp = -sinPhi * (px - cx) / 2 + cosPhi * (py - cy) / 2;
+    if (pxp === 0 && pyp === 0) return [];
+    rx = Math.abs(rx); ry = Math.abs(ry);
+    var lambda = (pxp * pxp) / (rx * rx) + (pyp * pyp) / (ry * ry);
+    if (lambda > 1) { rx *= Math.sqrt(lambda); ry *= Math.sqrt(lambda); }
+    var radicant = (rx * rx * ry * ry) - (rx * rx * pyp * pyp) - (ry * ry * pxp * pxp);
+    if (radicant < 0) radicant = 0;
+    radicant /= (rx * rx * pyp * pyp) + (ry * ry * pxp * pxp);
+    radicant = Math.sqrt(radicant) * (largeArcFlag === sweepFlag ? -1 : 1);
+    var centerx = radicant * rx / ry * pyp;
+    var centery = radicant * -ry / rx * pxp;
+    var centerx_orig = cosPhi * centerx - sinPhi * centery + (px + cx) / 2;
+    var centery_orig = sinPhi * centerx + cosPhi * centery + (py + cy) / 2;
+    var ang1 = Math.atan2((pyp - centery) / ry, (pxp - centerx) / rx);
+    var ang2 = Math.atan2((-pyp - centery) / ry, (-pxp - centerx) / rx);
+    var angDiff = ang2 - ang1;
+    if (sweepFlag === 0 && angDiff > 0) angDiff -= 2 * Math.PI;
+    else if (sweepFlag === 1 && angDiff < 0) angDiff += 2 * Math.PI;
+    var segments = Math.ceil(Math.abs(angDiff) / (Math.PI / 2));
+    var segmentAngle = angDiff / segments;
+    var k = (4 / 3) * Math.tan(segmentAngle / 4);
+    var currentAng = ang1;
+    for (var i = 0; i < segments; i++) {
+      var nextAng = currentAng + segmentAngle;
+      var cos1 = Math.cos(currentAng), sin1 = Math.sin(currentAng);
+      var cos2 = Math.cos(nextAng), sin2 = Math.sin(nextAng);
+      var p1x = rx * (cos1 - k * sin1), p1y = ry * (sin1 + k * cos1);
+      var p2x = rx * (cos2 + k * sin2), p2y = ry * (sin2 - k * cos2);
+      var p3x = rx * cos2, p3y = ry * sin2;
+      curves.push({
+        x1: centerx_orig + cosPhi * p1x - sinPhi * p1y, y1: centery_orig + sinPhi * p1x + cosPhi * p1y,
+        x2: centerx_orig + cosPhi * p2x - sinPhi * p2y, y2: centery_orig + sinPhi * p2x + cosPhi * p2y,
+        x: centerx_orig + cosPhi * p3x - sinPhi * p3y, y: centery_orig + sinPhi * p3x + cosPhi * p3y
+      });
+      currentAng = nextAng;
     }
+    return curves;
+  }
 
-    class SVGParser {
-        constructor(pathStr) {
-            this.tokens = pathStr.match(/([a-zA-Z])|([-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/g) || [];
-            this.index = 0;
-            this.penX = 0; this.penY = 0;
-            this.startX = 0; this.startY = 0;
-            this.lastControlX = 0; this.lastControlY = 0;
-            this.lastCommand = '';
-        }
-        nextNum() { return this.index < this.tokens.length ? parseFloat(this.tokens[this.index++]) : 0; }
-        isCommand(t) { return /^[a-zA-Z]$/.test(t); }
-        parse() {
-            var commands = [];
-            this.index = 0;
-            var currentCommand = '';
-            while (this.index < this.tokens.length) {
-                var prevIndex = this.index;
-                var token = this.tokens[this.index];
-                
-                if (this.isCommand(token)) {
-                    currentCommand = token;
-                    this.index++;
-                } else {
-                    if (currentCommand === 'M') currentCommand = 'L';
-                    if (currentCommand === 'm') currentCommand = 'l';
-                }
-                
-                var cmds = this.processCommand(currentCommand);
-                if (cmds) commands.push(...cmds);
-                this.lastCommand = currentCommand;
-                
-                if (this.index === prevIndex) {
-                    this.index++;
-                }
-            }
-            return commands;
-        }
-        processCommand(cmd) {
-            var result = [];
-            var cX, cY;
-            const isRel = (c) => c === c.toLowerCase();
-            try {
-                switch (cmd) {
-                    case 'M': case 'm': 
-                        var x = this.nextNum(), y = this.nextNum();
-                        if (isRel(cmd)) { x += this.penX; y += this.penY; }
-                        this.penX = x; this.penY = y; this.startX = x; this.startY = y;
-                        result.push({type:'M',x:x,y:y}); cX=x; cY=y; break;
-                    case 'L': case 'l': case 'H': case 'h': case 'V': case 'v':
-                        var x = this.penX, y = this.penY;
-                        if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; } 
-                        else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; } 
-                        else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
-                        this.penX = x; this.penY = y;
-                        result.push({type:'L',x:x,y:y}); cX=x; cY=y; break;
-                    case 'C': case 'c': 
-                        var x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-                        if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
-                        this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-                    case 'S': case 's': 
-                        var x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-                        if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-                        var x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-                        var y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
-                        this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-                    case 'Q': case 'q': 
-                        var x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-                        if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
-                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
-                        this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-                    case 'T': case 't': 
-                        var x=this.nextNum(), y=this.nextNum();
-                        if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-                        var x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-                        var y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
-                        this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-                    case 'A': case 'a': 
-                        var rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-                        if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-                        var curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
-                        if (!curves) result.push({type:'L',x:x,y:y});
-                        else curves.forEach(function(c) { result.push({type:'C',x1:c.x1,y1:c.y1,x2:c.x2,y2:c.y2,x:c.x,y:c.y}); });
-                        this.penX=x; this.penY=y; cX=x; cY=y; break;
-                    case 'Z': case 'z': 
-                        this.penX=this.startX; this.penY=this.startY;
-                        result.push({type:'L',x:this.startX,y:this.startY}); cX=this.startX; cY=this.startY; break;
-                }
-            } catch(e) { console.warn(e); }
-            this.lastControlX = cX; this.lastControlY = cY;
-            return result;
-        }
+  class SVGParser {
+    constructor(pathStr) {
+      this.tokens = pathStr.match(/([a-zA-Z])|([-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/g) || [];
+      this.index = 0;
+      this.penX = 0; this.penY = 0;
+      this.startX = 0; this.startY = 0;
+      this.lastControlX = 0; this.lastControlY = 0;
+      this.lastCommand = '';
     }
-
-    function extractPathData(htmlStr) {
-        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr; 
-        
-        var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
-        var matches = [];
-        var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
-        var match;
-        while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
-        
-        if (matches.length > 0) {
-            if (hasBasicShapes) {
-                showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
-            } else {
-                showToast("智能合并 " + matches.length + " 条路径", 'success');
-            }
-            return matches.join(' ');
+    nextNum() { return this.index < this.tokens.length ? parseFloat(this.tokens[this.index++]) : 0; }
+    isCommand(t) { return /^[a-zA-Z]$/.test(t); }
+    parse() {
+      var commands = [];
+      this.index = 0;
+      var currentCommand = '';
+      while (this.index < this.tokens.length) {
+        var prevIndex = this.index;
+        var token = this.tokens[this.index];
+        if (this.isCommand(token)) {
+          currentCommand = token;
+          this.index++;
+        } else {
+          if (currentCommand === 'M') currentCommand = 'L';
+          if (currentCommand === 'm') currentCommand = 'l';
         }
-        
-        if (hasBasicShapes) {
-            throw new Error("检测到未转曲的形状！请先在软件中执行“轮廓化描边”或“转为路径”后再导出。");
+        var cmds = this.processCommand(currentCommand);
+        if (cmds) commands.push(...cmds);
+        this.lastCommand = currentCommand;
+        if (this.index === prevIndex) {
+          this.index++;
         }
-
-        throw new Error("未检测到标准 SVG 路径数据，请检查代码。"); 
+      }
+      return commands;
     }
-
-    var btn = document.getElementById('btnConvert');
-    var btnCopy = document.getElementById('btnCopy');
-
-    btn.addEventListener('click', function() {
-        try {
-            var rawInput = document.getElementById('svgInput').value.trim();
-            if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
-
-            var cleanInput = extractPathData(rawInput);
-            var scale = parseFloat(document.getElementById('scaleFactor').value);
-            var extraTags = document.getElementById('extraTags').value.trim();
-            
-            var parser = new SVGParser(cleanInput);
-            var absCommands = parser.parse();
-
-            if(absCommands.length === 0) {
-                showToast("无效的路径数据", 'error');
-                return;
-            }
-
-            var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            var updateBounds = function(x, y) {
-                if (x < minX) minX = x; if (x > maxX) maxX = x;
-                if (y < minY) minY = y; if (y > maxY) maxY = y;
-            };
-            
-            var assStr = "";
-            var f = function(n) { return Math.round(n * scale); };
-
-            absCommands.forEach(function(c) {
-                if (c.type === 'M') { assStr += "m " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-                if (c.type === 'L') { assStr += "l " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-                if (c.type === 'C') { 
-                    assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " "; 
-                    updateBounds(c.x1, c.y1); updateBounds(c.x2, c.y2); updateBounds(c.x, c.y);
-                }
-            });
-
-            document.getElementById('assPath').setAttribute('d', cleanInput);
-            var w = maxX - minX; var h = maxY - minY;
-            if (w <= 0) w = 100; if (h <= 0) h = 100;
-            var padding = Math.max(w, h) * 0.1;
-            var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
-            document.getElementById('svgPreview').setAttribute('viewBox', vb);
-
-            var pMap = {1:'\\p1', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
-            var pTag = pMap[scale] || '\\p1';
-            var head = "{" + extraTags + pTag + "}";
-            document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
-            
-            if (!rawInput.includes('<')) showToast("转换成功!", 'success');
-
-        } catch (e) {
-            showToast(e.message, 'error');
+    processCommand(cmd) {
+      var result = [];
+      var cX, cY;
+      const isRel = (c) => c === c.toLowerCase();
+      try {
+        switch (cmd) {
+          case 'M': case 'm': {
+            var x = this.nextNum(), y = this.nextNum();
+            if (isRel(cmd)) { x += this.penX; y += this.penY; }
+            this.penX = x; this.penY = y; this.startX = x; this.startY = y;
+            result.push({type:'M',x:x,y:y}); cX=x; cY=y; break;
+          }
+          case 'L': case 'l': case 'H': case 'h': case 'V': case 'v': {
+            var x = this.penX, y = this.penY;
+            if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; }
+            else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; }
+            else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
+            this.penX = x; this.penY = y;
+            result.push({type:'L',x:x,y:y}); cX=x; cY=y; break;
+          }
+          case 'C': case 'c': {
+            var x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+            if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
+            result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y});
+            this.penX=x; this.penY=y; cX=x2; cY=y2; break;
+          }
+          case 'S': case 's': {
+            var x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+            if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
+            var x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+            var y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+            result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y});
+            this.penX=x; this.penY=y; cX=x2; cY=y2; break;
+          }
+          case 'Q': case 'q': {
+            var x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+            if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
+            var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+            var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+            result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y});
+            this.penX=x; this.penY=y; cX=x1; cY=y1; break;
+          }
+          case 'T': case 't': {
+            var x=this.nextNum(), y=this.nextNum();
+            if(isRel(cmd)){x+=this.penX; y+=this.penY;}
+            var x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+            var y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+            var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+            var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+            result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y});
+            this.penX=x; this.penY=y; cX=x1; cY=y1; break;
+          }
+          case 'A': case 'a': {
+            var rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+            if(isRel(cmd)){x+=this.penX; y+=this.penY;}
+            var curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
+            if (!curves) result.push({type:'L',x:x,y:y});
+            else curves.forEach(function(c) { result.push({type:'C',x1:c.x1,y1:c.y1,x2:c.x2,y2:c.y2,x:c.x,y:c.y}); });
+            this.penX=x; this.penY=y; cX=x; cY=y; break;
+          }
+          case 'Z': case 'z': {
+            this.penX=this.startX; this.penY=this.startY;
+            result.push({type:'L',x:this.startX,y:this.startY}); cX=this.startX; cY=this.startY; break;
+          }
         }
-    });
+      } catch(e) { console.warn(e); }
+      this.lastControlX = cX; this.lastControlY = cY;
+      return result;
+    }
+  }
 
-    btnCopy.addEventListener('click', function() {
-        var el = document.getElementById('assOutput');
-        el.select();
-        try {
-            if(document.execCommand('copy')) showToast("ASS 代码已复制", 'success');
-        } catch(err) {
-            navigator.clipboard.writeText(el.value).then(() => {
-                showToast("ASS 代码已复制", 'success');
-            }).catch(e => showToast("复制失败", 'error'));
+  function extractPathData(htmlStr) {
+    if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr;
+    var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
+    var matches = [];
+    var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
+    var match;
+    while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
+    if (matches.length > 0) {
+      if (hasBasicShapes) {
+        showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
+      } else {
+        showToast("智能合并 " + matches.length + " 条路径", 'success');
+      }
+      return matches.join(' ');
+    }
+    if (hasBasicShapes) {
+      throw new Error("检测到未转曲的形状！请先在软件中执行"轮廓化描边"或"转为路径"后再导出。");
+    }
+    throw new Error("未检测到标准 SVG 路径数据，请检查代码。");
+  }
+
+  var btn = document.getElementById('btnConvert');
+  var btnCopy = document.getElementById('btnCopy');
+
+  btn.addEventListener('click', function() {
+    try {
+      var rawInput = document.getElementById('svgInput').value.trim();
+      if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
+      var cleanInput = extractPathData(rawInput);
+      var scale = parseFloat(document.getElementById('scaleFactor').value);
+      var extraTags = document.getElementById('extraTags').value.trim();
+      var parser = new SVGParser(cleanInput);
+      var absCommands = parser.parse();
+      if(absCommands.length === 0) {
+        showToast("无效的路径数据", 'error');
+        return;
+      }
+      var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      var updateBounds = function(x, y) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+      };
+      var assStr = "";
+      var f = function(n) { return Math.round(n * scale); };
+      absCommands.forEach(function(c) {
+        if (c.type === 'M') { assStr += "m " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
+        if (c.type === 'L') { assStr += "l " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
+        if (c.type === 'C') {
+          assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " ";
+          updateBounds(c.x1, c.y1); updateBounds(c.x2, c.y2); updateBounds(c.x, c.y);
         }
-    });
+      });
+      document.getElementById('assPath').setAttribute('d', cleanInput);
+      var w = maxX - minX; var h = maxY - minY;
+      if (w <= 0) w = 100; if (h <= 0) h = 100;
+      var padding = Math.max(w, h) * 0.1;
+      var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
+      document.getElementById('svgPreview').setAttribute('viewBox', vb);
+      var pMap = {1:'\\p1', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
+      var pTag = pMap[scale] || '\\p1';
+      var head = "{" + extraTags + pTag + "}";
+      document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
+      if (!rawInput.includes('<')) showToast("转换成功!", 'success');
+    } catch (e) {
+      showToast(e.message, 'error');
+    }
+  });
+
+  btnCopy.addEventListener('click', function() {
+    var el = document.getElementById('assOutput');
+    el.select();
+    try {
+      if(document.execCommand('copy')) showToast("ASS 代码已复制", 'success');
+    } catch(err) {
+      navigator.clipboard.writeText(el.value).then(function() {
+        showToast("ASS 代码已复制", 'success');
+      }).catch(function() { showToast("复制失败", 'error'); });
+    }
+  });
 })();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/svg-to-ass/sw.js', { scope: '/svg-to-ass/' }).catch(function() {});
+}
 </script>
 </body>
 </html>
