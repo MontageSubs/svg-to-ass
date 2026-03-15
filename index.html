@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
 <link rel="icon" type="image/jpeg" href="icons/icon-256.png">
-<meta name="version" content="2.8.1">
+<meta name="version" content="2.9">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -119,7 +119,7 @@ body {
 .brand-link:hover .brand-title { text-decoration: underline; }
 .brand-org {
   font-family: var(--mono);
-  font-size: 0.63rem;
+  font-size: 0.7rem;
   color: var(--accent);
   font-weight: 500;
   letter-spacing: 0.06em;
@@ -213,7 +213,7 @@ h1.brand-title {
 .step.active .step-head { background: var(--hd-bg); color: var(--hd-fg); border-color: var(--hd-bg); }
 .step-num {
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
   width: 20px; height: 20px;
   border-radius: 50%;
@@ -230,7 +230,8 @@ h2.step-title {
   line-height: inherit;
   display: inline;
 }
-.step-subtitle { font-size: 0.75rem; opacity: 0.45; margin-left: auto; font-family: var(--mono); }
+.step-subtitle { font-size: 0.75rem; color: var(--ink2); margin-left: auto; font-family: var(--mono); }
+.step.active .step-subtitle { color: rgba(246,245,242,0.7); }
 .step-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 .step-input { flex: 1; }
 .step-settings { flex: 0 0 auto; }
@@ -266,9 +267,9 @@ h2.step-title {
   line-height: 1.5;
   resize: none;
   outline: none;
-  transition: border-color 0.15s;
 }
 .custom-textarea:focus { border-color: var(--accent); background: var(--card); }
+.custom-textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 #svgInput { flex: 1; min-height: 200px; }
 #assOutput { color: var(--accent); height: 120px; min-height: 120px; flex-shrink: 0; }
 .flex-gap { display: flex; flex-direction: row; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
@@ -287,6 +288,7 @@ h2.step-title {
   transition: border-color 0.15s;
 }
 .custom-input:focus, .custom-select:focus { border-color: var(--accent); background: var(--card); }
+.custom-input:focus-visible, .custom-select:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .result-header {
   display: flex;
   justify-content: space-between;
@@ -420,6 +422,17 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 }
 .footer-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--rule2); }
 .footer-btn:active { background: var(--rule); border-color: var(--ink); color: var(--ink); }
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 .hidden { display: none !important; }
 @media (max-width: 900px) {
   .layout-grid { grid-template-columns: 1fr; }
@@ -477,7 +490,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
           <span class="step-subtitle">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
+          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
         </div>
       </div>
 
@@ -574,7 +587,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <div class="footer-btns">
       <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn">反馈</a>
       <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">
-        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;fill:currentColor;flex-shrink:0"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
+        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;fill:currentColor;flex-shrink:0" aria-hidden="true"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
         查看源代码
       </a>
     </div>
