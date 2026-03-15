@@ -1,12 +1,12 @@
-# SVG to ASS Converter (v1.0)
+# SVG to ASS Converter (v1.1)
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0-blue)
+![Version](https://img.shields.io/badge/version-1.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![Author](https://img.shields.io/badge/author-NickCollect-orange)](https://github.com/MontageSubs)
 
-**一个现代化、高精度的 Aegisub 绘图指令转换工具**
+**一个现代化、高精度的 Aegisub 绘图指令在线转换工具**
 
 ---
 
@@ -22,39 +22,38 @@
 
 ## ✨ 核心特性 (Features)
 
-* 🎨 **现代化 UI (Modern UI)**
-    * 采用深色模式（Dark Mode），符合 Aegisub 用户习惯，护眼且专业。
-    * 左右分栏设计，代码输入与结果预览一目了然。
+* 🎨 **现代化向导式 UI (Modern UI)**
+    * **自适应明暗主题**（Light/Dark Mode），跟随系统设置自动切换，提供统一且舒适的沉浸式体验。
+    * 采用**向导式（Step-by-Step）垂直流布局**，不仅逻辑清晰，且完美适配桌面端与移动端屏幕。
 
 * 🚀 **智能提取 (Smart Parsing)**
     * 内置“脏数据清洗器”，无需手动删除 XML 标签。
     * 支持直接粘贴整个 `<svg>` 代码块或 `<path>` 标签，自动识别并合并 `d` 属性路径。
 
 * 🔍 **实时预览 (Real-time Preview)**
-    * 左侧修改，右侧即时渲染。
-    * **透明网格背景**：自带 Photoshop 风格的棋盘格，支持**亮度调节滑块**，无论黑色还是白色图形都能清晰查看。
+    * 转换后即时渲染矢量形状。
+    * **自定义透明网格背景**：支持**亮度调节滑块**，无论导入的是纯黑还是纯白图形，都能调节出最佳的观察对比度。
 
 * 📐 **高精度支持 (High Precision)**
     * 默认提供 **8x (\p4)** 和 **16x (\p5)** 两种高精度模式。
     * 通过数学算法对坐标进行预放大，完美解决 Aegisub 中小图形锯齿化的问题。
 
 * 🛠 **自动头部 (Auto Header)**
-    * 自动生成 `\fscx100\fscy100` 等基础标签，支持自定义追加 `\pos` 或 `\c` 等指令。
+    * 自动生成 `\fscx1000\fscy1000` 等基础精度标签，支持自定义追加 `\pos` 或 `\c` 等指令。
 
 ## 📖 如何使用 (Usage)
 
 1.  **准备图形**：在 Adobe Illustrator / Inkscape / Figma 中设计好图形，并复制 SVG 代码 (Ctrl+C)。
-2.  **粘贴**：打开本工具，将代码直接粘贴到左侧的 "Input Source" 框中。
-3.  **转换**：点击 **Convert** 按钮（或直接查看预览）。
-4.  **复制**：点击右侧的 **Copy** 按钮，将生成的 ASS 代码粘贴到 Aegisub 的字幕行中。
+2.  **输入源文件**：在 **[步骤 1]** 的文本框中直接粘贴 SVG 代码。
+3.  **配置与转换**：在 **[步骤 2]** 中选择你需要的精度（推荐 8x），点击 **Convert** 按钮。
+4.  **预览与复制**：在 **[步骤 3]** 中检查渲染效果，确认无误后点击 **Copy**，将生成的 ASS 代码粘贴到 Aegisub 的字幕行中即可。
 
 ## 🛠 技术栈 (Tech Stack)
 
-* Pure HTML5
-* CSS3 (Flexbox & Grid Layout)
+* Pure HTML5 & CSS3
 * Vanilla JavaScript (ES6+)
-* 无需后端，纯前端运行
-
+* 原生 API 数学计算（贝塞尔曲线转换）
+* 无需后端，100% 纯本地浏览器处理
 
 ## 📄 许可证 (License)
 
