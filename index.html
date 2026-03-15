@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
 <link rel="icon" type="image/jpeg" href="https://montagesubs.github.io/assets/images/montagesubs_logo-256.jpg">
-<meta name="version" content="2.3">
+<meta name="version" content="2.5">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -576,13 +576,6 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 </footer>
 
 <script>
-'use strict';
-
-document.addEventListener('DOMContentLoaded', function() {
-  var v = document.querySelector('meta[name="version"]');
-  if (v) document.getElementById('ver').textContent += ' v' + v.content;
-});
-
 var discussLoaded = false;
 function loadDiscuss() {
   var section = document.getElementById('discuss-section');
@@ -610,6 +603,15 @@ function loadDiscuss() {
   };
   document.getElementById('discuss-section').appendChild(script);
 }
+</script>
+
+<script>
+'use strict';
+
+document.addEventListener('DOMContentLoaded', function() {
+  var v = document.querySelector('meta[name="version"]');
+  if (v) document.getElementById('ver').textContent += ' v' + v.content;
+});
 
 function showToast(msg, type) {
   type = type || 'success';
