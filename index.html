@@ -9,8 +9,8 @@
 <meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
-<link rel="icon" type="image/jpeg" href="https://montagesubs.github.io/assets/images/montagesubs_logo-256.jpg">
-<meta name="version" content="2.7">
+<link rel="icon" type="image/jpeg" href="icons/icon-256.png">
+<meta name="version" content="2.8">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -23,6 +23,7 @@
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SVG转ASS">
@@ -161,6 +162,10 @@ h1.brand-title {
   cursor: pointer;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+  height: 28px;
+  line-height: 1;
+  vertical-align: middle;
 }
 .btn-hdr:hover { border-color: var(--ink); background: var(--rule2); }
 .btn-hdr:active { background: var(--rule); border-color: var(--ink); }
@@ -400,6 +405,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 .footer-btn {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--ink2);
@@ -455,12 +461,14 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </a>
   <span class="sub" id="ver-sub">SVG to ASS Draw · 智能转换 · 高精度</span>
   <div class="header-right">
+    <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none" title="添加到主屏幕">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14l-5-5 1.41-1.41L11 14.17V8h2v6.17l2.59-2.59L17 13l-5 5z"/>
+      </svg>
+      添加到主屏幕
+    </button>
     <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()">讨论</button>
     <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr">ASS 子集化工具</a>
-    <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="btn-hdr">
-      <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
-      GitHub
-    </a>
   </div>
 </header>
 
@@ -570,7 +578,10 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <div class="footer-line"><span id="ver">用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
     <div class="footer-btns">
       <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn">反馈</a>
-      <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">查看源代码</a>
+      <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">
+        <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;fill:currentColor;flex-shrink:0"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
+        查看源代码
+      </a>
     </div>
   </div>
 </footer>
@@ -873,8 +884,43 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
 </script>
 
 <script>
+let _pwaPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  const btn = document.getElementById('btn-install-pwa');
+  if (btn) btn.style.display = 'inline-flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  _pwaPrompt = null;
+  const btn = document.getElementById('btn-install-pwa');
+  if (btn) btn.style.display = 'none';
+});
+
+if (window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btn-install-pwa');
+    if (btn) btn.style.display = 'none';
+  });
+}
+
+function triggerPwaInstall() {
+  if (_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then((result) => {
+      _pwaPrompt = null;
+      if (result.outcome === 'accepted') {
+        const btn = document.getElementById('btn-install-pwa');
+        if (btn) btn.style.display = 'none';
+      }
+    });
+  }
+}
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/svg-to-ass/sw.js', { scope: '/svg-to-ass/' }).catch(function() {});
+  navigator.serviceWorker.register('/svg-to-ass/sw.js', { scope: '/svg-to-ass/' }).catch(() => {});
 }
 </script>
 </body>

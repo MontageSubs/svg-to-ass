@@ -160,17 +160,6 @@ svg-to-ass/
 └── README.en.md      # 英文说明
 ```
 
-## 维护须知
-
-> **重要：本工具依赖蒙太奇字幕组主站的两个静态资源文件。**
->
-> 请勿在主站仓库中移动或删除以下文件，否则将导致本工具的图标与 PWA 安装功能失效：
->
-> - `https://montagesubs.github.io/assets/images/montagesubs_logo-256.jpg`（浏览器标签页图标）
-> - `https://montagesubs.github.io/assets/images/montagesubs_logo-512.jpg`（PWA 安装图标）
->
-> 如需调整主站资源路径，请同步更新本仓库的 `index.html` 与 `manifest.json`。
-
 ## 参与贡献
 
 欢迎任何形式的贡献，包括但不限于：
