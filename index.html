@@ -2,9 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=2.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SVG 转 ASS 绘图指令 · 蒙太奇字幕组 MontageSubs</title>
-<meta name="description" content="基于浏览器端实现的 SVG 转 ASS 绘图指令工具。支持将 SVG 路径数据一键转化为 ASS 矢量绘图代码，纯前端本地处理。由NickCollect@蒙太奇字幕组 MontageSubs 开发。">
+<meta name="description" content="基于浏览器端实现的 SVG 转 ASS 绘图指令工具。支持将 SVG 路径数据一键转化为 ASS 矢量绘图代码，纯前端本地处理。由蒙太奇字幕组 MontageSubs 开发。">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
 
@@ -103,16 +103,31 @@ h1.brand-title {
 .btn-hdr:active { background: var(--rule); border-color: var(--ink); }
 .btn-hdr svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
 
-/* 核心布局框架 */
-.main { max-width: 720px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; }
+/* 核心布局框架 (修复后的双栏宽版) */
+.main { max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
+.layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  flex: 1; /* 让网格填满剩余空间 */
+}
+.col-left, .col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 0; /* 允许内部元素正确伸缩 */
+}
+
+/* 步骤块基础样式 */
 .step {
-  margin-bottom: 1.25rem; border: 1px solid var(--rule); border-radius: var(--r);
+  border: 1px solid var(--rule); border-radius: var(--r);
   background: var(--card); overflow: hidden; transition: border-color 0.2s;
+  display: flex; flex-direction: column;
 }
 .step.active { border-color: var(--ink); }
 .step-head {
   display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.25rem;
-  border-bottom: 1px solid var(--rule); background: var(--paper);
+  border-bottom: 1px solid var(--rule); background: var(--paper); flex-shrink: 0;
 }
 .step.active .step-head { background: var(--hd-bg); color: var(--hd-fg); border-color: var(--hd-bg); }
 .step-num {
@@ -122,7 +137,12 @@ h1.brand-title {
 }
 h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; display: inline; }
 .step-subtitle { font-size: 0.75rem; opacity: 0.45; margin-left: auto; font-family: var(--mono); }
-.step-body { padding: 1.25rem; }
+.step-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+
+/* 定制特定步骤的高度行为 */
+.step-input { flex: 1; }      /* 步骤1：自动填满左侧剩余高度 */
+.step-settings { flex: 0 0 auto; } /* 步骤2：只占用实际内容需要的高度 */
+.step-result { flex: 1; }     /* 步骤3：自动填满右侧整个高度 */
 
 /* 按钮样式 */
 .btn {
@@ -136,16 +156,18 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 
 /* SVG 转换工具专属表单组件 */
 .custom-textarea {
-  width: 100%; min-height: 180px; padding: 0.875rem;
+  width: 100%; padding: 0.875rem;
   background: var(--paper); color: var(--ink); border: 1px solid var(--rule);
   border-radius: var(--r); font-family: var(--mono); font-size: 0.8rem;
-  line-height: 1.5; resize: vertical; outline: none; transition: border-color 0.15s;
+  line-height: 1.5; resize: none; outline: none; transition: border-color 0.15s;
 }
 .custom-textarea:focus { border-color: var(--accent); background: var(--card); }
-#assOutput { color: var(--accent); }
+#svgInput { flex: 1; min-height: 200px; } 
+#assOutput { color: var(--accent); height: 120px; min-height: 120px; flex-shrink: 0; }
 
-.flex-gap { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
-.mt2 { margin-top: 1rem; }
+/* 专门独立出来的横向排版容器，修复错位问题 */
+.flex-gap { display: flex; flex-direction: row; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
+.mt2 { margin-top: 1.25rem; }
 
 .input-group { display: flex; flex-direction: column; gap: 0.35rem; }
 .input-group label { font-size: 0.78rem; font-weight: 600; color: var(--ink2); }
@@ -159,10 +181,10 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 /* 预览与结果区域 */
 .result-header {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem; flex-shrink: 0;
 }
 .preview-box {
-  height: 220px; border: 1px solid var(--rule); border-radius: var(--r);
+  flex: 1; min-height: 200px; border: 1px solid var(--rule); border-radius: var(--r);
   overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;
   background-color: var(--card);
   background-image: linear-gradient(45deg, var(--rule2) 25%, transparent 25%), 
@@ -197,6 +219,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 .site-footer {
   border-top: 1px solid var(--rule); padding: 1.5rem 2rem;
   display: flex; justify-content: space-between; align-items: stretch; background: var(--card);
+  flex-shrink: 0;
 }
 .footer-left { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
 .footer-nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; align-items: center; }
@@ -222,7 +245,13 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 .footer-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--rule2); }
 .footer-btn:active { background: var(--rule); border-color: var(--ink); color: var(--ink); }
 
-@media (max-width: 600px) {
+/* 窄屏设备退化为单列垂直流 */
+@media (max-width: 900px) {
+  .layout-grid { grid-template-columns: 1fr; }
+  .col-left, .col-right { gap: 1.25rem; }
+  #svgInput { min-height: 200px; }
+  .preview-box { min-height: 220px; }
+  
   .site-header { padding: 0.75rem 1rem; gap: 0.5rem; flex-wrap: wrap; }
   .site-header .sub { display: none; }
   .brand-link { width: 100%; align-items: center; }
@@ -242,7 +271,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub">SVG to ASS Draw 2.0</span>
+  <span class="sub">SVG to ASS Draw 2.1</span>
   <div class="header-right">
     <a href="https://montagesubs.github.io/ass-subset/" class="btn-hdr">ASS 子集化工具</a>
     <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="btn-hdr">
@@ -253,66 +282,74 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 </header>
 
 <main class="main">
-  <div class="step active">
-    <div class="step-head">
-      <span class="step-num">1</span>
-      <h2 class="step-title">输入 SVG 代码</h2>
-      <span class="step-subtitle">Input Source</span>
-    </div>
-    <div class="step-body">
-      <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path>标签)..."></textarea>
-    </div>
-  </div>
-
-  <div class="step active">
-    <div class="step-head">
-      <span class="step-num">2</span>
-      <h2 class="step-title">转换设置</h2>
-      <span class="step-subtitle">Settings</span>
-    </div>
-    <div class="step-body flex-gap">
-      <div class="input-group">
-        <label>精度 Scale</label>
-        <select id="scaleFactor" class="custom-select">
-          <option value="8" selected>8x (\p4 推荐)</option>
-          <option value="16">16x (\p5 极致)</option>
-        </select>
-      </div>
-      <div class="input-group" style="flex:1">
-        <label>附加标签 (Header Tags)</label>
-        <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" placeholder="例如 \pos(960,540)">
-      </div>
-      <div class="input-group" style="justify-content: flex-end;">
-        <button id="btnConvert" class="btn btn-primary" style="height: 34px;">转换 Convert</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="step active">
-    <div class="step-head">
-      <span class="step-num">3</span>
-      <h2 class="step-title">结果与预览</h2>
-      <span class="step-subtitle">Result & Preview</span>
-    </div>
-    <div class="step-body">
-      <div class="result-header">
-        <span style="font-size: 0.85rem; font-weight: 600;">ASS 代码输出</span>
-        <button id="btnCopy" class="btn-hdr">复制 Copy</button>
-      </div>
-      <textarea id="assOutput" class="custom-textarea" style="min-height: 120px;" readonly placeholder="等待转换..."></textarea>
-
-      <div class="result-header mt2">
-        <span style="font-size: 0.85rem; font-weight: 600;">效果预览</span>
-        <div class="slider-group">
-          <label>背景亮度:</label>
-          <input type="range" min="0" max="100" value="90" id="bgSlider" title="调整预览背景亮度以适配不同颜色的形状">
+  <div class="layout-grid">
+    <div class="col-left">
+      <div class="step active step-input">
+        <div class="step-head">
+          <span class="step-num">1</span>
+          <h2 class="step-title">输入 SVG 代码</h2>
+          <span class="step-subtitle">Input Source</span>
+        </div>
+        <div class="step-body">
+          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path>标签)..."></textarea>
         </div>
       </div>
-      <div class="preview-box">
-        <div id="previewBg"></div>
-        <svg id="svgPreview" class="preview-svg">
-          <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
-        </svg>
+
+      <div class="step active step-settings">
+        <div class="step-head">
+          <span class="step-num">2</span>
+          <h2 class="step-title">转换设置</h2>
+          <span class="step-subtitle">Settings</span>
+        </div>
+        <div class="step-body">
+          <div class="flex-gap">
+            <div class="input-group">
+              <label>精度 Scale</label>
+              <select id="scaleFactor" class="custom-select">
+                <option value="8" selected>8x (\p4 推荐)</option>
+                <option value="16">16x (\p5 极致)</option>
+              </select>
+            </div>
+            <div class="input-group" style="flex:1">
+              <label>附加标签 (Header Tags)</label>
+              <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" placeholder="例如 \pos(960,540)">
+            </div>
+            <div class="input-group">
+              <button id="btnConvert" class="btn btn-primary" style="height: 34px;">转换 Convert</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="step active step-result">
+        <div class="step-head">
+          <span class="step-num">3</span>
+          <h2 class="step-title">结果与预览</h2>
+          <span class="step-subtitle">Result & Preview</span>
+        </div>
+        <div class="step-body">
+          <div class="result-header">
+            <span style="font-size: 0.85rem; font-weight: 600;">ASS 代码输出</span>
+            <button id="btnCopy" class="btn-hdr">复制 Copy</button>
+          </div>
+          <textarea id="assOutput" class="custom-textarea" readonly placeholder="等待转换..."></textarea>
+
+          <div class="result-header mt2">
+            <span style="font-size: 0.85rem; font-weight: 600;">效果预览</span>
+            <div class="slider-group">
+              <label>背景亮度:</label>
+              <input type="range" min="0" max="100" value="90" id="bgSlider" title="调整预览背景亮度以适配不同颜色的形状">
+            </div>
+          </div>
+          <div class="preview-box">
+            <div id="previewBg"></div>
+            <svg id="svgPreview" class="preview-svg">
+              <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -330,6 +367,8 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
       <a href="https://github.com/MontageSubs" target="_blank" rel="noopener">GitHub</a>
       <span class="footer-sep">|</span>
       <a href="https://weibo.com/u/8358891788" target="_blank" rel="noopener">微博</a>
+      <span class="footer-sep">|</span>
+      <a href="https://bsky.app/profile/montagesubs.bsky.social" target="_blank" rel="noopener">BlueSky</a>
     </nav>
     <div class="footer-brand">
       <span class="footer-org">蒙太奇字幕组 · MontageSubs</span>
