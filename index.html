@@ -9,7 +9,6 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
 
 <style>
-/* 全局设计变量 */
 :root {
   --ink:   #111318;
   --ink2:  #3d4150;
@@ -57,7 +56,6 @@ body {
   flex-direction: column;
 }
 
-/* 顶部导航与 Header */
 .site-header {
   border-bottom: 1px solid var(--rule);
   padding: 1rem 2rem;
@@ -103,7 +101,6 @@ h1.brand-title {
 .btn-hdr:active { background: var(--rule); border-color: var(--ink); }
 .btn-hdr svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
 
-/* 核心布局框架 (修复后的双栏宽版) */
 .main { max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; flex: 1; display: flex; flex-direction: column; }
 .layout-grid {
   display: grid;
@@ -118,7 +115,6 @@ h1.brand-title {
   min-height: 0;
 }
 
-/* 步骤块基础样式 */
 .step {
   border: 1px solid var(--rule); border-radius: var(--r);
   background: var(--card); overflow: hidden; transition: border-color 0.2s;
@@ -139,12 +135,10 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 .step-subtitle { font-size: 0.75rem; opacity: 0.45; margin-left: auto; font-family: var(--mono); }
 .step-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 
-/* 定制特定步骤的高度行为 */
 .step-input { flex: 1; }      
 .step-settings { flex: 0 0 auto; } 
 .step-result { flex: 1; }     
 
-/* 按钮样式 */
 .btn {
   display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.65rem 1.4rem;
   border: 1px solid transparent; border-radius: var(--r); font-family: var(--sans);
@@ -154,7 +148,6 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 .btn-primary:hover { opacity: 0.85; }
 .btn-primary:active { opacity: 0.7; transform: translateY(1px); }
 
-/* SVG 转换工具专属表单组件 */
 .custom-textarea {
   width: 100%; padding: 0.875rem;
   background: var(--paper); color: var(--ink); border: 1px solid var(--rule);
@@ -177,7 +170,6 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 }
 .custom-input:focus, .custom-select:focus { border-color: var(--accent); background: var(--card); }
 
-/* 预览与结果区域 */
 .result-header {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 0.5rem; flex-shrink: 0;
@@ -201,7 +193,6 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 .slider-group { display: flex; align-items: center; gap: 0.5rem; }
 .slider-group label { font-size: 0.75rem; font-family: var(--mono); color: var(--ink2); }
 
-/* Toast 提示 */
 #toast {
   position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-100px);
   background: var(--ink); color: var(--paper); padding: 0.6rem 1.25rem;
@@ -214,7 +205,6 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 #toast.error { background: var(--err); color: #fff; }
 #toast.warn { background: var(--warn); color: #fff; }
 
-/* 页脚 */
 .site-footer {
   border-top: 1px solid var(--rule); padding: 1.5rem 2rem;
   display: flex; justify-content: space-between; align-items: stretch; background: var(--card);
@@ -244,7 +234,6 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 .footer-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--rule2); }
 .footer-btn:active { background: var(--rule); border-color: var(--ink); color: var(--ink); }
 
-/* 窄屏设备退化为单列垂直流 */
 @media (max-width: 900px) {
   .layout-grid { grid-template-columns: 1fr; }
   .col-left, .col-right { gap: 1.25rem; }
@@ -270,9 +259,9 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub">SVG to ASS Draw 2.0</span>
+  <span class="sub">SVG to ASS Draw 2.3</span>
   <div class="header-right">
-    <a href="https://montagesubs.github.io/ass-subset/" class="btn-hdr">ASS 子集化工具</a>
+    <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr">ASS 子集化工具</a>
     <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="btn-hdr">
       <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
       GitHub
@@ -290,7 +279,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
           <span class="step-subtitle">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径。&#10;如果你使用 AI/Inkscape 绘图，导出前请务必先【轮廓化描边】或【转换为路径】。"></textarea>
+          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
         </div>
       </div>
 
@@ -389,7 +378,6 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <script>
 'use strict';
 
-// ---------------- Toast 提示框逻辑 ----------------
 function showToast(msg, type = 'success') {
     const el = document.getElementById('toast');
     el.innerText = msg;
@@ -398,7 +386,6 @@ function showToast(msg, type = 'success') {
     el.timer = setTimeout(() => { el.className = ''; }, 3000);
 }
 
-// ---------------- 预览背景控制逻辑 ----------------
 document.getElementById('bgSlider').addEventListener('input', function(e) {
     const val = e.target.value;
     const bg = document.getElementById('previewBg');
@@ -407,7 +394,6 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
     bg.style.background = `rgba(${color},${color},${color}, ${opacity})`;
 });
 
-// ---------------- 核心 SVG 转 ASS 逻辑 (保留原始逻辑) ----------------
 (function() {
     function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
         var curves = [];
@@ -470,7 +456,9 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             this.index = 0;
             var currentCommand = '';
             while (this.index < this.tokens.length) {
+                var prevIndex = this.index;
                 var token = this.tokens[this.index];
+                
                 if (this.isCommand(token)) {
                     currentCommand = token;
                     this.index++;
@@ -478,9 +466,14 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
                     if (currentCommand === 'M') currentCommand = 'L';
                     if (currentCommand === 'm') currentCommand = 'l';
                 }
+                
                 var cmds = this.processCommand(currentCommand);
                 if (cmds) commands.push(...cmds);
                 this.lastCommand = currentCommand;
+                
+                if (this.index === prevIndex) {
+                    this.index++;
+                }
             }
             return commands;
         }
@@ -550,17 +543,15 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
     function extractPathData(htmlStr) {
         if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr; 
         
-        // 检测是否包含未转曲的基础形状标签
         var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
-
         var matches = [];
-        var regex = /d\s*=\s*["']([^"']+)["']/gi;
+        var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
         var match;
         while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
         
         if (matches.length > 0) {
             if (hasBasicShapes) {
-                showToast("已提取路径，但忽略了未转曲的基础形状(如圆/矩形)！", 'warn');
+                showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
             } else {
                 showToast("智能合并 " + matches.length + " 条路径", 'success');
             }
@@ -568,7 +559,6 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
         }
         
         if (hasBasicShapes) {
-            // 精准拦截：发现基础形状且没有路径数据，抛出明确错误
             throw new Error("检测到未转曲的形状！请先在软件中执行“轮廓化描边”或“转为路径”后再导出。");
         }
 
