@@ -1,4 +1,4 @@
-# SVG to ASS Converter (v1.1)
+# SVG to ASS Converter (v2.3)
 
 <div align="center">
 
