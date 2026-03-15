@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SVG 转 ASS 绘图指令 · 蒙太奇字幕组 MontageSubs</title>
 <meta name="description" content="现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放、实时矢量预览，纯前端本地处理，无需安装。由蒙太奇字幕组 MontageSubs 开发。">
-<meta name="keywords" content="SVG转ASS,SVG to ASS,ASS绘图指令,Aegisub绘图,矢量转字幕,ASS draw,svg-to-ass,MontageSubs,蒙太奇字幕组,字幕特效,Typesetter,在线工具,贝塞尔曲线,路径转换,ASS特效,字幕制作">
+<meta name="keywords" content="SVG转ASS,SVG to ASS,SVG2ASS,ASS绘图指令,Aegisub绘图,矢量转字幕,ASS draw,svg-to-ass,MontageSubs,蒙太奇字幕组,字幕特效,Typesetter,在线工具,贝塞尔曲线,路径转换,ASS特效,字幕制作">
 <meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
 <link rel="icon" type="image/jpeg" href="https://montagesubs.github.io/assets/images/montagesubs_logo-256.jpg">
-<meta name="version" content="2.5">
+<meta name="version" content="2.7">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -453,7 +453,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub">SVG to ASS Draw · 智能转换 · 高精度</span>
+  <span class="sub" id="ver-sub">SVG to ASS Draw · 智能转换 · 高精度</span>
   <div class="header-right">
     <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()">讨论</button>
     <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr">ASS 子集化工具</a>
@@ -576,6 +576,8 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 </footer>
 
 <script>
+'use strict';
+
 var discussLoaded = false;
 function loadDiscuss() {
   var section = document.getElementById('discuss-section');
@@ -603,263 +605,270 @@ function loadDiscuss() {
   };
   document.getElementById('discuss-section').appendChild(script);
 }
-</script>
 
-<script>
-'use strict';
+var _v = document.querySelector('meta[name="version"]');
+if (_v) {
+  var _vs = document.getElementById('ver-sub');
+  if (_vs) _vs.textContent = 'SVG to ASS Draw v' + _v.content + ' · 智能转换 · 高精度';
+  var _vf = document.getElementById('ver');
+  if (_vf) _vf.textContent += ' v' + _v.content;
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-  var v = document.querySelector('meta[name="version"]');
-  if (v) document.getElementById('ver').textContent += ' v' + v.content;
-});
-
-function showToast(msg, type) {
-  type = type || 'success';
-  var el = document.getElementById('toast');
-  el.innerText = msg;
-  el.className = type + ' show';
-  if (el.timer) clearTimeout(el.timer);
-  el.timer = setTimeout(function() { el.className = ''; }, 3000);
+function showToast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.innerText = msg;
+    el.className = type + ' show';
+    if(el.timer) clearTimeout(el.timer);
+    el.timer = setTimeout(() => { el.className = ''; }, 3000);
 }
 
 document.getElementById('bgSlider').addEventListener('input', function(e) {
-  var val = e.target.value;
-  var bg = document.getElementById('previewBg');
-  var color = val > 50 ? 255 : 0;
-  var opacity = Math.abs(val - 50) / 50;
-  bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ', ' + opacity + ')';
+    const val = e.target.value;
+    const bg = document.getElementById('previewBg');
+    const color = val > 50 ? 255 : 0;
+    const opacity = Math.abs(val - 50) / 50;
+    bg.style.background = `rgba(${color},${color},${color}, ${opacity})`;
 });
 
 (function() {
-  function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
-    var curves = [];
-    if (rx === 0 || ry === 0) return null;
-    var phi = xAxisRotation * (Math.PI / 180);
-    var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
-    var pxp = cosPhi * (px - cx) / 2 + sinPhi * (py - cy) / 2;
-    var pyp = -sinPhi * (px - cx) / 2 + cosPhi * (py - cy) / 2;
-    if (pxp === 0 && pyp === 0) return [];
-    rx = Math.abs(rx); ry = Math.abs(ry);
-    var lambda = (pxp * pxp) / (rx * rx) + (pyp * pyp) / (ry * ry);
-    if (lambda > 1) { rx *= Math.sqrt(lambda); ry *= Math.sqrt(lambda); }
-    var radicant = (rx * rx * ry * ry) - (rx * rx * pyp * pyp) - (ry * ry * pxp * pxp);
-    if (radicant < 0) radicant = 0;
-    radicant /= (rx * rx * pyp * pyp) + (ry * ry * pxp * pxp);
-    radicant = Math.sqrt(radicant) * (largeArcFlag === sweepFlag ? -1 : 1);
-    var centerx = radicant * rx / ry * pyp;
-    var centery = radicant * -ry / rx * pxp;
-    var centerx_orig = cosPhi * centerx - sinPhi * centery + (px + cx) / 2;
-    var centery_orig = sinPhi * centerx + cosPhi * centery + (py + cy) / 2;
-    var ang1 = Math.atan2((pyp - centery) / ry, (pxp - centerx) / rx);
-    var ang2 = Math.atan2((-pyp - centery) / ry, (-pxp - centerx) / rx);
-    var angDiff = ang2 - ang1;
-    if (sweepFlag === 0 && angDiff > 0) angDiff -= 2 * Math.PI;
-    else if (sweepFlag === 1 && angDiff < 0) angDiff += 2 * Math.PI;
-    var segments = Math.ceil(Math.abs(angDiff) / (Math.PI / 2));
-    var segmentAngle = angDiff / segments;
-    var k = (4 / 3) * Math.tan(segmentAngle / 4);
-    var currentAng = ang1;
-    for (var i = 0; i < segments; i++) {
-      var nextAng = currentAng + segmentAngle;
-      var cos1 = Math.cos(currentAng), sin1 = Math.sin(currentAng);
-      var cos2 = Math.cos(nextAng), sin2 = Math.sin(nextAng);
-      var p1x = rx * (cos1 - k * sin1), p1y = ry * (sin1 + k * cos1);
-      var p2x = rx * (cos2 + k * sin2), p2y = ry * (sin2 - k * cos2);
-      var p3x = rx * cos2, p3y = ry * sin2;
-      curves.push({
-        x1: centerx_orig + cosPhi * p1x - sinPhi * p1y, y1: centery_orig + sinPhi * p1x + cosPhi * p1y,
-        x2: centerx_orig + cosPhi * p2x - sinPhi * p2y, y2: centery_orig + sinPhi * p2x + cosPhi * p2y,
-        x: centerx_orig + cosPhi * p3x - sinPhi * p3y, y: centery_orig + sinPhi * p3x + cosPhi * p3y
-      });
-      currentAng = nextAng;
-    }
-    return curves;
-  }
-
-  class SVGParser {
-    constructor(pathStr) {
-      this.tokens = pathStr.match(/([a-zA-Z])|([-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/g) || [];
-      this.index = 0;
-      this.penX = 0; this.penY = 0;
-      this.startX = 0; this.startY = 0;
-      this.lastControlX = 0; this.lastControlY = 0;
-      this.lastCommand = '';
-    }
-    nextNum() { return this.index < this.tokens.length ? parseFloat(this.tokens[this.index++]) : 0; }
-    isCommand(t) { return /^[a-zA-Z]$/.test(t); }
-    parse() {
-      var commands = [];
-      this.index = 0;
-      var currentCommand = '';
-      while (this.index < this.tokens.length) {
-        var prevIndex = this.index;
-        var token = this.tokens[this.index];
-        if (this.isCommand(token)) {
-          currentCommand = token;
-          this.index++;
-        } else {
-          if (currentCommand === 'M') currentCommand = 'L';
-          if (currentCommand === 'm') currentCommand = 'l';
+    function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
+        var curves = [];
+        if (rx === 0 || ry === 0) return null; 
+        var phi = xAxisRotation * (Math.PI / 180);
+        var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
+        var pxp = cosPhi * (px - cx) / 2 + sinPhi * (py - cy) / 2;
+        var pyp = -sinPhi * (px - cx) / 2 + cosPhi * (py - cy) / 2;
+        if (pxp === 0 && pyp === 0) return [];
+        rx = Math.abs(rx); ry = Math.abs(ry);
+        var lambda = (pxp * pxp) / (rx * rx) + (pyp * pyp) / (ry * ry);
+        if (lambda > 1) { rx *= Math.sqrt(lambda); ry *= Math.sqrt(lambda); }
+        var radicant = (rx * rx * ry * ry) - (rx * rx * pyp * pyp) - (ry * ry * pxp * pxp);
+        if (radicant < 0) radicant = 0;
+        radicant /= (rx * rx * pyp * pyp) + (ry * ry * pxp * pxp);
+        radicant = Math.sqrt(radicant) * (largeArcFlag === sweepFlag ? -1 : 1);
+        var centerx = radicant * rx / ry * pyp;
+        var centery = radicant * -ry / rx * pxp;
+        var centerx_orig = cosPhi * centerx - sinPhi * centery + (px + cx) / 2;
+        var centery_orig = sinPhi * centerx + cosPhi * centery + (py + cy) / 2;
+        var ang1 = Math.atan2((pyp - centery) / ry, (pxp - centerx) / rx);
+        var ang2 = Math.atan2((-pyp - centery) / ry, (-pxp - centerx) / rx);
+        var angDiff = ang2 - ang1;
+        if (sweepFlag === 0 && angDiff > 0) angDiff -= 2 * Math.PI;
+        else if (sweepFlag === 1 && angDiff < 0) angDiff += 2 * Math.PI;
+        var segments = Math.ceil(Math.abs(angDiff) / (Math.PI / 2));
+        var segmentAngle = angDiff / segments;
+        var k = (4 / 3) * Math.tan(segmentAngle / 4);
+        var currentAng = ang1;
+        for (var i = 0; i < segments; i++) {
+            var nextAng = currentAng + segmentAngle;
+            var cos1 = Math.cos(currentAng), sin1 = Math.sin(currentAng);
+            var cos2 = Math.cos(nextAng), sin2 = Math.sin(nextAng);
+            var p1x = rx * (cos1 - k * sin1), p1y = ry * (sin1 + k * cos1);
+            var p2x = rx * (cos2 + k * sin2), p2y = ry * (sin2 - k * cos2);
+            var p3x = rx * cos2, p3y = ry * sin2;
+            curves.push({
+                x1: centerx_orig + cosPhi * p1x - sinPhi * p1y, y1: centery_orig + sinPhi * p1x + cosPhi * p1y,
+                x2: centerx_orig + cosPhi * p2x - sinPhi * p2y, y2: centery_orig + sinPhi * p2x + cosPhi * p2y,
+                x: centerx_orig + cosPhi * p3x - sinPhi * p3y, y: centery_orig + sinPhi * p3x + cosPhi * p3y
+            });
+            currentAng = nextAng;
         }
-        var cmds = this.processCommand(currentCommand);
-        if (cmds) commands.push(...cmds);
-        this.lastCommand = currentCommand;
-        if (this.index === prevIndex) {
-          this.index++;
+        return curves;
+    }
+
+    class SVGParser {
+        constructor(pathStr) {
+            this.tokens = pathStr.match(/([a-zA-Z])|([-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?)/g) || [];
+            this.index = 0;
+            this.penX = 0; this.penY = 0;
+            this.startX = 0; this.startY = 0;
+            this.lastControlX = 0; this.lastControlY = 0;
+            this.lastCommand = '';
         }
-      }
-      return commands;
-    }
-    processCommand(cmd) {
-      var result = [];
-      var cX, cY;
-      const isRel = (c) => c === c.toLowerCase();
-      try {
-        switch (cmd) {
-          case 'M': case 'm': {
-            var x = this.nextNum(), y = this.nextNum();
-            if (isRel(cmd)) { x += this.penX; y += this.penY; }
-            this.penX = x; this.penY = y; this.startX = x; this.startY = y;
-            result.push({type:'M',x:x,y:y}); cX=x; cY=y; break;
-          }
-          case 'L': case 'l': case 'H': case 'h': case 'V': case 'v': {
-            var x = this.penX, y = this.penY;
-            if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; }
-            else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; }
-            else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
-            this.penX = x; this.penY = y;
-            result.push({type:'L',x:x,y:y}); cX=x; cY=y; break;
-          }
-          case 'C': case 'c': {
-            var x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-            if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-            result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y});
-            this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-          }
-          case 'S': case 's': {
-            var x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-            if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-            var x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-            var y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-            result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y});
-            this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-          }
-          case 'Q': case 'q': {
-            var x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-            if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
-            var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-            var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-            result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y});
-            this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-          }
-          case 'T': case 't': {
-            var x=this.nextNum(), y=this.nextNum();
-            if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-            var x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-            var y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-            var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-            var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-            result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y});
-            this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-          }
-          case 'A': case 'a': {
-            var rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
-            if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-            var curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
-            if (!curves) result.push({type:'L',x:x,y:y});
-            else curves.forEach(function(c) { result.push({type:'C',x1:c.x1,y1:c.y1,x2:c.x2,y2:c.y2,x:c.x,y:c.y}); });
-            this.penX=x; this.penY=y; cX=x; cY=y; break;
-          }
-          case 'Z': case 'z': {
-            this.penX=this.startX; this.penY=this.startY;
-            result.push({type:'L',x:this.startX,y:this.startY}); cX=this.startX; cY=this.startY; break;
-          }
+        nextNum() { return this.index < this.tokens.length ? parseFloat(this.tokens[this.index++]) : 0; }
+        isCommand(t) { return /^[a-zA-Z]$/.test(t); }
+        parse() {
+            var commands = [];
+            this.index = 0;
+            var currentCommand = '';
+            while (this.index < this.tokens.length) {
+                var prevIndex = this.index;
+                var token = this.tokens[this.index];
+                
+                if (this.isCommand(token)) {
+                    currentCommand = token;
+                    this.index++;
+                } else {
+                    if (currentCommand === 'M') currentCommand = 'L';
+                    if (currentCommand === 'm') currentCommand = 'l';
+                }
+                
+                var cmds = this.processCommand(currentCommand);
+                if (cmds) commands.push(...cmds);
+                this.lastCommand = currentCommand;
+                
+                if (this.index === prevIndex) {
+                    this.index++;
+                }
+            }
+            return commands;
         }
-      } catch(e) { console.warn(e); }
-      this.lastControlX = cX; this.lastControlY = cY;
-      return result;
-    }
-  }
-
-  function extractPathData(htmlStr) {
-    if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr;
-    var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
-    var matches = [];
-    var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
-    var match;
-    while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
-    if (matches.length > 0) {
-      if (hasBasicShapes) {
-        showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
-      } else {
-        showToast("智能合并 " + matches.length + " 条路径", 'success');
-      }
-      return matches.join(' ');
-    }
-    if (hasBasicShapes) {
-      throw new Error("检测到未转曲的形状！请先在软件中执行"轮廓化描边"或"转为路径"后再导出。");
-    }
-    throw new Error("未检测到标准 SVG 路径数据，请检查代码。");
-  }
-
-  var btn = document.getElementById('btnConvert');
-  var btnCopy = document.getElementById('btnCopy');
-
-  btn.addEventListener('click', function() {
-    try {
-      var rawInput = document.getElementById('svgInput').value.trim();
-      if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
-      var cleanInput = extractPathData(rawInput);
-      var scale = parseFloat(document.getElementById('scaleFactor').value);
-      var extraTags = document.getElementById('extraTags').value.trim();
-      var parser = new SVGParser(cleanInput);
-      var absCommands = parser.parse();
-      if(absCommands.length === 0) {
-        showToast("无效的路径数据", 'error');
-        return;
-      }
-      var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-      var updateBounds = function(x, y) {
-        if (x < minX) minX = x; if (x > maxX) maxX = x;
-        if (y < minY) minY = y; if (y > maxY) maxY = y;
-      };
-      var assStr = "";
-      var f = function(n) { return Math.round(n * scale); };
-      absCommands.forEach(function(c) {
-        if (c.type === 'M') { assStr += "m " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-        if (c.type === 'L') { assStr += "l " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-        if (c.type === 'C') {
-          assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " ";
-          updateBounds(c.x1, c.y1); updateBounds(c.x2, c.y2); updateBounds(c.x, c.y);
+        processCommand(cmd) {
+            var result = [];
+            var cX, cY;
+            const isRel = (c) => c === c.toLowerCase();
+            try {
+                switch (cmd) {
+                    case 'M': case 'm': 
+                        var x = this.nextNum(), y = this.nextNum();
+                        if (isRel(cmd)) { x += this.penX; y += this.penY; }
+                        this.penX = x; this.penY = y; this.startX = x; this.startY = y;
+                        result.push({type:'M',x:x,y:y}); cX=x; cY=y; break;
+                    case 'L': case 'l': case 'H': case 'h': case 'V': case 'v':
+                        var x = this.penX, y = this.penY;
+                        if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; } 
+                        else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; } 
+                        else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
+                        this.penX = x; this.penY = y;
+                        result.push({type:'L',x:x,y:y}); cX=x; cY=y; break;
+                    case 'C': case 'c': 
+                        var x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
+                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
+                        this.penX=x; this.penY=y; cX=x2; cY=y2; break;
+                    case 'S': case 's': 
+                        var x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
+                        var x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+                        var y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
+                        this.penX=x; this.penY=y; cX=x2; cY=y2; break;
+                    case 'Q': case 'q': 
+                        var x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
+                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
+                        this.penX=x; this.penY=y; cX=x1; cY=y1; break;
+                    case 'T': case 't': 
+                        var x=this.nextNum(), y=this.nextNum();
+                        if(isRel(cmd)){x+=this.penX; y+=this.penY;}
+                        var x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+                        var y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
+                        this.penX=x; this.penY=y; cX=x1; cY=y1; break;
+                    case 'A': case 'a': 
+                        var rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        if(isRel(cmd)){x+=this.penX; y+=this.penY;}
+                        var curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
+                        if (!curves) result.push({type:'L',x:x,y:y});
+                        else curves.forEach(function(c) { result.push({type:'C',x1:c.x1,y1:c.y1,x2:c.x2,y2:c.y2,x:c.x,y:c.y}); });
+                        this.penX=x; this.penY=y; cX=x; cY=y; break;
+                    case 'Z': case 'z': 
+                        this.penX=this.startX; this.penY=this.startY;
+                        result.push({type:'L',x:this.startX,y:this.startY}); cX=this.startX; cY=this.startY; break;
+                }
+            } catch(e) { console.warn(e); }
+            this.lastControlX = cX; this.lastControlY = cY;
+            return result;
         }
-      });
-      document.getElementById('assPath').setAttribute('d', cleanInput);
-      var w = maxX - minX; var h = maxY - minY;
-      if (w <= 0) w = 100; if (h <= 0) h = 100;
-      var padding = Math.max(w, h) * 0.1;
-      var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
-      document.getElementById('svgPreview').setAttribute('viewBox', vb);
-      var pMap = {1:'\\p1', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
-      var pTag = pMap[scale] || '\\p1';
-      var head = "{" + extraTags + pTag + "}";
-      document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
-      if (!rawInput.includes('<')) showToast("转换成功!", 'success');
-    } catch (e) {
-      showToast(e.message, 'error');
     }
-  });
 
-  btnCopy.addEventListener('click', function() {
-    var el = document.getElementById('assOutput');
-    el.select();
-    try {
-      if(document.execCommand('copy')) showToast("ASS 代码已复制", 'success');
-    } catch(err) {
-      navigator.clipboard.writeText(el.value).then(function() {
-        showToast("ASS 代码已复制", 'success');
-      }).catch(function() { showToast("复制失败", 'error'); });
+    function extractPathData(htmlStr) {
+        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr; 
+        
+        var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
+        var matches = [];
+        var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
+        var match;
+        while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
+        
+        if (matches.length > 0) {
+            if (hasBasicShapes) {
+                showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
+            } else {
+                showToast("智能合并 " + matches.length + " 条路径", 'success');
+            }
+            return matches.join(' ');
+        }
+        
+        if (hasBasicShapes) {
+            throw new Error("检测到未转曲的形状！请先在软件中执行“轮廓化描边”或“转为路径”后再导出。");
+        }
+
+        throw new Error("未检测到标准 SVG 路径数据，请检查代码。"); 
     }
-  });
+
+    var btn = document.getElementById('btnConvert');
+    var btnCopy = document.getElementById('btnCopy');
+
+    btn.addEventListener('click', function() {
+        try {
+            var rawInput = document.getElementById('svgInput').value.trim();
+            if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
+
+            var cleanInput = extractPathData(rawInput);
+            var scale = parseFloat(document.getElementById('scaleFactor').value);
+            var extraTags = document.getElementById('extraTags').value.trim();
+            
+            var parser = new SVGParser(cleanInput);
+            var absCommands = parser.parse();
+
+            if(absCommands.length === 0) {
+                showToast("无效的路径数据", 'error');
+                return;
+            }
+
+            var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            var updateBounds = function(x, y) {
+                if (x < minX) minX = x; if (x > maxX) maxX = x;
+                if (y < minY) minY = y; if (y > maxY) maxY = y;
+            };
+            
+            var assStr = "";
+            var f = function(n) { return Math.round(n * scale); };
+
+            absCommands.forEach(function(c) {
+                if (c.type === 'M') { assStr += "m " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
+                if (c.type === 'L') { assStr += "l " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
+                if (c.type === 'C') { 
+                    assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " "; 
+                    updateBounds(c.x1, c.y1); updateBounds(c.x2, c.y2); updateBounds(c.x, c.y);
+                }
+            });
+
+            document.getElementById('assPath').setAttribute('d', cleanInput);
+            var w = maxX - minX; var h = maxY - minY;
+            if (w <= 0) w = 100; if (h <= 0) h = 100;
+            var padding = Math.max(w, h) * 0.1;
+            var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
+            document.getElementById('svgPreview').setAttribute('viewBox', vb);
+
+            var pMap = {1:'\\p1', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
+            var pTag = pMap[scale] || '\\p1';
+            var head = "{" + extraTags + pTag + "}";
+            document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
+            
+            if (!rawInput.includes('<')) showToast("转换成功!", 'success');
+
+        } catch (e) {
+            showToast(e.message, 'error');
+        }
+    });
+
+    btnCopy.addEventListener('click', function() {
+        var el = document.getElementById('assOutput');
+        el.select();
+        try {
+            if(document.execCommand('copy')) showToast("ASS 代码已复制", 'success');
+        } catch(err) {
+            navigator.clipboard.writeText(el.value).then(() => {
+                showToast("ASS 代码已复制", 'success');
+            }).catch(e => showToast("复制失败", 'error'));
+        }
+    });
 })();
 </script>
 
