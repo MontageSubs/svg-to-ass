@@ -109,13 +109,13 @@ h1.brand-title {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  flex: 1; /* 让网格填满剩余空间 */
+  flex: 1;
 }
 .col-left, .col-right {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  min-height: 0; /* 允许内部元素正确伸缩 */
+  min-height: 0;
 }
 
 /* 步骤块基础样式 */
@@ -140,9 +140,9 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 .step-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 
 /* 定制特定步骤的高度行为 */
-.step-input { flex: 1; }      /* 步骤1：自动填满左侧剩余高度 */
-.step-settings { flex: 0 0 auto; } /* 步骤2：只占用实际内容需要的高度 */
-.step-result { flex: 1; }     /* 步骤3：自动填满右侧整个高度 */
+.step-input { flex: 1; }      
+.step-settings { flex: 0 0 auto; } 
+.step-result { flex: 1; }     
 
 /* 按钮样式 */
 .btn {
@@ -165,7 +165,6 @@ h2.step-title { font-weight: 600; font-size: 0.83rem; margin: 0; padding: 0; dis
 #svgInput { flex: 1; min-height: 200px; } 
 #assOutput { color: var(--accent); height: 120px; min-height: 120px; flex-shrink: 0; }
 
-/* 专门独立出来的横向排版容器，修复错位问题 */
 .flex-gap { display: flex; flex-direction: row; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
 .mt2 { margin-top: 1.25rem; }
 
@@ -271,7 +270,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub">SVG to ASS Draw 2.1</span>
+  <span class="sub">SVG to ASS Draw 2.0</span>
   <div class="header-right">
     <a href="https://montagesubs.github.io/ass-subset/" class="btn-hdr">ASS 子集化工具</a>
     <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="btn-hdr">
@@ -291,7 +290,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
           <span class="step-subtitle">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path>标签)..."></textarea>
+          <textarea id="svgInput" class="custom-textarea" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径。&#10;如果你使用 AI/Inkscape 绘图，导出前请务必先【轮廓化描边】或【转换为路径】。"></textarea>
         </div>
       </div>
 
@@ -550,16 +549,30 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
 
     function extractPathData(htmlStr) {
         if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr; 
+        
+        // 检测是否包含未转曲的基础形状标签
+        var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
+
         var matches = [];
         var regex = /d\s*=\s*["']([^"']+)["']/gi;
         var match;
         while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
+        
         if (matches.length > 0) {
-            showToast("智能合并 " + matches.length + " 条路径", 'success');
+            if (hasBasicShapes) {
+                showToast("已提取路径，但忽略了未转曲的基础形状(如圆/矩形)！", 'warn');
+            } else {
+                showToast("智能合并 " + matches.length + " 条路径", 'success');
+            }
             return matches.join(' ');
         }
-        showToast("未检测到标准 SVG 格式，尝试强制解析", 'warn');
-        return htmlStr; 
+        
+        if (hasBasicShapes) {
+            // 精准拦截：发现基础形状且没有路径数据，抛出明确错误
+            throw new Error("检测到未转曲的形状！请先在软件中执行“轮廓化描边”或“转为路径”后再导出。");
+        }
+
+        throw new Error("未检测到标准 SVG 路径数据，请检查代码。"); 
     }
 
     var btn = document.getElementById('btnConvert');
