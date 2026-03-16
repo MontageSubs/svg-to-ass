@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.0.1">
+<meta name="version" content="3.1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -460,9 +460,8 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <noscript>
   <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--paper,#f6f5f2);z-index:9999;font-family:sans-serif;text-align:center;padding:2rem;">
     <div style="max-width:400px;">
-      <p style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;">需要启用 JavaScript</p>
-      <p style="font-size:0.9rem;color:#555;line-height:1.6;">本工具在浏览器本地运行，依赖 JavaScript 处理路径转换。请在浏览器设置中启用 JavaScript 后刷新页面。</p>
-      <p style="font-size:0.8rem;color:#888;margin-top:0.75rem;">JavaScript is required. Please enable it in your browser settings and reload.</p>
+      <p style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;">需要启用 JavaScript · JavaScript Required</p>
+      <p style="font-size:0.9rem;color:#555;line-height:1.6;">本工具在浏览器本地运行，依赖 JavaScript 处理路径转换。请在浏览器设置中启用 JavaScript 后刷新页面。<br><br>This tool runs locally in your browser and requires JavaScript for path conversion. Please enable JavaScript in your browser settings and reload.</p>
     </div>
   </div>
 </noscript>
@@ -470,13 +469,14 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <header class="site-header">
   <a href="https://montagesubs.github.io/svg-to-ass/" class="brand-link">
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
-    <h1 class="brand-title">SVG 转 ASS 绘图指令</h1>
+    <h1 class="brand-title" data-i18n="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
   <span class="sub" id="ver-sub">SVG to ASS Draw · 智能转换 · 高精度</span>
   <div class="header-right">
-    <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none">安装</button>
-    <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()">讨论</button>
-    <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr">ASS 子集化工具</a>
+    <button class="btn-hdr" id="btn-lang" onclick="toggleLang()" title="Switch language / 切换语言">EN</button>
+    <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none" data-i18n="btn-install">安装</button>
+    <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()" data-i18n="btn-discuss">讨论</button>
+    <a href="https://montagesubs.github.io/ass-subset/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-subset">ASS 子集化工具</a>
   </div>
 </header>
 
@@ -486,35 +486,35 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
       <div class="step active step-input">
         <div class="step-head">
           <span class="step-num">1</span>
-          <h2 class="step-title">输入 SVG 代码</h2>
+          <h2 class="step-title" data-i18n="step1-title">输入 SVG 代码</h2>
           <span class="step-subtitle">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
+          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" data-i18n-aria="aria-input" data-i18n-placeholder="placeholder-input" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
         </div>
       </div>
 
       <div class="step active step-settings">
         <div class="step-head">
           <span class="step-num">2</span>
-          <h2 class="step-title">转换设置</h2>
+          <h2 class="step-title" data-i18n="step2-title">转换设置</h2>
           <span class="step-subtitle">Settings</span>
         </div>
         <div class="step-body">
           <div class="flex-gap">
             <div class="input-group">
-              <label>精度 Scale</label>
+              <label data-i18n="label-scale">精度 Scale</label>
               <select id="scaleFactor" class="custom-select">
-                <option value="8" selected>8x (\p4 推荐)</option>
-                <option value="16">16x (\p5 极致)</option>
+                <option value="8" selected id="opt-8x">8x (\p4 推荐)</option>
+                <option value="16" id="opt-16x">16x (\p5 极致)</option>
               </select>
             </div>
             <div class="input-group" style="flex:1">
-              <label>附加标签 (Header Tags)</label>
-              <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" placeholder="例如 \pos(960,540)">
+              <label data-i18n="label-tags">附加标签 (Header Tags)</label>
+              <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" data-i18n-placeholder="placeholder-tags" placeholder="例如 \pos(960,540)">
             </div>
             <div class="input-group">
-              <button id="btnConvert" class="btn btn-primary" style="height: 34px;">转换 Convert</button>
+              <button id="btnConvert" class="btn btn-primary" style="height: 34px;" data-i18n="btn-convert">转换 Convert</button>
             </div>
           </div>
         </div>
@@ -525,21 +525,21 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
       <div class="step active step-result">
         <div class="step-head">
           <span class="step-num">3</span>
-          <h2 class="step-title">结果与预览</h2>
+          <h2 class="step-title" data-i18n="step3-title">结果与预览</h2>
           <span class="step-subtitle">Result &amp; Preview</span>
         </div>
         <div class="step-body">
           <div class="result-header">
-            <span style="font-size: 0.85rem; font-weight: 600;">ASS 代码输出</span>
-            <button id="btnCopy" class="btn-hdr">复制 Copy</button>
+            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-output">ASS 代码输出</span>
+            <button id="btnCopy" class="btn-hdr" data-i18n="btn-copy">复制 Copy</button>
           </div>
-          <textarea id="assOutput" class="custom-textarea" readonly placeholder="等待转换..."></textarea>
+          <textarea id="assOutput" class="custom-textarea" readonly data-i18n-placeholder="placeholder-output" placeholder="等待转换..."></textarea>
 
           <div class="result-header mt2">
-            <span style="font-size: 0.85rem; font-weight: 600;">效果预览</span>
+            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-preview">效果预览</span>
             <div class="slider-group">
-              <label for="bgSlider">背景亮度:</label>
-              <input type="range" min="0" max="100" value="90" id="bgSlider" title="调整预览背景亮度以适配不同颜色的形状">
+              <label for="bgSlider" data-i18n="label-bg">背景亮度:</label>
+              <input type="range" min="0" max="100" value="90" id="bgSlider" data-i18n-title="bg-title" title="调整预览背景亮度以适配不同颜色的形状">
             </div>
           </div>
           <div class="preview-box">
@@ -557,14 +557,14 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <div id="toast"></div>
 
 <div id="discuss-section" class="hidden">
-  <div class="discuss-header">讨论 · Discussion</div>
-  <div id="discuss-loading">加载中…</div>
+  <div class="discuss-header" data-i18n="discuss-header">讨论 · Discussion</div>
+  <div id="discuss-loading" data-i18n="discuss-loading">加载中…</div>
 </div>
 
 <footer class="site-footer">
   <div class="footer-left">
     <nav class="footer-nav">
-      <a href="https://montagesubs.github.io/" target="_blank" rel="noopener">主页</a>
+      <a href="https://montagesubs.github.io/" target="_blank" rel="noopener" data-i18n="footer-home">主页</a>
       <span class="footer-sep">|</span>
       <a href="https://t.me/s/MTSubs" target="_blank" rel="noopener">Telegram</a>
       <span class="footer-sep">|</span>
@@ -576,19 +576,19 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     </nav>
     <div class="footer-brand">
       <span class="footer-org">蒙太奇字幕组 · MontageSubs</span>
-      <span class="footer-slogan">用爱发电 ❤️ Powered by Love</span>
+      <span class="footer-slogan" data-i18n="footer-slogan">用爱发电 ❤️ Powered by Love</span>
     </div>
   </div>
   <div class="footer-right">
-    <div class="footer-line">
+    <div class="footer-line" id="footer-license" data-i18n-html="footer-license-html">
       以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>
     </div>
-    <div class="footer-line"><span id="ver">用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
+    <div class="footer-line"><span id="ver" data-i18n="footer-built">用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
     <div class="footer-btns">
-      <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn">反馈</a>
+      <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn" data-i18n="footer-feedback">反馈</a>
       <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">
         <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;fill:currentColor;flex-shrink:0" aria-hidden="true"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
-        查看源代码
+        <span data-i18n="footer-source">查看源代码</span>
       </a>
     </div>
   </div>
@@ -597,6 +597,155 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <script>
 'use strict';
 
+// ─── i18n ────────────────────────────────────────────────────────────────────
+var _lang = (function() {
+  var saved = null;
+  try { saved = localStorage.getItem('svg2ass-lang'); } catch(e) {}
+  if (saved === 'en' || saved === 'zh') return saved;
+  var nav = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
+  return nav.startsWith('zh') ? 'zh' : 'en';
+})();
+
+var I18N = {
+  zh: {
+    'brand-title':    'SVG 转 ASS 绘图指令',
+    'ver-sub':        'SVG to ASS Draw v{ver} · 智能转换 · 高精度',
+    'btn-install':    '安装',
+    'btn-discuss':    '讨论',
+    'btn-subset':     'ASS 子集化工具',
+    'step1-title':    '输入 SVG 代码',
+    'step2-title':    '转换设置',
+    'step3-title':    '结果与预览',
+    'label-scale':    '精度 Scale',
+    'label-tags':     '附加标签 (Header Tags)',
+    'btn-convert':    '转换 Convert',
+    'label-output':   'ASS 代码输出',
+    'btn-copy':       '复制 Copy',
+    'label-preview':  '效果预览',
+    'label-bg':       '背景亮度:',
+    'bg-title':       '调整预览背景亮度以适配不同颜色的形状',
+    'discuss-header': '讨论 · Discussion',
+    'discuss-loading':'加载中…',
+    'footer-home':    '主页',
+    'footer-slogan':  '用爱发电 ❤️ Powered by Love',
+    'footer-license-html': '以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
+    'footer-built':   '用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass) v{ver}',
+    'footer-feedback':'反馈',
+    'footer-source':  '查看源代码',
+    'aria-input':     'SVG 代码输入',
+    'placeholder-input':  '在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...\n\n💡 新手提示：\n如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。\n如果你使用 Figma / Adobe Illustrator / Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。',
+    'placeholder-output': '等待转换...',
+    'toast-no-input': '请输入 SVG 代码',
+    'toast-too-large':'输入过大（>{size}KB），转换可能导致页面卡顿',
+    'toast-invalid':  '无效的路径数据',
+    'toast-success':  '转换成功!',
+    'toast-merged':   '智能合并 {n} 条路径',
+    'toast-basic-warn':'已提取路径，但忽略了未转曲的基础形状！',
+    'toast-no-copy':  '没有可复制的内容',
+    'toast-copied':   'ASS 代码已复制',
+    'toast-copy-fail':'复制失败，请手动复制',
+    'err-untraced':   '检测到未转曲的形状！请先在软件中执行"轮廓化描边"或"转为路径"后再导出。',
+    'err-no-path':    '未检测到标准 SVG 路径数据，请检查代码。',
+    'placeholder-tags':   '例如 \\pos(960,540)',
+    'opt-16x':        '16x (\\p5 极致)',
+  },
+  en: {
+    'brand-title':    'SVG to ASS Draw',
+    'ver-sub':        'SVG to ASS Draw v{ver} · Smart Convert · High Precision',
+    'btn-install':    'Install',
+    'btn-discuss':    'Discussion',
+    'btn-subset':     'ASS Subsetter',
+    'step1-title':    'Input SVG Code',
+    'step2-title':    'Settings',
+    'step3-title':    'Result & Preview',
+    'label-scale':    'Precision',
+    'label-tags':     'Extra Tags (Header Tags)',
+    'btn-convert':    'Convert',
+    'label-output':   'ASS Output',
+    'btn-copy':       'Copy',
+    'label-preview':  'Preview',
+    'label-bg':       'Background:',
+    'bg-title':       'Adjust preview background brightness for different shape colors',
+    'discuss-header': 'Discussion · 讨论',
+    'discuss-loading':'Loading…',
+    'footer-home':    'Home',
+    'footer-slogan':  'Powered by Love ❤️ 用爱发电',
+    'footer-license-html': 'Open source under <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Author <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
+    'footer-built':   'Built with Love · SVG to ASS Draw (svg-to-ass) v{ver}',
+    'footer-feedback':'Feedback',
+    'footer-source':  'Source Code',
+    'aria-input':     'SVG Code Input',
+    'placeholder-input':  'Paste SVG code here (<svg> or <path> tags)...\n\n💡 Tips:\nIf using AI, ask it: "Output all shapes as <path> elements only."\nIf using Figma / Illustrator / Inkscape, run "Outline Stroke" or "Object to Path" before exporting.',
+    'placeholder-output': 'Waiting for conversion...',
+    'toast-no-input': 'Please enter SVG code',
+    'toast-too-large':'Input too large (>{size}KB), conversion may freeze the page',
+    'toast-invalid':  'Invalid path data',
+    'toast-success':  'Conversion successful!',
+    'toast-merged':   'Merged {n} paths',
+    'toast-basic-warn':'Paths extracted, but unconverted basic shapes were ignored!',
+    'toast-no-copy':  'Nothing to copy',
+    'toast-copied':   'ASS code copied',
+    'toast-copy-fail':'Copy failed, please copy manually',
+    'err-untraced':   'Untraced shapes detected! Please run "Outline Stroke" or "Object to Path" in your editor before exporting.',
+    'err-no-path':    'No valid SVG path data found. Please check your input.',
+    'placeholder-tags':   'e.g. \\pos(960,540)',
+    'opt-16x':        '16x (\\p5 Maximum)',
+  }
+};
+
+function t(key, vars) {
+  var str = (I18N[_lang] && I18N[_lang][key]) || (I18N['zh'][key]) || key;
+  if (vars) {
+    Object.keys(vars).forEach(function(k) { str = str.replace('{' + k + '}', vars[k]); });
+  }
+  return str;
+}
+
+function applyLang(lang) {
+  _lang = lang;
+  try { localStorage.setItem('svg2ass-lang', lang); } catch(e) {}
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+    el.innerHTML = t(el.getAttribute('data-i18n-html'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el) {
+    el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+    el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+  });
+
+  // ver interpolation
+  var _ver = document.querySelector('meta[name="version"]');
+  var _verStr = _ver ? _ver.content : '';
+  var _vs = document.getElementById('ver-sub');
+  if (_vs) _vs.textContent = t('ver-sub').replace('{ver}', _verStr);
+  var _vf = document.getElementById('ver');
+  if (_vf) _vf.textContent = t('footer-built').replace('{ver}', _verStr);
+
+  // select options
+  var o8 = document.getElementById('opt-8x');
+  var o16 = document.getElementById('opt-16x');
+  if (o8) o8.textContent = t('opt-8x');
+  if (o16) o16.textContent = t('opt-16x');
+
+  // lang toggle button label
+  var btnLang = document.getElementById('btn-lang');
+  if (btnLang) btnLang.textContent = lang === 'zh' ? 'EN' : '中文';
+}
+
+function toggleLang() {
+  applyLang(_lang === 'zh' ? 'en' : 'zh');
+}
+
+// ─── Discussion ──────────────────────────────────────────────────────────────
 var discussLoaded = false;
 function loadDiscuss() {
   var section = document.getElementById('discuss-section');
@@ -615,7 +764,7 @@ function loadDiscuss() {
   script.setAttribute('data-reactions-enabled', '0');
   script.setAttribute('data-emit-metadata', '0');
   script.setAttribute('data-theme', theme);
-  script.setAttribute('data-lang', 'zh-CN');
+  script.setAttribute('data-lang', _lang === 'zh' ? 'zh-CN' : 'en');
   script.crossOrigin = 'anonymous';
   script.async = true;
   script.onload = function() {
@@ -625,30 +774,28 @@ function loadDiscuss() {
   document.getElementById('discuss-section').appendChild(script);
 }
 
-var _v = document.querySelector('meta[name="version"]');
-if (_v) {
-  var _vs = document.getElementById('ver-sub');
-  if (_vs) _vs.textContent = 'SVG to ASS Draw v' + _v.content + ' · 智能转换 · 高精度';
-  var _vf = document.getElementById('ver');
-  if (_vf) _vf.textContent += ' v' + _v.content;
-}
-
+// ─── Toast ───────────────────────────────────────────────────────────────────
 var _toastTimer = null;
-function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    el.innerText = msg;
-    el.className = type + ' show';
-    if (_toastTimer) clearTimeout(_toastTimer);
-    _toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+function showToast(msg, type) {
+  type = type || 'success';
+  var el = document.getElementById('toast');
+  el.innerText = msg;
+  el.className = type + ' show';
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.className = ''; }, 3000);
 }
 
+// ─── Background slider ───────────────────────────────────────────────────────
 document.getElementById('bgSlider').addEventListener('input', function(e) {
-    const val = e.target.value;
-    const bg = document.getElementById('previewBg');
-    const color = val > 50 ? 255 : 0;
-    const opacity = Math.abs(val - 50) / 50;
-    bg.style.background = `rgba(${color},${color},${color}, ${opacity})`;
+  var val = e.target.value;
+  var bg = document.getElementById('previewBg');
+  var color = val > 50 ? 255 : 0;
+  var opacity = Math.abs(val - 50) / 50;
+  bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ',' + opacity + ')';
 });
+
+// ─── Init lang ───────────────────────────────────────────────────────────────
+applyLang(_lang);
 
 (function() {
     function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
@@ -743,7 +890,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             const isRel = (c) => c === c.toLowerCase();
             const requireNum = () => {
                 var v = this.nextNum();
-                if (isNaN(v)) throw new Error('路径数据不完整：命令 "' + cmd + '" 缺少参数');
+                if (isNaN(v)) throw new Error(t('err-incomplete', {cmd: cmd}));
                 return v;
             };
             try {
@@ -824,18 +971,18 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
         
         if (matches.length > 0) {
             if (hasBasicShapes) {
-                showToast("已提取路径，但忽略了未转曲的基础形状！", 'warn');
+                showToast(t('toast-basic-warn'), 'warn');
             } else {
-                showToast("智能合并 " + matches.length + " 条路径", 'success');
+                showToast(t('toast-merged', {n: matches.length}), 'success');
             }
             return matches.join(' ');
         }
         
         if (hasBasicShapes) {
-            throw new Error("检测到未转曲的形状！请先在软件中执行“轮廓化描边”或“转为路径”后再导出。");
+            throw new Error(t('err-untraced'));
         }
 
-        throw new Error("未检测到标准 SVG 路径数据，请检查代码。"); 
+        throw new Error(t('err-no-path'));
     }
 
     var btn = document.getElementById('btnConvert');
@@ -844,11 +991,11 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
     btn.addEventListener('click', function() {
         try {
             var rawInput = document.getElementById('svgInput').value.trim();
-            if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
+            if(!rawInput) { showToast(t('toast-no-input'), 'warn'); return; }
 
             // 超大输入保护：超过 500KB 提示用户（主线程同步处理，可能卡顿）
             if (rawInput.length > 500000) {
-                showToast("输入过大（>" + Math.round(rawInput.length/1024) + "KB），转换可能导致页面卡顿", 'warn');
+                showToast(t('toast-too-large', {size: Math.round(rawInput.length/1024)}), 'warn');
             }
 
             var cleanInput = extractPathData(rawInput);
@@ -859,7 +1006,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             var absCommands = parser.parse();
 
             if(absCommands.length === 0) {
-                showToast("无效的路径数据", 'error');
+                showToast(t('toast-invalid'), 'error');
                 return;
             }
 
@@ -926,7 +1073,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             var head = "{" + extraTags + pTag + "}";
             document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
             
-            if (!rawInput.includes('<')) showToast("转换成功!", 'success');
+            if (!rawInput.includes('<')) showToast(t('toast-success'), 'success');
 
         } catch (e) {
             showToast(e.message, 'error');
@@ -935,18 +1082,18 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
 
     btnCopy.addEventListener('click', function() {
         var text = document.getElementById('assOutput').value;
-        if (!text) { showToast("没有可复制的内容", 'warn'); return; }
+        if (!text) { showToast(t('toast-no-copy'), 'warn'); return; }
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text)
-                .then(() => showToast("ASS 代码已复制", 'success'))
+                .then(() => showToast(t('toast-copied'), 'success'))
                 .catch(() => {
                     try {
                         var el = document.getElementById('assOutput');
                         el.select();
                         document.execCommand('copy');
-                        showToast("ASS 代码已复制", 'success');
+                        showToast(t('toast-copied'), 'success');
                     } catch(e) {
-                        showToast("复制失败，请手动复制", 'error');
+                        showToast(t('toast-copy-fail'), 'error');
                     }
                 });
         } else {
@@ -954,9 +1101,9 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             el.select();
             try {
                 document.execCommand('copy');
-                showToast("ASS 代码已复制", 'success');
+                showToast(t('toast-copied'), 'success');
             } catch(err) {
-                showToast("复制失败，请手动复制", 'error');
+                showToast(t('toast-copy-fail'), 'error');
             }
         }
     });
