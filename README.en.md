@@ -46,14 +46,18 @@ Renders the converted shape instantly in the right panel. A brightness slider le
 
 Automatically prepends `\fscx1000\fscy1000` and the appropriate `\p` tag. Supports custom inline tags such as `\pos` or `\c`. The output is ready to paste directly into an Aegisub dialogue line.
 
+**Bilingual Interface (Chinese / English)**
+
+Automatically follows the browser language (Chinese environments default to Chinese, all others default to English). A toggle button in the top-right corner lets you switch at any time, and your preference is saved across sessions.
+
 ## Usage
 
 No installation needed:
 
 1. Open [https://montagesubs.github.io/svg-to-ass/](https://montagesubs.github.io/svg-to-ass/)
 2. Paste SVG code into the left input panel (Step 1)
-3. Choose precision and configure extra tags in Step 2, then click **转换 Convert**
-4. Check the preview on the right, then click **复制 Copy** and paste the result into Aegisub
+3. Choose precision and configure extra tags in Step 2, then click **Convert**
+4. Check the preview on the right, then click **Copy** and paste the result into Aegisub
 
 ---
 
@@ -167,6 +171,11 @@ Contributions of all kinds are welcome:
 - Submit a Pull Request to improve code or documentation
 
 ## Changelog
+
+### v3.1
+- Added bilingual interface (Chinese / English): automatically follows the browser language, with a manual toggle button in the top-right corner; preference is saved to localStorage across sessions
+- Full i18n coverage: all UI text, placeholders, toast messages, error strings, and the Giscus discussion language update on switch
+- Implemented as a lightweight i18n engine using `data-i18n` attributes and a `t()` helper function — no external dependencies, single-file architecture unchanged
 
 ### v3.0.1
 - Fixed silent zero-fill on missing path arguments: truncated path data (e.g. a `C` command with two arguments instead of six) previously filled missing values with `0`, producing incorrect output without any warning. The parser now throws a descriptive error immediately, e.g. `路径数据不完整：命令 "C" 缺少参数`
