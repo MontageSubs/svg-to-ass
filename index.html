@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.0">
+<meta name="version" content="3.0.1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -538,14 +538,14 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
           <div class="result-header mt2">
             <span style="font-size: 0.85rem; font-weight: 600;">效果预览</span>
             <div class="slider-group">
-              <label>背景亮度:</label>
+              <label for="bgSlider">背景亮度:</label>
               <input type="range" min="0" max="100" value="90" id="bgSlider" title="调整预览背景亮度以适配不同颜色的形状">
             </div>
           </div>
           <div class="preview-box">
             <div id="previewBg"></div>
             <svg id="svgPreview" class="preview-svg">
-              <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1" stroke-linecap="round"/>
+              <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round" style="vector-effect:non-scaling-stroke"/>
             </svg>
           </div>
         </div>
@@ -675,7 +675,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
         var angDiff = ang2 - ang1;
         if (sweepFlag === 0 && angDiff > 0) angDiff -= 2 * Math.PI;
         else if (sweepFlag === 1 && angDiff < 0) angDiff += 2 * Math.PI;
-        var segments = Math.ceil(Math.abs(angDiff) / (Math.PI / 2));
+        var segments = Math.max(1, Math.ceil(Math.abs(angDiff) / (Math.PI / 2)));
         var segmentAngle = angDiff / segments;
         var k = (4 / 3) * Math.tan(segmentAngle / 4);
         var currentAng = ang1;
@@ -705,7 +705,11 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             this.lastControlX = 0; this.lastControlY = 0;
             this.lastCommand = '';
         }
-        nextNum() { return this.index < this.tokens.length ? parseFloat(this.tokens[this.index++]) : 0; }
+        nextNum() {
+            if (this.index >= this.tokens.length) return NaN;
+            var v = parseFloat(this.tokens[this.index++]);
+            return isNaN(v) ? NaN : v;
+        }
         isCommand(t) { return /^[a-zA-Z]$/.test(t); }
         parse() {
             var commands = [];
@@ -737,30 +741,35 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             var result = [];
             var cX = this.penX, cY = this.penY; // 初始化为当前笔位，防止未知命令时 NaN 传播
             const isRel = (c) => c === c.toLowerCase();
+            const requireNum = () => {
+                var v = this.nextNum();
+                if (isNaN(v)) throw new Error('路径数据不完整：命令 "' + cmd + '" 缺少参数');
+                return v;
+            };
             try {
                 switch (cmd) {
                     case 'M': case 'm': {
-                        let x = this.nextNum(), y = this.nextNum();
+                        let x = requireNum(), y = requireNum();
                         if (isRel(cmd)) { x += this.penX; y += this.penY; }
                         this.penX = x; this.penY = y; this.startX = x; this.startY = y;
                         result.push({type:'M',x,y}); cX=x; cY=y; break;
                     }
                     case 'L': case 'l': case 'H': case 'h': case 'V': case 'v': {
                         let x = this.penX, y = this.penY;
-                        if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; }
-                        else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; }
-                        else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
+                        if (cmd.toLowerCase() === 'h') { x = requireNum(); if(isRel(cmd)) x += this.penX; }
+                        else if (cmd.toLowerCase() === 'v') { y = requireNum(); if(isRel(cmd)) y += this.penY; }
+                        else { x = requireNum(); y = requireNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
                         this.penX = x; this.penY = y;
                         result.push({type:'L',x,y}); cX=x; cY=y; break;
                     }
                     case 'C': case 'c': {
-                        let x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        let x1=requireNum(), y1=requireNum(), x2=requireNum(), y2=requireNum(), x=requireNum(), y=requireNum();
                         if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
                         result.push({type:'C',x1,y1,x2,y2,x,y});
                         this.penX=x; this.penY=y; cX=x2; cY=y2; break;
                     }
                     case 'S': case 's': {
-                        let x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        let x2=requireNum(), y2=requireNum(), x=requireNum(), y=requireNum();
                         if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
                         const x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
                         const y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
@@ -768,7 +777,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
                         this.penX=x; this.penY=y; cX=x2; cY=y2; break;
                     }
                     case 'Q': case 'q': {
-                        let x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        let x1=requireNum(), y1=requireNum(), x=requireNum(), y=requireNum();
                         if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
                         const cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
                         const cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
@@ -776,7 +785,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
                         this.penX=x; this.penY=y; cX=x1; cY=y1; break;
                     }
                     case 'T': case 't': {
-                        let x=this.nextNum(), y=this.nextNum();
+                        let x=requireNum(), y=requireNum();
                         if(isRel(cmd)){x+=this.penX; y+=this.penY;}
                         const x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
                         const y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
@@ -786,7 +795,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
                         this.penX=x; this.penY=y; cX=x1; cY=y1; break;
                     }
                     case 'A': case 'a': {
-                        let rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        let rx=requireNum(), ry=requireNum(), rot=requireNum(), laf=requireNum(), sf=requireNum(), x=requireNum(), y=requireNum();
                         if(isRel(cmd)){x+=this.penX; y+=this.penY;}
                         const curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
                         if (!curves) result.push({type:'L',x,y});
@@ -809,7 +818,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
         
         var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
         var matches = [];
-        var regex = /\bd\s*=\s*["']([^"']+)["']/gi;
+        var regex = /\bd\s*=\s*["']([\s\S]*?)["']/gi;
         var match;
         while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
         
@@ -889,7 +898,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             absCommands.forEach(function(c) {
                 if (c.type === 'M') {
                     assStr += "m " + f(c.x) + " " + f(c.y) + " ";
-                    expandBounds(c.x, true); expandBounds(c.y, false);
+                    // M 是笔位移动，不渲染内容，不纳入视觉 bounding box
                     penX = c.x; penY = c.y;
                 }
                 if (c.type === 'L') {
@@ -912,7 +921,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
             document.getElementById('svgPreview').setAttribute('viewBox', vb);
 
-            var pMap = {1:'\\p1', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
+            var pMap = {8:'\\p4', 16:'\\p5'};
             var pTag = pMap[scale] || '\\p1';
             var head = "{" + extraTags + pTag + "}";
             document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
