@@ -168,6 +168,22 @@ svg-to-ass/
 - 在 [Discussions](https://github.com/MontageSubs/svg-to-ass/discussions) 中分享使用经验或技术讨论
 - 提交 Pull Request 改进代码或文档
 
+## 版本历史
+
+### v3.0
+- 修复预览包围盒不精确的问题：原实现以贝塞尔控制点计算 viewBox，导致图形在预览中被错误缩放或偏移；现改用参数方程求极值点，预览精度完全对齐实际图形
+- 修复 `S`/`T` 命令连续使用时的 NaN 静默传播问题（由未初始化的控制点变量引起）
+- 修复复制功能 API 优先级错误：改为优先调用 `navigator.clipboard`，以废弃的 `document.execCommand` 作为降级方案
+- 修复图标 MIME 类型声明错误（`image/jpeg` → `image/png`）
+- 重构路径解析器 `switch` 块：所有 `var` 改为 `let`/`const` + 显式块作用域，消除变量提升导致的跨 case 状态污染
+- Toast 计时器从 DOM 属性迁移至闭包变量
+- 新增超大输入（>500 KB）保护提示
+
+### v2.9
+- 初始公开发布版本
+
+---
+
 ## 许可证
 
 本项目源代码遵循 [MIT License](./LICENSE) 授权。

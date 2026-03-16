@@ -166,6 +166,22 @@ Contributions of all kinds are welcome:
 - Share usage tips or engage in technical discussion via [Discussions](https://github.com/MontageSubs/svg-to-ass/discussions)
 - Submit a Pull Request to improve code or documentation
 
+## Changelog
+
+### v3.0
+- Fixed inaccurate preview bounding box: viewBox was previously computed from Bézier control points rather than actual curve extrema, causing shapes to appear incorrectly scaled or offset in the preview. Now uses derivative roots for precise bounds
+- Fixed silent NaN propagation in `S`/`T` commands caused by uninitialized control point variables
+- Fixed copy button API priority: now correctly prefers `navigator.clipboard`, with deprecated `document.execCommand` as a legacy fallback
+- Fixed icon MIME type declaration (`image/jpeg` → `image/png`)
+- Refactored path parser `switch` block: replaced all `var` with `let`/`const` inside explicit block scopes, eliminating cross-case variable hoisting issues
+- Moved toast timer ID from a DOM property to a closure variable
+- Added input size guard (>500 KB) to warn users before synchronous processing may block the main thread
+
+### v2.9
+- Initial public release
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](./LICENSE).
