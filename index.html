@@ -9,8 +9,8 @@
 <meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://montagesubs.github.io/svg-to-ass/">
-<link rel="icon" type="image/jpeg" href="icons/icon-256.png">
-<meta name="version" content="2.9">
+<link rel="icon" type="image/png" href="icons/icon-256.png">
+<meta name="version" content="3.0">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -581,7 +581,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </div>
   <div class="footer-right">
     <div class="footer-line">
-      以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/MontageSubs" target="_blank" rel="noopener">NickCollect</a>
+      以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>
     </div>
     <div class="footer-line"><span id="ver">用爱打造 · SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
     <div class="footer-btns">
@@ -633,12 +633,13 @@ if (_v) {
   if (_vf) _vf.textContent += ' v' + _v.content;
 }
 
+var _toastTimer = null;
 function showToast(msg, type = 'success') {
     const el = document.getElementById('toast');
     el.innerText = msg;
     el.className = type + ' show';
-    if(el.timer) clearTimeout(el.timer);
-    el.timer = setTimeout(() => { el.className = ''; }, 3000);
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => { el.className = ''; }, 3000);
 }
 
 document.getElementById('bgSlider').addEventListener('input', function(e) {
@@ -734,60 +735,68 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
         }
         processCommand(cmd) {
             var result = [];
-            var cX, cY;
+            var cX = this.penX, cY = this.penY; // 初始化为当前笔位，防止未知命令时 NaN 传播
             const isRel = (c) => c === c.toLowerCase();
             try {
                 switch (cmd) {
-                    case 'M': case 'm': 
-                        var x = this.nextNum(), y = this.nextNum();
+                    case 'M': case 'm': {
+                        let x = this.nextNum(), y = this.nextNum();
                         if (isRel(cmd)) { x += this.penX; y += this.penY; }
                         this.penX = x; this.penY = y; this.startX = x; this.startY = y;
-                        result.push({type:'M',x:x,y:y}); cX=x; cY=y; break;
-                    case 'L': case 'l': case 'H': case 'h': case 'V': case 'v':
-                        var x = this.penX, y = this.penY;
-                        if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; } 
-                        else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; } 
+                        result.push({type:'M',x,y}); cX=x; cY=y; break;
+                    }
+                    case 'L': case 'l': case 'H': case 'h': case 'V': case 'v': {
+                        let x = this.penX, y = this.penY;
+                        if (cmd.toLowerCase() === 'h') { x = this.nextNum(); if(isRel(cmd)) x += this.penX; }
+                        else if (cmd.toLowerCase() === 'v') { y = this.nextNum(); if(isRel(cmd)) y += this.penY; }
                         else { x = this.nextNum(); y = this.nextNum(); if(isRel(cmd)){ x += this.penX; y += this.penY; } }
                         this.penX = x; this.penY = y;
-                        result.push({type:'L',x:x,y:y}); cX=x; cY=y; break;
-                    case 'C': case 'c': 
-                        var x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                        result.push({type:'L',x,y}); cX=x; cY=y; break;
+                    }
+                    case 'C': case 'c': {
+                        let x1=this.nextNum(), y1=this.nextNum(), x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
                         if (isRel(cmd)){ x1+=this.penX; y1+=this.penY; x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
+                        result.push({type:'C',x1,y1,x2,y2,x,y});
                         this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-                    case 'S': case 's': 
-                        var x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                    }
+                    case 'S': case 's': {
+                        let x2=this.nextNum(), y2=this.nextNum(), x=this.nextNum(), y=this.nextNum();
                         if (isRel(cmd)){ x2+=this.penX; y2+=this.penY; x+=this.penX; y+=this.penY; }
-                        var x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-                        var y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-                        result.push({type:'C',x1:x1,y1:y1,x2:x2,y2:y2,x:x,y:y}); 
+                        const x1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+                        const y1 = (['C','c','S','s'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+                        result.push({type:'C',x1,y1,x2,y2,x,y});
                         this.penX=x; this.penY=y; cX=x2; cY=y2; break;
-                    case 'Q': case 'q': 
-                        var x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                    }
+                    case 'Q': case 'q': {
+                        let x1=this.nextNum(), y1=this.nextNum(), x=this.nextNum(), y=this.nextNum();
                         if(isRel(cmd)){x1+=this.penX; y1+=this.penY; x+=this.penX; y+=this.penY;}
-                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
+                        const cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+                        const cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x,y});
                         this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-                    case 'T': case 't': 
-                        var x=this.nextNum(), y=this.nextNum();
+                    }
+                    case 'T': case 't': {
+                        let x=this.nextNum(), y=this.nextNum();
                         if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-                        var x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
-                        var y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
-                        var cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
-                        var cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
-                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x:x,y:y}); 
+                        const x1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penX - this.lastControlX : this.penX;
+                        const y1 = (['Q','q','T','t'].includes(this.lastCommand)) ? 2*this.penY - this.lastControlY : this.penY;
+                        const cp1x=this.penX+(2/3)*(x1-this.penX), cp1y=this.penY+(2/3)*(y1-this.penY);
+                        const cp2x=x+(2/3)*(x1-x), cp2y=y+(2/3)*(y1-y);
+                        result.push({type:'C',x1:cp1x,y1:cp1y,x2:cp2x,y2:cp2y,x,y});
                         this.penX=x; this.penY=y; cX=x1; cY=y1; break;
-                    case 'A': case 'a': 
-                        var rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
+                    }
+                    case 'A': case 'a': {
+                        let rx=this.nextNum(), ry=this.nextNum(), rot=this.nextNum(), laf=this.nextNum(), sf=this.nextNum(), x=this.nextNum(), y=this.nextNum();
                         if(isRel(cmd)){x+=this.penX; y+=this.penY;}
-                        var curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
-                        if (!curves) result.push({type:'L',x:x,y:y});
+                        const curves = arcToBezier(this.penX, this.penY, x, y, rx, ry, rot, laf===1, sf===1);
+                        if (!curves) result.push({type:'L',x,y});
                         else curves.forEach(function(c) { result.push({type:'C',x1:c.x1,y1:c.y1,x2:c.x2,y2:c.y2,x:c.x,y:c.y}); });
                         this.penX=x; this.penY=y; cX=x; cY=y; break;
-                    case 'Z': case 'z': 
+                    }
+                    case 'Z': case 'z': {
                         this.penX=this.startX; this.penY=this.startY;
                         result.push({type:'L',x:this.startX,y:this.startY}); cX=this.startX; cY=this.startY; break;
+                    }
                 }
             } catch(e) { console.warn(e); }
             this.lastControlX = cX; this.lastControlY = cY;
@@ -828,6 +837,11 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             var rawInput = document.getElementById('svgInput').value.trim();
             if(!rawInput) { showToast("请输入 SVG 代码", 'warn'); return; }
 
+            // 超大输入保护：超过 500KB 提示用户（主线程同步处理，可能卡顿）
+            if (rawInput.length > 500000) {
+                showToast("输入过大（>" + Math.round(rawInput.length/1024) + "KB），转换可能导致页面卡顿", 'warn');
+            }
+
             var cleanInput = extractPathData(rawInput);
             var scale = parseFloat(document.getElementById('scaleFactor').value);
             var extraTags = document.getElementById('extraTags').value.trim();
@@ -841,20 +855,53 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
             }
 
             var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-            var updateBounds = function(x, y) {
-                if (x < minX) minX = x; if (x > maxX) maxX = x;
-                if (y < minY) minY = y; if (y > maxY) maxY = y;
+            var expandBounds = function(v, isX) {
+                if (isX) { if(v < minX) minX=v; if(v > maxX) maxX=v; }
+                else      { if(v < minY) minY=v; if(v > maxY) maxY=v; }
             };
-            
+            // 求三次贝塞尔在单轴上的极值点（导数为零的 t 值），比用控制点更精确
+            var bezierAxisExtrema = function(p0, p1, p2, p3) {
+                var pts = [p0, p3];
+                var a = -3*p0 + 9*p1 - 9*p2 + 3*p3;
+                var b =  6*p0 - 12*p1 + 6*p2;
+                var c = -3*p0 + 3*p1;
+                if (Math.abs(a) < 1e-12) {
+                    if (Math.abs(b) > 1e-12) {
+                        var t = -c / b;
+                        if (t > 0 && t < 1) { var mt=1-t; pts.push(mt*mt*mt*p0+3*mt*mt*t*p1+3*mt*t*t*p2+t*t*t*p3); }
+                    }
+                } else {
+                    var disc = b*b - 4*a*c;
+                    if (disc >= 0) {
+                        var sq = Math.sqrt(disc);
+                        [(-b+sq)/(2*a), (-b-sq)/(2*a)].forEach(function(t) {
+                            if (t > 0 && t < 1) { var mt=1-t; pts.push(mt*mt*mt*p0+3*mt*mt*t*p1+3*mt*t*t*p2+t*t*t*p3); }
+                        });
+                    }
+                }
+                return pts;
+            };
+
             var assStr = "";
             var f = function(n) { return Math.round(n * scale); };
+            var penX = 0, penY = 0; // 跟踪当前笔位，用于贝塞尔起点
 
             absCommands.forEach(function(c) {
-                if (c.type === 'M') { assStr += "m " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-                if (c.type === 'L') { assStr += "l " + f(c.x) + " " + f(c.y) + " "; updateBounds(c.x, c.y); }
-                if (c.type === 'C') { 
-                    assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " "; 
-                    updateBounds(c.x1, c.y1); updateBounds(c.x2, c.y2); updateBounds(c.x, c.y);
+                if (c.type === 'M') {
+                    assStr += "m " + f(c.x) + " " + f(c.y) + " ";
+                    expandBounds(c.x, true); expandBounds(c.y, false);
+                    penX = c.x; penY = c.y;
+                }
+                if (c.type === 'L') {
+                    assStr += "l " + f(c.x) + " " + f(c.y) + " ";
+                    expandBounds(c.x, true); expandBounds(c.y, false);
+                    penX = c.x; penY = c.y;
+                }
+                if (c.type === 'C') {
+                    assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " ";
+                    bezierAxisExtrema(penX, c.x1, c.x2, c.x).forEach(function(v){ expandBounds(v, true); });
+                    bezierAxisExtrema(penY, c.y1, c.y2, c.y).forEach(function(v){ expandBounds(v, false); });
+                    penX = c.x; penY = c.y;
                 }
             });
 
@@ -878,14 +925,30 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
     });
 
     btnCopy.addEventListener('click', function() {
-        var el = document.getElementById('assOutput');
-        el.select();
-        try {
-            if(document.execCommand('copy')) showToast("ASS 代码已复制", 'success');
-        } catch(err) {
-            navigator.clipboard.writeText(el.value).then(() => {
+        var text = document.getElementById('assOutput').value;
+        if (!text) { showToast("没有可复制的内容", 'warn'); return; }
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text)
+                .then(() => showToast("ASS 代码已复制", 'success'))
+                .catch(() => {
+                    try {
+                        var el = document.getElementById('assOutput');
+                        el.select();
+                        document.execCommand('copy');
+                        showToast("ASS 代码已复制", 'success');
+                    } catch(e) {
+                        showToast("复制失败，请手动复制", 'error');
+                    }
+                });
+        } else {
+            var el = document.getElementById('assOutput');
+            el.select();
+            try {
+                document.execCommand('copy');
                 showToast("ASS 代码已复制", 'success');
-            }).catch(e => showToast("复制失败", 'error'));
+            } catch(err) {
+                showToast("复制失败，请手动复制", 'error');
+            }
         }
     });
 })();
