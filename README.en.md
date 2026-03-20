@@ -15,7 +15,7 @@
 
 <div align="center">
 
-| [Open Tool](https://montagesubs.github.io/svg-to-ass/) | [Report an Issue](https://github.com/MontageSubs/svg-to-ass/issues) | [Join the Discussion](https://github.com/MontageSubs/svg-to-ass/discussions) |
+| [Open Tool](https://subs.js.org/svg-to-ass/) | [Report an Issue](https://github.com/MontageSubs/svg-to-ass/issues) | [Join the Discussion](https://github.com/MontageSubs/svg-to-ass/discussions) |
 | :---: | :---: | :---: |
 
 </div><br/>
@@ -54,7 +54,7 @@ Automatically follows the browser language (Chinese environments default to Chin
 
 No installation needed:
 
-1. Open [https://montagesubs.github.io/svg-to-ass/](https://montagesubs.github.io/svg-to-ass/)
+1. Open [https://subs.js.org/svg-to-ass/](https://subs.js.org/svg-to-ass/)
 2. Paste SVG code into the left input panel (Step 1)
 3. Choose precision and configure extra tags in Step 2, then click **Convert**
 4. Check the preview on the right, then click **Copy** and paste the result into Aegisub
