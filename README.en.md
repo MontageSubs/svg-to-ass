@@ -1,11 +1,11 @@
 # SVG to ASS Draw Converter
-**SVG 转 ASS 绘图指令 · MontageSubs**
+**Powered by Love ❤️ NickCollect**
 
 <br/>
 
-> **Convert SVG vector paths into Aegisub ASS drawing commands, entirely in your browser — no installation required.**
+> **Convert SVG vector paths into Aegisub ASS drawing commands, entirely in your browser — all processing happens locally.**
 >
-> *All processing runs locally. No files are ever uploaded to a server.*
+> *Smart Convert · High Precision*
 
 <div align="right">
 
@@ -52,10 +52,8 @@ Automatically follows the browser language (Chinese environments default to Chin
 
 ## Usage
 
-No installation needed:
-
 1. Open [https://subs.js.org/svg-to-ass/](https://subs.js.org/svg-to-ass/)
-2. Paste SVG code into the left input panel (Step 1)
+2. Paste or upload SVG code into the left input panel (Step 1)
 3. Choose precision and configure extra tags in Step 2, then click **Convert**
 4. Check the preview on the right, then click **Copy** and paste the result into Aegisub
 
