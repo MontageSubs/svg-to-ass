@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.2.2">
+<meta name="version" content="3.2.3">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -557,7 +557,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
           <span class="step-subtitle">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" data-i18n-aria="aria-input" data-i18n-placeholder="placeholder-input" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
+          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" data-i18n-aria="aria-input" data-i18n-placeholder="placeholder-input" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行「轮廓化描边」或「对象转为路径」。"></textarea>
         </div>
       </div>
 
@@ -766,7 +766,7 @@ var I18N = {
     'label-tags':        '附加標籤 (Header Tags)',
     'opt-16x':           '16x (\\p5 極致)',
     'opt-8x':            '8x (\\p4 推薦)',
-    'placeholder-input': '在此貼上 SVG 代碼（含 <svg> 或 <path> 標籤）...\n\n💡 新手提示：\n若使用 AI 生成，請告訴 AI：將所有圖形轉換為 <path> 路徑輸出。\n若使用 Figma / Adobe Illustrator / Inkscape 繪圖，請先執行【外框化筆畫】或【物件轉路徑】再匯出。',
+    'placeholder-input': '在此貼上 SVG 代碼（含 <svg> 或 <path> 標籤）...\n\n💡 新手提示：\n若使用 AI 生成，請告訴 AI：將所有圖形轉換為 <path> 路徑輸出。\n若使用 Figma / Adobe Illustrator / Inkscape 繪圖，請先執行「外框化筆畫」或「物件轉路徑」再匯出。',
     'placeholder-output':'等待轉換...',
     'placeholder-tags':  '例如 \\pos(960,540)',
     'step1-title':       '輸入 SVG 代碼',
