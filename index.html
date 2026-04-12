@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.2.6">
+<meta name="version" content="3.3">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -22,7 +22,7 @@
 <meta name="twitter:description" content="浏览器端 SVG 转 ASS 绘图指令：智能脏数据清洗 + 8x/16x 高精度 + 实时预览，纯前端本地处理，零服务器。">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json" id="pwa-manifest">
 <link rel="apple-touch-icon" href="icons/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -167,8 +167,8 @@ h1.brand-title {
   line-height: 1;
   vertical-align: middle;
 }
-.btn-hdr:hover { border-color: var(--ink); background: var(--rule2); }
-.btn-hdr:active { background: var(--rule); border-color: var(--ink); }
+.btn-hdr:hover { border-color: var(--ink); background: var(--rule2); color: var(--ink); }
+.btn-hdr:active { background: var(--rule); border-color: var(--ink); color: var(--ink); }
 .btn-hdr svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
 .main {
   max-width: 1200px;
@@ -270,25 +270,38 @@ h2.step-title {
 }
 .custom-textarea:focus { border-color: var(--accent); background: var(--card); }
 .custom-textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-#svgInput { flex: 1; min-height: 200px; }
+#svgInput { flex: 1; min-height: 180px; }
 #assOutput { color: var(--accent); height: 120px; min-height: 120px; flex-shrink: 0; }
 .flex-gap { display: flex; flex-direction: row; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
 .mt2 { margin-top: 1.25rem; }
 .input-group { display: flex; flex-direction: column; gap: 0.35rem; }
 .input-group label { font-size: 0.78rem; font-weight: 600; color: var(--ink2); }
 .custom-input, .custom-select {
-  padding: 0.5rem 0.75rem;
+  padding: 0.3rem 0.75rem;
   background: var(--paper);
   color: var(--ink);
   border: 1px solid var(--rule);
   border-radius: var(--r);
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 500;
   outline: none;
   transition: border-color 0.15s;
+  height: 28px;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.custom-input {
+  height: auto;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  cursor: text;
 }
 .custom-input:focus, .custom-select:focus { border-color: var(--accent); background: var(--card); }
 .custom-input:focus-visible, .custom-select:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.custom-select:hover { border-color: var(--ink); background: var(--rule2); }
 .result-header {
   display: flex;
   justify-content: space-between;
@@ -340,6 +353,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   opacity: 0;
   z-index: 9999;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
 }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.success { background: var(--ok); color: #fff; }
@@ -477,6 +491,63 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   white-space: nowrap;
   border-width: 0;
 }
+.drop-zone {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1.5px dashed var(--rule);
+  border-radius: var(--r);
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  background: var(--paper);
+  user-select: none;
+  -webkit-user-select: none;
+  margin-bottom: 0.75rem;
+}
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--card);
+}
+.drop-zone .dz-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.35rem;
+  line-height: 1;
+}
+.drop-zone .dz-main {
+  font-weight: 500;
+  font-size: 0.88rem;
+  margin-bottom: 0.2rem;
+}
+.drop-zone .dz-hint {
+  font-size: 0.75rem;
+  color: var(--ink2);
+  font-family: var(--mono);
+}
+.file-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  opacity: 0;
+  pointer-events: none;
+}
+.input-toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.input-source-hint {
+  font-size: 0.75rem;
+  color: var(--ink2);
+  font-family: var(--mono);
+  margin-bottom: 0.5rem;
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -516,12 +587,12 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </div>
 </noscript>
 
-<header class="site-header">
+<header class="site-header" role="banner">
   <a href="https://subs.js.org/svg-to-ass/" class="brand-link">
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title" data-i18n="brand-title">SVG 转 ASS 绘图指令</h1>
   </a>
-  <span class="sub" id="ver-sub">SVG to ASS Draw · 智能转换 · 高精度</span>
+  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw · 智能转换 · 高精度</span>
   <div class="header-right">
     <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none"
       data-i18n="btn-install">安装</button>
@@ -529,8 +600,8 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <a href="https://subs.js.org/ass-subset/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-subset">ASS
       子集化工具</a>
     <div class="lang-wrap" id="lang-wrap">
-      <button class="btn-hdr" id="btn-lang-toggle" onclick="toggleLangMenu()" aria-label="Switch Language"
-        aria-label="切换语言" aria-haspopup="menu" aria-expanded="false">A/文</button>
+      <button class="btn-hdr" id="btn-lang-toggle" onclick="toggleLangMenu()"
+        data-i18n-aria="aria-lang-toggle" aria-label="切换语言" aria-haspopup="menu" aria-expanded="false">A/文</button>
       <div class="lang-menu" id="lang-menu" role="menu">
         <button onclick="setLang('ar')" id="lang-ar" role="menuitem">Arabic · العربية</button>
         <button onclick="setLang('zh')" id="lang-zh" class="active" role="menuitem">Chinese Simplified · 简体中文</button>
@@ -547,41 +618,60 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </div>
 </header>
 
-<main class="main">
+<main class="main" id="main-content">
   <div class="layout-grid">
     <div class="col-left">
       <div class="step active step-input">
         <div class="step-head">
-          <span class="step-num">1</span>
-          <h2 class="step-title" data-i18n="step1-title">输入 SVG 代码</h2>
-          <span class="step-subtitle">Input Source</span>
+          <span class="step-num" aria-hidden="true">1</span>
+          <h2 class="step-title" data-i18n="step1-title">输入 SVG</h2>
+          <span class="step-subtitle" aria-hidden="true">Input Source</span>
         </div>
         <div class="step-body">
-          <textarea id="svgInput" class="custom-textarea" aria-label="SVG 代码输入" data-i18n-aria="aria-input" data-i18n-placeholder="placeholder-input" placeholder="在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...&#10;&#10;💡 新手提示：&#10;如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。&#10;如果你使用 Figma / Adobe Illustrator/ Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。"></textarea>
+          <label class="drop-zone hidden" id="dz-svg" for="inp-svg"
+            data-i18n-aria="aria-dropzone" aria-label="上传 SVG 文件">
+            <div class="dz-icon" aria-hidden="true">📂</div>
+            <div class="dz-main" data-i18n="dz-main">拖拽 SVG 文件到此，或点击选择</div>
+            <div class="dz-hint" data-i18n="dz-hint">.svg 格式</div>
+          </label>
+          <input type="file" id="inp-svg" accept=".svg,image/svg+xml" class="file-input-hidden"
+            aria-label="选择 SVG 文件">
+          <div class="input-toolbar">
+            <button class="btn-hdr" id="btn-paste" onclick="pasteFromClipboard()" data-i18n="btn-paste">粘贴</button>
+            <button class="btn-hdr" id="btn-upload-svg" onclick="triggerSvgUpload()" data-i18n="btn-upload">上传文件</button>
+            <button class="btn-hdr" id="btn-clear-input" onclick="clearInput()" style="display:none" data-i18n="btn-clear">清除</button>
+          </div>
+          <div id="input-source-hint" class="input-source-hint hidden" aria-live="polite"></div>
+          <textarea id="svgInput" class="custom-textarea" data-i18n-aria="aria-input" aria-label="SVG 代码输入"
+            data-i18n-placeholder="placeholder-input"
+            placeholder="在此粘贴 SVG 代码..."></textarea>
         </div>
       </div>
 
       <div class="step active step-settings">
         <div class="step-head">
-          <span class="step-num">2</span>
+          <span class="step-num" aria-hidden="true">2</span>
           <h2 class="step-title" data-i18n="step2-title">转换设置</h2>
-          <span class="step-subtitle">Settings</span>
+          <span class="step-subtitle" aria-hidden="true">Settings</span>
         </div>
         <div class="step-body">
           <div class="flex-gap">
             <div class="input-group">
               <label for="scaleFactor" data-i18n="label-scale">精度 Scale</label>
-              <select id="scaleFactor" class="custom-select">
+              <select id="scaleFactor" class="custom-select" aria-label="精度选择">
                 <option value="8" selected id="opt-8x">8x (\p4 推荐)</option>
                 <option value="16" id="opt-16x">16x (\p5 极致)</option>
               </select>
             </div>
             <div class="input-group" style="flex:1">
               <label for="extraTags" data-i18n="label-tags">附加标签 (Header Tags)</label>
-              <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" data-i18n-placeholder="placeholder-tags" placeholder="例如 \pos(960,540)">
+              <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000"
+                data-i18n-placeholder="placeholder-tags" placeholder="例如 \pos(960,540)"
+                aria-label="附加标签">
             </div>
             <div class="input-group">
-              <button id="btnConvert" class="btn btn-primary" style="height: 34px;" data-i18n="btn-convert">转换 Convert</button>
+              <button id="btnConvert" class="btn btn-primary" style="height: 34px;" data-i18n="btn-convert"
+                aria-label="开始转换">转换</button>
             </div>
           </div>
         </div>
@@ -591,27 +681,37 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <div class="col-right">
       <div class="step active step-result">
         <div class="step-head">
-          <span class="step-num">3</span>
+          <span class="step-num" aria-hidden="true">3</span>
           <h2 class="step-title" data-i18n="step3-title">结果与预览</h2>
-          <span class="step-subtitle">Result &amp; Preview</span>
+          <span class="step-subtitle" aria-hidden="true">Result &amp; Preview</span>
         </div>
         <div class="step-body">
           <div class="result-header">
             <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-output">ASS 代码输出</span>
-            <button id="btnCopy" class="btn-hdr" data-i18n="btn-copy">复制 Copy</button>
+            <div style="display:flex;gap:0.4rem;">
+              <button id="btnCopy" class="btn-hdr" data-i18n="btn-copy" aria-label="复制 ASS 代码">复制</button>
+            </div>
           </div>
-          <textarea id="assOutput" class="custom-textarea" readonly data-i18n-placeholder="placeholder-output" data-i18n-aria="aria-output" aria-label="ASS 代码输出框" placeholder="等待转换..."></textarea>
+          <textarea id="assOutput" class="custom-textarea" readonly
+            data-i18n-placeholder="placeholder-output"
+            data-i18n-aria="aria-output" aria-label="ASS 代码输出框"
+            aria-live="polite" aria-atomic="true"
+            placeholder="等待转换..."></textarea>
           <div class="result-header mt2">
             <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-preview">效果预览</span>
             <div class="slider-group">
               <label for="bgSlider" data-i18n="label-bg">背景亮度:</label>
-              <input type="range" min="0" max="100" value="90" id="bgSlider" data-i18n-title="bg-title" title="调整预览背景亮度以适配不同颜色的形状">
+              <input type="range" min="0" max="100" value="90" id="bgSlider"
+                data-i18n-title="bg-title" title="调整预览背景亮度以适配不同颜色的形状"
+                aria-label="预览背景亮度">
             </div>
           </div>
           <div class="preview-box">
-            <div id="previewBg"></div>
-            <svg id="svgPreview" class="preview-svg" role="img" data-i18n-aria="aria-preview" aria-label="矢量路径预览">
-              <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round" style="vector-effect:non-scaling-stroke"/>
+            <div id="previewBg" aria-hidden="true"></div>
+            <svg id="svgPreview" class="preview-svg" role="img"
+              data-i18n-aria="aria-preview" aria-label="矢量路径预览">
+              <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1.5"
+                stroke-linecap="round" style="vector-effect:non-scaling-stroke"/>
             </svg>
           </div>
         </div>
@@ -620,24 +720,24 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
   </div>
 </main>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <div id="discuss-section" class="hidden">
   <div class="discuss-header" data-i18n="discuss-header">讨论 · Discussion</div>
   <div id="discuss-loading" data-i18n="discuss-loading">加载中…</div>
 </div>
 
-<footer class="site-footer">
+<footer class="site-footer" role="contentinfo">
   <div class="footer-left">
-    <nav class="footer-nav">
+    <nav class="footer-nav" aria-label="外部链接">
       <a href="https://subs.js.org/" target="_blank" rel="noopener" data-i18n="footer-home">主页</a>
-      <span class="footer-sep">|</span>
+      <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://t.me/s/MTSubs" target="_blank" rel="noopener">Telegram</a>
-      <span class="footer-sep">|</span>
+      <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://github.com/MontageSubs" target="_blank" rel="noopener">GitHub</a>
-      <span class="footer-sep">|</span>
+      <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://weibo.com/u/8358891788" target="_blank" rel="noopener">微博</a>
-      <span class="footer-sep">|</span>
+      <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://bsky.app/profile/montagesubs.bsky.social" target="_blank" rel="noopener">BlueSky</a>
     </nav>
     <div class="footer-brand">
@@ -682,507 +782,607 @@ var currentLang = 'zh';
     else if (nav.startsWith('pt')) currentLang = 'pt-BR';
     else if (nav.startsWith('ar')) currentLang = 'ar';
     else if (nav.startsWith('tr')) currentLang = 'tr';
-    else currentLang = 'zh';
+    else currentLang = 'en';
   }
 })();
 
 var I18N = {
   zh: {
-    'app.subtitle':      'SVG矢量转ASS绘图指令 · 智能清洗·高精度缩放·实时预览',
-    'aria-input':        'SVG 代码输入',
-    'aria-lang-toggle':  '切换语言',
-    'aria-output':       'ASS 代码输出框',
-    'aria-preview':      '矢量路径预览',
-    'bg-title':          '调整预览背景亮度以适配不同颜色的形状',
-    'btn-convert':       '转换',
-    'btn-copy':          '复制',
-    'btn-discuss':       '讨论',
-    'btn-install':       '安装',
-    'btn-subset':        'ASS 子集化工具',
-    'brand-title':       'SVG 转 ASS 绘图指令',
-    'discuss-header':    '讨论 · Discussion',
-    'discuss-loading':   '加载中…',
-    'err-incomplete':    '路径命令「{cmd}」缺少参数',
-    'err-no-path':       '未检测到标准 SVG 路径数据，请检查代码。',
-    'err-untraced':      '检测到未转曲的形状！请先在软件中执行"轮廓化描边"或"转为路径"后再导出。',
-    'footer-feedback':   '反馈',
-    'footer-home':       '主页',
+    'app.subtitle':        'SVG矢量转ASS绘图指令 · 智能清洗·高精度缩放·实时预览',
+    'aria-input':          'SVG 代码输入',
+    'aria-lang-toggle':    '切换语言',
+    'aria-output':         'ASS 代码输出框',
+    'aria-preview':        '矢量路径预览',
+    'aria-dropzone':       '上传 SVG 文件，支持拖拽或点击选择',
+    'bg-title':            '调整预览背景亮度以适配不同颜色的形状',
+    'brand-title':         'SVG 转 ASS 绘图指令',
+    'btn-clear':           '清除',
+    'btn-convert':         '转换',
+    'btn-copy':            '复制',
+    'btn-discuss':         '讨论',
+    'btn-install':         '安装',
+    'btn-paste':           '粘贴',
+    'btn-subset':          'ASS 子集化工具',
+    'btn-upload':          '上传文件',
+    'discuss-header':      '讨论 · Discussion',
+    'discuss-loading':     '加载中…',
+    'dz-hint':             '.svg 格式',
+    'dz-main':             '拖拽 SVG 文件到此，或点击选择',
+    'err-incomplete':      '路径命令「{cmd}」缺少参数',
+    'err-no-path':         '未检测到标准 SVG 路径数据，请检查代码。',
+    'err-untraced':        '检测到未支持的形状标签，已尝试转换为路径但部分可能丢失，建议在设计软件中先执行"轮廓化描边"或"转为路径"后再导出。',
+    'footer-feedback':     '反馈',
+    'footer-home':         '主页',
     'footer-license-html': '以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        '蒙太奇字幕组 · MontageSubs',
-    'footer-slogan':     '用爱发电 ❤️ Powered by Love',
-    'footer-source':     '查看源代码',
-    'footer-tool':       'SVG 转 ASS 绘图指令 (svg-to-ass) v{ver}',
-    'label-bg':          '背景亮度:',
-    'label-output':      'ASS 代码输出',
-    'label-preview':     '效果预览',
-    'label-scale':       '精度 Scale',
-    'label-tags':        '附加标签 (Header Tags)',
-    'opt-16x':           '16x (\\p5 极致)',
-    'opt-8x':            '8x (\\p4 推荐)',
-    'placeholder-input': '在此粘贴 SVG 代码 (包含 <svg> 或 <path> 标签)...\n\n💡 新手提示：\n如果你使用 AI 生成代码，请告诉 AI：将所有图形转换为 <path> 路径输出。\n如果你使用 Figma / Adobe Illustrator / Inkscape 绘图，导出前请务必先执行【轮廓化描边】或【对象转为路径】。',
-    'placeholder-output':'等待转换...',
-    'placeholder-tags':  '例如 \\pos(960,540)',
-    'step1-title':       '输入 SVG 代码',
-    'step2-title':       '转换设置',
-    'step3-title':       '结果与预览',
-    'toast-basic-warn':  '已提取路径，但忽略了未转曲的基础形状！',
-    'toast-copied':      'ASS 代码已复制',
-    'toast-copy-fail':   '复制失败，请手动复制',
-    'toast-invalid':     '无效的路径数据',
-    'toast-merged':      '智能合并 {n} 条路径',
-    'toast-no-copy':     '没有可复制的内容',
-    'toast-no-input':    '请输入 SVG 代码',
-    'toast-success':     '转换成功！',
-    'toast-too-large':   '输入过大（>{size}KB），转换可能导致页面卡顿',
-    'ver-sub':           'SVG to ASS Draw v{ver} · 智能转换 · 高精度',
+    'footer-org':          '蒙太奇字幕组 · MontageSubs',
+    'footer-slogan':       '用爱发电 ❤️ Powered by Love',
+    'footer-source':       '查看源代码',
+    'footer-tool':         'SVG 转 ASS 绘图指令 (svg-to-ass) v{ver}',
+    'hint-paste':          '已粘贴内容（如需改变，可重新粘贴或上传文件）',
+    'hint-upload':         '已上传文件：{name}',
+    'label-bg':            '背景亮度:',
+    'label-output':        'ASS 代码输出',
+    'label-preview':       '效果预览',
+    'label-scale':         '精度 Scale',
+    'label-tags':          '附加标签 (Header Tags)',
+    'opt-16x':             '16x (\\p5 极致)',
+    'opt-8x':              '8x (\\p4 推荐)',
+    'placeholder-input':   '在此粘贴 SVG 代码...',
+    'placeholder-output':  '等待转换...',
+    'placeholder-tags':    '例如 \\pos(960,540)',
+    'step1-title':         '输入 SVG',
+    'step2-title':         '转换设置',
+    'step3-title':         '结果与预览',
+    'toast-basic-shapes':  '已将基础形状自动转换为路径并合并',
+    'toast-copied':        'ASS 代码已复制',
+    'toast-copy-fail':     '复制失败，请手动复制',
+    'toast-invalid':       '无效的路径数据',
+    'toast-merged':        '智能合并 {n} 条路径',
+    'toast-no-copy':       '没有可复制的内容',
+    'toast-no-input':      '请输入 SVG 代码或上传文件',
+    'toast-paste-fail':    '粘贴失败，请检查浏览器权限或手动粘贴',
+    'toast-read-fail':     '读取文件失败',
+    'toast-success':       '转换成功！',
+    'toast-too-large':     '输入过大（>{size}KB），转换可能导致页面卡顿',
+    'ver-sub':             'SVG to ASS Draw v{ver} · 智能转换 · 高精度',
   },
   'zh-TW': {
-    'app.subtitle':      'SVG向量轉ASS繪圖指令 · 智慧清洗·高精度縮放·即時預覽',
-    'aria-input':        'SVG 代碼輸入',
-    'aria-lang-toggle':  '切換語言',
-    'aria-output':       'ASS 代碼輸出框',
-    'aria-preview':      '向量路徑預覽',
-    'bg-title':          '調整預覽背景亮度以適配不同顏色的形狀',
-    'btn-convert':       '轉換',
-    'btn-copy':          '複製',
-    'btn-discuss':       '討論',
-    'btn-install':       '安裝',
-    'btn-subset':        'ASS 子集化工具',
-    'brand-title':       'SVG 轉 ASS 繪圖指令',
-    'discuss-header':    '討論 · Discussion',
-    'discuss-loading':   '載入中…',
-    'err-incomplete':    '路徑命令「{cmd}」缺少參數',
-    'err-no-path':       '未偵測到標準 SVG 路徑資料，請檢查代碼。',
-    'err-untraced':      '偵測到未轉曲的形狀！請先在軟體中執行「外框化筆畫」或「物件轉路徑」後再匯出。',
-    'footer-feedback':   '回報問題',
-    'footer-home':       '首頁',
+    'app.subtitle':        'SVG向量轉ASS繪圖指令 · 智慧清洗·高精度縮放·即時預覽',
+    'aria-input':          'SVG 代碼輸入',
+    'aria-lang-toggle':    '切換語言',
+    'aria-output':         'ASS 代碼輸出框',
+    'aria-preview':        '向量路徑預覽',
+    'aria-dropzone':       '上傳 SVG 檔案，支援拖曳或點擊選擇',
+    'bg-title':            '調整預覽背景亮度以適配不同顏色的形狀',
+    'brand-title':         'SVG 轉 ASS 繪圖指令',
+    'btn-clear':           '清除',
+    'btn-convert':         '轉換',
+    'btn-copy':            '複製',
+    'btn-discuss':         '討論',
+    'btn-install':         '安裝',
+    'btn-paste':           '貼上',
+    'btn-subset':          'ASS 子集化工具',
+    'btn-upload':          '上傳檔案',
+    'discuss-header':      '討論 · Discussion',
+    'discuss-loading':     '載入中…',
+    'dz-hint':             '.svg 格式',
+    'dz-main':             '拖曳 SVG 檔案到此，或點擊選擇',
+    'err-incomplete':      '路徑命令「{cmd}」缺少參數',
+    'err-no-path':         '未偵測到標準 SVG 路徑資料，請檢查代碼。',
+    'err-untraced':        '偵測到不支援的形狀標籤，已嘗試轉換為路徑但部分可能遺失，建議在設計軟體中先執行「外框化筆畫」或「物件轉路徑」後再匯出。',
+    'footer-feedback':     '回報問題',
+    'footer-home':         '首頁',
     'footer-license-html': '以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 開源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕組',
-    'footer-slogan':     '用愛發電 ❤️ Powered by Love',
-    'footer-source':     '原始碼',
-    'footer-tool':       'SVG 轉 ASS 繪圖指令 (svg-to-ass) v{ver}',
-    'label-bg':          '背景亮度：',
-    'label-output':      'ASS 代碼輸出',
-    'label-preview':     '效果預覽',
-    'label-scale':       '精度 Scale',
-    'label-tags':        '附加標籤 (Header Tags)',
-    'opt-16x':           '16x (\\p5 極致)',
-    'opt-8x':            '8x (\\p4 推薦)',
-    'placeholder-input': '在此貼上 SVG 代碼（含 <svg> 或 <path> 標籤）...\n\n💡 新手提示：\n若使用 AI 生成，請告訴 AI：將所有圖形轉換為 <path> 路徑輸出。\n若使用 Figma / Adobe Illustrator / Inkscape 繪圖，請先執行「外框化筆畫」或「物件轉路徑」再匯出。',
-    'placeholder-output':'等待轉換...',
-    'placeholder-tags':  '例如 \\pos(960,540)',
-    'step1-title':       '輸入 SVG 代碼',
-    'step2-title':       '轉換設定',
-    'step3-title':       '結果與預覽',
-    'toast-basic-warn':  '已擷取路徑，但忽略了未轉曲的基礎形狀！',
-    'toast-copied':      'ASS 代碼已複製',
-    'toast-copy-fail':   '複製失敗，請手動複製',
-    'toast-invalid':     '無效的路徑資料',
-    'toast-merged':      '智慧合併 {n} 條路徑',
-    'toast-no-copy':     '沒有可複製的內容',
-    'toast-no-input':    '請輸入 SVG 代碼',
-    'toast-success':     '轉換成功！',
-    'toast-too-large':   '輸入過大（>{size}KB），轉換可能導致頁面卡頓',
-    'ver-sub':           'SVG to ASS Draw v{ver} · 智慧轉換 · 高精度',
+    'footer-org':          'MontageSubs · 蒙太奇字幕組',
+    'footer-slogan':       '用愛發電 ❤️ Powered by Love',
+    'footer-source':       '原始碼',
+    'footer-tool':         'SVG 轉 ASS 繪圖指令 (svg-to-ass) v{ver}',
+    'hint-paste':          '已貼上內容（如需變更，可重新貼上或上傳檔案）',
+    'hint-upload':         '已上傳檔案：{name}',
+    'label-bg':            '背景亮度：',
+    'label-output':        'ASS 代碼輸出',
+    'label-preview':       '效果預覽',
+    'label-scale':         '精度 Scale',
+    'label-tags':          '附加標籤 (Header Tags)',
+    'opt-16x':             '16x (\\p5 極致)',
+    'opt-8x':              '8x (\\p4 推薦)',
+    'placeholder-input':   '在此貼上 SVG 代碼...',
+    'placeholder-output':  '等待轉換...',
+    'placeholder-tags':    '例如 \\pos(960,540)',
+    'step1-title':         '輸入 SVG',
+    'step2-title':         '轉換設定',
+    'step3-title':         '結果與預覽',
+    'toast-basic-shapes':  '已將基礎形狀自動轉換為路徑並合併',
+    'toast-copied':        'ASS 代碼已複製',
+    'toast-copy-fail':     '複製失敗，請手動複製',
+    'toast-invalid':       '無效的路徑資料',
+    'toast-merged':        '智慧合併 {n} 條路徑',
+    'toast-no-copy':       '沒有可複製的內容',
+    'toast-no-input':      '請輸入 SVG 代碼或上傳檔案',
+    'toast-paste-fail':    '貼上失敗，請檢查瀏覽器權限或手動貼上',
+    'toast-read-fail':     '讀取檔案失敗',
+    'toast-success':       '轉換成功！',
+    'toast-too-large':     '輸入過大（>{size}KB），轉換可能導致頁面卡頓',
+    'ver-sub':             'SVG to ASS Draw v{ver} · 智慧轉換 · 高精度',
   },
   en: {
-    'app.subtitle':      'SVG Vector to ASS Drawing Commands · Smart Clean · High Precision · Live Preview',
-    'aria-input':        'SVG Code Input',
-    'aria-lang-toggle':  'Switch Language',
-    'aria-output':       'ASS Code Output',
-    'aria-preview':      'Vector path preview',
-    'bg-title':          'Adjust preview background brightness for different shape colors',
-    'btn-convert':       'Convert',
-    'btn-copy':          'Copy',
-    'btn-discuss':       'Discussion',
-    'btn-install':       'Install',
-    'btn-subset':        'ASS Subsetter',
-    'brand-title':       'SVG to ASS Draw',
-    'discuss-header':    'Discussion',
-    'discuss-loading':   'Loading…',
-    'err-incomplete':    'Incomplete path command "{cmd}"',
-    'err-no-path':       'No valid SVG path data found. Please check your input.',
-    'err-untraced':      'Untraced shapes detected! Please run "Outline Stroke" or "Object to Path" in your editor before exporting.',
-    'footer-feedback':   'Report Issue',
-    'footer-home':       'Home',
+    'app.subtitle':        'SVG Vector to ASS Drawing Commands · Smart Clean · High Precision · Live Preview',
+    'aria-input':          'SVG Code Input',
+    'aria-lang-toggle':    'Switch Language',
+    'aria-output':         'ASS Code Output',
+    'aria-preview':        'Vector path preview',
+    'aria-dropzone':       'Upload SVG file, drag and drop or click to select',
+    'bg-title':            'Adjust preview background brightness for different shape colors',
+    'brand-title':         'SVG to ASS Draw',
+    'btn-clear':           'Clear',
+    'btn-convert':         'Convert',
+    'btn-copy':            'Copy',
+    'btn-discuss':         'Discussion',
+    'btn-install':         'Install',
+    'btn-paste':           'Paste',
+    'btn-subset':          'ASS Subsetter',
+    'btn-upload':          'Upload File',
+    'discuss-header':      'Discussion',
+    'discuss-loading':     'Loading…',
+    'dz-hint':             '.svg format',
+    'dz-main':             'Drag SVG file here, or click to select',
+    'err-incomplete':      'Incomplete path command "{cmd}"',
+    'err-no-path':         'No valid SVG path data found. Please check your input.',
+    'err-untraced':        'Unsupported shape tags detected; attempted conversion to paths but some may be lost. Run "Outline Stroke" or "Object to Path" in your editor before exporting.',
+    'footer-feedback':     'Report Issue',
+    'footer-home':         'Home',
     'footer-license-html': 'Open source under <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Author <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'Powered by Love ❤️ 用爱发电',
-    'footer-source':     'Source Code',
-    'footer-tool':       'SVG to ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'Background:',
-    'label-output':      'ASS Output',
-    'label-preview':     'Preview',
-    'label-scale':       'Precision',
-    'label-tags':        'Extra Tags (Header Tags)',
-    'opt-16x':           '16x (\\p5 Maximum)',
-    'opt-8x':            '8x (\\p4 Recommended)',
-    'placeholder-input': 'Paste SVG code here (<svg> or <path> tags)...\n\n💡 Tips:\nIf using AI, ask it: "Output all shapes as <path> elements only."\nIf using Figma / Illustrator / Inkscape, run "Outline Stroke" or "Object to Path" before exporting.',
-    'placeholder-output':'Waiting for conversion...',
-    'placeholder-tags':  'e.g. \\pos(960,540)',
-    'step1-title':       'Input SVG Code',
-    'step2-title':       'Settings',
-    'step3-title':       'Result & Preview',
-    'toast-basic-warn':  'Paths extracted, but unconverted basic shapes were ignored!',
-    'toast-copied':      'ASS code copied',
-    'toast-copy-fail':   'Copy failed, please copy manually',
-    'toast-invalid':     'Invalid path data',
-    'toast-merged':      'Merged {n} paths',
-    'toast-no-copy':     'Nothing to copy',
-    'toast-no-input':    'Please enter SVG code',
-    'toast-success':     'Conversion successful!',
-    'toast-too-large':   'Input too large (>{size}KB), conversion may freeze the page',
-    'ver-sub':           'SVG to ASS Draw v{ver} · Smart Convert · High Precision',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'Powered by Love ❤️ 用爱发电',
+    'footer-source':       'Source Code',
+    'footer-tool':         'SVG to ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'Content pasted (re-paste or upload file to change)',
+    'hint-upload':         'File uploaded: {name}',
+    'label-bg':            'Background:',
+    'label-output':        'ASS Output',
+    'label-preview':       'Preview',
+    'label-scale':         'Precision',
+    'label-tags':          'Extra Tags (Header Tags)',
+    'opt-16x':             '16x (\\p5 Maximum)',
+    'opt-8x':              '8x (\\p4 Recommended)',
+    'placeholder-input':   'Paste SVG code here...',
+    'placeholder-output':  'Waiting for conversion...',
+    'placeholder-tags':    'e.g. \\pos(960,540)',
+    'step1-title':         'Input SVG',
+    'step2-title':         'Settings',
+    'step3-title':         'Result & Preview',
+    'toast-basic-shapes':  'Basic shapes automatically converted to paths and merged',
+    'toast-copied':        'ASS code copied',
+    'toast-copy-fail':     'Copy failed, please copy manually',
+    'toast-invalid':       'Invalid path data',
+    'toast-merged':        'Merged {n} paths',
+    'toast-no-copy':       'Nothing to copy',
+    'toast-no-input':      'Please enter SVG code or upload a file',
+    'toast-paste-fail':    'Paste failed, check browser permissions or paste manually',
+    'toast-read-fail':     'Failed to read file',
+    'toast-success':       'Conversion successful!',
+    'toast-too-large':     'Input too large (>{size}KB), conversion may freeze the page',
+    'ver-sub':             'SVG to ASS Draw v{ver} · Smart Convert · High Precision',
   },
   ja: {
-    'app.subtitle':      'SVGベクター→ASS描画コマンド · スマートクリーニング・高精度・リアルタイムプレビュー',
-    'aria-input':        'SVGコード入力',
-    'aria-lang-toggle':  '言語を切り替える',
-    'aria-output':       'ASS出力コード',
-    'aria-preview':      'ベクターパスプレビュー',
-    'bg-title':          'さまざまな形の色に合わせてプレビュー背景の明るさを調整',
-    'btn-convert':       '変換',
-    'btn-copy':          'コピー',
-    'btn-discuss':       'ディスカッション',
-    'btn-install':       'インストール',
-    'btn-subset':        'ASSサブセットツール',
-    'brand-title':       'SVG → ASS描画コマンド',
-    'discuss-header':    'ディスカッション · Discussion',
-    'discuss-loading':   '読み込み中…',
-    'err-incomplete':    'パスコマンド「{cmd}」のパラメータが不足しています',
-    'err-no-path':       '有効なSVGパスデータが見つかりません。コードを確認してください。',
-    'err-untraced':      'アウトライン化されていない図形が検出されました！エクスポート前にエディタで「ストロークをアウトライン化」または「オブジェクトをパスに変換」を実行してください。',
-    'footer-feedback':   '問題を報告',
-    'footer-home':       'ホーム',
+    'app.subtitle':        'SVGベクター→ASS描画コマンド · スマートクリーニング・高精度・リアルタイムプレビュー',
+    'aria-input':          'SVGコード入力',
+    'aria-lang-toggle':    '言語を切り替える',
+    'aria-output':         'ASS出力コード',
+    'aria-preview':        'ベクターパスプレビュー',
+    'aria-dropzone':       'SVGファイルをアップロード、ドラッグ&ドロップまたはクリックして選択',
+    'bg-title':            'さまざまな形の色に合わせてプレビュー背景の明るさを調整',
+    'brand-title':         'SVG → ASS描画コマンド',
+    'btn-clear':           'クリア',
+    'btn-convert':         '変換',
+    'btn-copy':            'コピー',
+    'btn-discuss':         'ディスカッション',
+    'btn-install':         'インストール',
+    'btn-paste':           '貼り付け',
+    'btn-subset':          'ASSサブセットツール',
+    'btn-upload':          'ファイルをアップロード',
+    'discuss-header':      'ディスカッション · Discussion',
+    'discuss-loading':     '読み込み中…',
+    'dz-hint':             '.svg形式',
+    'dz-main':             'SVGファイルをここにドラッグ、またはクリックして選択',
+    'err-incomplete':      'パスコマンド「{cmd}」のパラメータが不足しています',
+    'err-no-path':         '有効なSVGパスデータが見つかりません。コードを確認してください。',
+    'err-untraced':        'サポートされていない図形タグが検出されました。パスへの変換を試みましたが、一部が失われる可能性があります。エクスポート前にエディタで「ストロークをアウトライン化」または「オブジェクトをパスに変換」を実行してください。',
+    'footer-feedback':     '問題を報告',
+    'footer-home':         'ホーム',
     'footer-license-html': '<a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> のもとオープンソース · 作者：<a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     '愛を込めて ❤️ 用爱发电',
-    'footer-source':     'ソースコードを見る',
-    'footer-tool':       'SVG → ASS描画コマンド (svg-to-ass) v{ver}',
-    'label-bg':          '背景の明るさ：',
-    'label-output':      'ASS出力',
-    'label-preview':     'プレビュー',
-    'label-scale':       '精度',
-    'label-tags':        '追加タグ (Header Tags)',
-    'opt-16x':           '16x (\\p5 最高精度)',
-    'opt-8x':            '8x (\\p4 推奨)',
-    'placeholder-input': 'ここにSVGコードを貼り付けてください（<svg>または<path>タグ含む）...\n\n💡 ヒント：\nAIを使う場合は「すべての図形を<path>要素で出力してください」と指示してください。\nFigma / Illustrator / Inkscapeを使う場合は、エクスポート前に「ストロークをアウトライン化」または「オブジェクトをパスに変換」を実行してください。',
-    'placeholder-output':'変換待機中...',
-    'placeholder-tags':  '例：\\pos(960,540)',
-    'step1-title':       'SVGコードを入力',
-    'step2-title':       '変換設定',
-    'step3-title':       '結果とプレビュー',
-    'toast-basic-warn':  'パスを抽出しましたが、アウトライン化されていない基本図形は無視されました！',
-    'toast-copied':      'ASSコードをコピーしました',
-    'toast-copy-fail':   'コピーに失敗しました。手動でコピーしてください',
-    'toast-invalid':     '無効なパスデータ',
-    'toast-merged':      '{n}個のパスをスマートマージしました',
-    'toast-no-copy':     'コピーする内容がありません',
-    'toast-no-input':    'SVGコードを入力してください',
-    'toast-success':     '変換成功！',
-    'toast-too-large':   '入力が大きすぎます（>{size}KB）、変換でページがフリーズする可能性があります',
-    'ver-sub':           'SVG to ASS Draw v{ver} · スマート変換 · 高精度',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       '愛を込めて ❤️ 用爱发电',
+    'footer-source':       'ソースコードを見る',
+    'footer-tool':         'SVG → ASS描画コマンド (svg-to-ass) v{ver}',
+    'hint-paste':          'コンテンツが貼り付けられました（変更するには再貼り付けかファイルをアップロードしてください）',
+    'hint-upload':         'アップロード済み：{name}',
+    'label-bg':            '背景の明るさ：',
+    'label-output':        'ASS出力',
+    'label-preview':       'プレビュー',
+    'label-scale':         '精度',
+    'label-tags':          '追加タグ (Header Tags)',
+    'opt-16x':             '16x (\\p5 最高精度)',
+    'opt-8x':              '8x (\\p4 推奨)',
+    'placeholder-input':   'ここにSVGコードを貼り付けてください...',
+    'placeholder-output':  '変換待機中...',
+    'placeholder-tags':    '例：\\pos(960,540)',
+    'step1-title':         'SVG入力',
+    'step2-title':         '変換設定',
+    'step3-title':         '結果とプレビュー',
+    'toast-basic-shapes':  '基本図形を自動的にパスに変換して結合しました',
+    'toast-copied':        'ASSコードをコピーしました',
+    'toast-copy-fail':     'コピーに失敗しました。手動でコピーしてください',
+    'toast-invalid':       '無効なパスデータ',
+    'toast-merged':        '{n}個のパスをスマートマージしました',
+    'toast-no-copy':       'コピーする内容がありません',
+    'toast-no-input':      'SVGコードを入力するかファイルをアップロードしてください',
+    'toast-paste-fail':    '貼り付けに失敗しました。ブラウザの権限を確認するか手動で貼り付けてください',
+    'toast-read-fail':     'ファイルの読み込みに失敗しました',
+    'toast-success':       '変換成功！',
+    'toast-too-large':     '入力が大きすぎます（>{size}KB）、変換でページがフリーズする可能性があります',
+    'ver-sub':             'SVG to ASS Draw v{ver} · スマート変換 · 高精度',
   },
   ko: {
-    'app.subtitle':      'SVG 벡터→ASS 드로우 명령어 · 스마트 클리닝·고정밀·실시간 미리보기',
-    'aria-input':        'SVG 코드 입력',
-    'aria-lang-toggle':  '언어 변경',
-    'aria-output':       'ASS 코드 출력',
-    'aria-preview':      '벡터 경로 미리보기',
-    'bg-title':          '다양한 형태 색상에 맞게 미리보기 배경 밝기 조정',
-    'btn-convert':       '변환',
-    'btn-copy':          '복사',
-    'btn-discuss':       '토론',
-    'btn-install':       '설치',
-    'btn-subset':        'ASS 서브셋 도구',
-    'brand-title':       'SVG → ASS 드로우',
-    'discuss-header':    '토론 · Discussion',
-    'discuss-loading':   '로딩 중…',
-    'err-incomplete':    '경로 명령 "{cmd}"의 매개변수가 부족합니다',
-    'err-no-path':       '유효한 SVG 경로 데이터를 찾을 수 없습니다. 코드를 확인해주세요.',
-    'err-untraced':      '외곽선화되지 않은 도형이 감지됩니다! 내보내기 전에 편집기에서 "외곽선 선따기" 또는 "오브젝트를 패스로"를 실행해주세요.',
-    'footer-feedback':   '문제 보고',
-    'footer-home':       '홈',
+    'app.subtitle':        'SVG 벡터→ASS 드로우 명령어 · 스마트 클리닝·고정밀·실시간 미리보기',
+    'aria-input':          'SVG 코드 입력',
+    'aria-lang-toggle':    '언어 변경',
+    'aria-output':         'ASS 코드 출력',
+    'aria-preview':        '벡터 경로 미리보기',
+    'aria-dropzone':       'SVG 파일 업로드, 드래그 앤 드롭 또는 클릭하여 선택',
+    'bg-title':            '다양한 형태 색상에 맞게 미리보기 배경 밝기 조정',
+    'brand-title':         'SVG → ASS 드로우',
+    'btn-clear':           '지우기',
+    'btn-convert':         '변환',
+    'btn-copy':            '복사',
+    'btn-discuss':         '토론',
+    'btn-install':         '설치',
+    'btn-paste':           '붙여넣기',
+    'btn-subset':          'ASS 서브셋 도구',
+    'btn-upload':          '파일 업로드',
+    'discuss-header':      '토론 · Discussion',
+    'discuss-loading':     '로딩 중…',
+    'dz-hint':             '.svg 형식',
+    'dz-main':             'SVG 파일을 여기에 드래그하거나 클릭하여 선택',
+    'err-incomplete':      '경로 명령 "{cmd}"의 매개변수가 부족합니다',
+    'err-no-path':         '유효한 SVG 경로 데이터를 찾을 수 없습니다. 코드를 확인해주세요.',
+    'err-untraced':        '지원되지 않는 형태 태그가 감지되었습니다. 경로로 변환을 시도했지만 일부가 손실될 수 있습니다. 내보내기 전에 편집기에서 "외곽선 선따기" 또는 "오브젝트를 패스로"를 실행하세요.',
+    'footer-feedback':     '문제 보고',
+    'footer-home':         '홈',
     'footer-license-html': '<a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 오픈소스 · 작성자 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     '사랑으로 만들었습니다 ❤️ 用爱发电',
-    'footer-source':     '소스 코드',
-    'footer-tool':       'SVG → ASS 드로우 (svg-to-ass) v{ver}',
-    'label-bg':          '배경 밝기:',
-    'label-output':      'ASS 출력',
-    'label-preview':     '미리보기',
-    'label-scale':       '정밀도',
-    'label-tags':        '추가 태그 (Header Tags)',
-    'opt-16x':           '16x (\\p5 최고 정밀)',
-    'opt-8x':            '8x (\\p4 권장)',
-    'placeholder-input': '여기에 SVG 코드를 붙여넣으세요 (<svg> 또는 <path> 태그 포함)...\n\n💡 팁:\nAI를 사용한다면: "모든 도형을 <path> 요소로 출력해주세요"라고 요청하세요.\nFigma / Illustrator / Inkscape를 사용한다면, 내보내기 전에 "외곽선 선따기" 또는 "오브젝트를 패스로"를 실행하세요.',
-    'placeholder-output':'변환 대기 중...',
-    'placeholder-tags':  '예: \\pos(960,540)',
-    'step1-title':       'SVG 코드 입력',
-    'step2-title':       '변환 설정',
-    'step3-title':       '결과 및 미리보기',
-    'toast-basic-warn':  '경로는 추출됐지만 외곽선화되지 않은 기본 도형은 무시됩니다！',
-    'toast-copied':      'ASS 코드가 복사되었습니다',
-    'toast-copy-fail':   '복사 실패, 직접 복사해주세요',
-    'toast-invalid':     '유효하지 않은 경로 데이터',
-    'toast-merged':      '{n}개 경로 병합 완료',
-    'toast-no-copy':     '복사할 내용이 없습니다',
-    'toast-no-input':    'SVG 코드를 입력해주세요',
-    'toast-success':     '변환 성공！',
-    'toast-too-large':   '입력이 너무 큽니다 (>{size}KB), 변환 시 페이지가 멈출 수 있습니다',
-    'ver-sub':           'SVG to ASS Draw v{ver} · 스마트 변환 · 고정밀',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       '사랑으로 만들었습니다 ❤️ 用爱发电',
+    'footer-source':       '소스 코드',
+    'footer-tool':         'SVG → ASS 드로우 (svg-to-ass) v{ver}',
+    'hint-paste':          '콘텐츠가 붙여넣어졌습니다 (변경하려면 다시 붙여넣거나 파일을 업로드하세요)',
+    'hint-upload':         '업로드된 파일: {name}',
+    'label-bg':            '배경 밝기:',
+    'label-output':        'ASS 출력',
+    'label-preview':       '미리보기',
+    'label-scale':         '정밀도',
+    'label-tags':          '추가 태그 (Header Tags)',
+    'opt-16x':             '16x (\\p5 최고 정밀)',
+    'opt-8x':              '8x (\\p4 권장)',
+    'placeholder-input':   '여기에 SVG 코드를 붙여넣으세요...',
+    'placeholder-output':  '변환 대기 중...',
+    'placeholder-tags':    '예: \\pos(960,540)',
+    'step1-title':         'SVG 입력',
+    'step2-title':         '변환 설정',
+    'step3-title':         '결과 및 미리보기',
+    'toast-basic-shapes':  '기본 형태를 자동으로 경로로 변환하고 병합했습니다',
+    'toast-copied':        'ASS 코드가 복사되었습니다',
+    'toast-copy-fail':     '복사 실패, 직접 복사해주세요',
+    'toast-invalid':       '유효하지 않은 경로 데이터',
+    'toast-merged':        '{n}개 경로 병합 완료',
+    'toast-no-copy':       '복사할 내용이 없습니다',
+    'toast-no-input':      'SVG 코드를 입력하거나 파일을 업로드해주세요',
+    'toast-paste-fail':    '붙여넣기 실패, 브라우저 권한을 확인하거나 수동으로 붙여넣으세요',
+    'toast-read-fail':     '파일 읽기 실패',
+    'toast-success':       '변환 성공！',
+    'toast-too-large':     '입력이 너무 큽니다 (>{size}KB), 변환 시 페이지가 멈출 수 있습니다',
+    'ver-sub':             'SVG to ASS Draw v{ver} · 스마트 변환 · 고정밀',
   },
   es: {
-    'app.subtitle':      'SVG Vector a Comandos de Dibujo ASS · Limpieza Inteligente·Alta Precisión·Vista Previa en Vivo',
-    'aria-input':        'Entrada de código SVG',
-    'aria-lang-toggle':  'Cambiar idioma',
-    'aria-output':       'Salida de código ASS',
-    'aria-preview':      'Vista previa de trayecto vectorial',
-    'bg-title':          'Ajustar el brillo del fondo para adaptarse a diferentes colores de forma',
-    'btn-convert':       'Convertir',
-    'btn-copy':          'Copiar',
-    'btn-discuss':       'Debate',
-    'btn-install':       'Instalar',
-    'btn-subset':        'Subconjunto ASS',
-    'brand-title':       'SVG a ASS Draw',
-    'discuss-header':    'Debate · Discussion',
-    'discuss-loading':   'Cargando…',
-    'err-incomplete':    'Parámetros insuficientes en el comando de trayecto "{cmd}"',
-    'err-no-path':       'No se encontraron datos de trayecto SVG válidos. Verifica tu entrada.',
-    'err-untraced':      'Se detectaron formas sin contornear. Ejecuta "Contorno de trazos" u "Objeto a trayecto" en tu editor antes de exportar.',
-    'footer-feedback':   'Reportar problema',
-    'footer-home':       'Inicio',
+    'app.subtitle':        'SVG Vector a Comandos de Dibujo ASS · Limpieza Inteligente·Alta Precisión·Vista Previa en Vivo',
+    'aria-input':          'Entrada de código SVG',
+    'aria-lang-toggle':    'Cambiar idioma',
+    'aria-output':         'Salida de código ASS',
+    'aria-preview':        'Vista previa de trayecto vectorial',
+    'aria-dropzone':       'Subir archivo SVG, arrastrar y soltar o clic para seleccionar',
+    'bg-title':            'Ajustar el brillo del fondo para adaptarse a diferentes colores de forma',
+    'brand-title':         'SVG a ASS Draw',
+    'btn-clear':           'Limpiar',
+    'btn-convert':         'Convertir',
+    'btn-copy':            'Copiar',
+    'btn-discuss':         'Debate',
+    'btn-install':         'Instalar',
+    'btn-paste':           'Pegar',
+    'btn-subset':          'Subconjunto ASS',
+    'btn-upload':          'Subir archivo',
+    'discuss-header':      'Debate · Discussion',
+    'discuss-loading':     'Cargando…',
+    'dz-hint':             'Formato .svg',
+    'dz-main':             'Arrastra el archivo SVG aquí, o haz clic para seleccionar',
+    'err-incomplete':      'Parámetros insuficientes en el comando de trayecto "{cmd}"',
+    'err-no-path':         'No se encontraron datos de trayecto SVG válidos. Verifica tu entrada.',
+    'err-untraced':        'Se detectaron etiquetas de forma no compatibles; se intentó la conversión a trayectos pero algunas pueden perderse. Ejecuta "Contorno de trazos" u "Objeto a trayecto" antes de exportar.',
+    'footer-feedback':     'Reportar problema',
+    'footer-home':         'Inicio',
     'footer-license-html': 'Código abierto bajo <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Autor <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'Hecho con amor ❤️ 用爱发电',
-    'footer-source':     'Código fuente',
-    'footer-tool':       'SVG a ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'Brillo del fondo:',
-    'label-output':      'Salida ASS',
-    'label-preview':     'Vista previa',
-    'label-scale':       'Precisión',
-    'label-tags':        'Etiquetas adicionales (Header Tags)',
-    'opt-16x':           '16x (\\p5 Máximo)',
-    'opt-8x':            '8x (\\p4 Recomendado)',
-    'placeholder-input': 'Pega el código SVG aquí (etiquetas <svg> o <path>)...\n\n💡 Consejos:\nSi usas IA, indícale: "Exporta todas las formas como elementos <path>."\nSi usas Figma / Illustrator / Inkscape, ejecuta "Contorno de trazos" u "Objeto a trayecto" antes de exportar.',
-    'placeholder-output':'Esperando conversión...',
-    'placeholder-tags':  'Ej. \\pos(960,540)',
-    'step1-title':       'Ingresar código SVG',
-    'step2-title':       'Configuración',
-    'step3-title':       'Resultado y Vista previa',
-    'toast-basic-warn':  'Trayectos extraídos, pero se ignoraron formas básicas sin contornear.',
-    'toast-copied':      'Código ASS copiado',
-    'toast-copy-fail':   'Error al copiar, copia manualmente',
-    'toast-invalid':     'Datos de trayecto inválidos',
-    'toast-merged':      '{n} trayectos combinados',
-    'toast-no-copy':     'No hay contenido para copiar',
-    'toast-no-input':    'Por favor ingresa código SVG',
-    'toast-success':     '¡Conversión exitosa!',
-    'toast-too-large':   'Entrada muy grande (>{size}KB), la conversión puede congelar la página',
-    'ver-sub':           'SVG a ASS Draw v{ver} · Conversión Inteligente · Alta Precisión',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'Hecho con amor ❤️ 用爱发电',
+    'footer-source':       'Código fuente',
+    'footer-tool':         'SVG a ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'Contenido pegado (vuelve a pegar o sube un archivo para cambiar)',
+    'hint-upload':         'Archivo subido: {name}',
+    'label-bg':            'Brillo del fondo:',
+    'label-output':        'Salida ASS',
+    'label-preview':       'Vista previa',
+    'label-scale':         'Precisión',
+    'label-tags':          'Etiquetas adicionales (Header Tags)',
+    'opt-16x':             '16x (\\p5 Máximo)',
+    'opt-8x':              '8x (\\p4 Recomendado)',
+    'placeholder-input':   'Pega el código SVG aquí...',
+    'placeholder-output':  'Esperando conversión...',
+    'placeholder-tags':    'Ej. \\pos(960,540)',
+    'step1-title':         'Entrada SVG',
+    'step2-title':         'Configuración',
+    'step3-title':         'Resultado y Vista previa',
+    'toast-basic-shapes':  'Formas básicas convertidas automáticamente a trayectos y combinadas',
+    'toast-copied':        'Código ASS copiado',
+    'toast-copy-fail':     'Error al copiar, copia manualmente',
+    'toast-invalid':       'Datos de trayecto inválidos',
+    'toast-merged':        '{n} trayectos combinados',
+    'toast-no-copy':       'No hay contenido para copiar',
+    'toast-no-input':      'Por favor ingresa código SVG o sube un archivo',
+    'toast-paste-fail':    'Error al pegar, verifica los permisos del navegador o pega manualmente',
+    'toast-read-fail':     'Error al leer el archivo',
+    'toast-success':       '¡Conversión exitosa!',
+    'toast-too-large':     'Entrada muy grande (>{size}KB), la conversión puede congelar la página',
+    'ver-sub':             'SVG a ASS Draw v{ver} · Conversión Inteligente · Alta Precisión',
   },
   'pt-BR': {
-    'app.subtitle':      'SVG Vetor para Comandos de Desenho ASS · Limpeza Inteligente·Alta Precisão·Pré-visualização em Tempo Real',
-    'aria-input':        'Entrada de código SVG',
-    'aria-lang-toggle':  'Trocar idioma',
-    'aria-output':       'Saída de código ASS',
-    'aria-preview':      'Pré-visualização do caminho vetorial',
-    'bg-title':          'Ajuste o brilho do fundo para adaptar às diferentes cores da forma',
-    'btn-convert':       'Converter',
-    'btn-copy':          'Copiar',
-    'btn-discuss':       'Discussão',
-    'btn-install':       'Instalar',
-    'btn-subset':        'Subconjunto ASS',
-    'brand-title':       'SVG para ASS Draw',
-    'discuss-header':    'Discussão · Discussion',
-    'discuss-loading':   'Carregando…',
-    'err-incomplete':    'Parâmetros insuficientes no comando de caminho "{cmd}"',
-    'err-no-path':       'Nenhum dado de caminho SVG válido encontrado. Verifique a entrada.',
-    'err-untraced':      'Formas sem contorno detectadas! Execute "Contorno de traçado" ou "Objeto para caminho" no editor antes de exportar.',
-    'footer-feedback':   'Reportar problema',
-    'footer-home':       'Início',
+    'app.subtitle':        'SVG Vetor para Comandos de Desenho ASS · Limpeza Inteligente·Alta Precisão·Pré-visualização em Tempo Real',
+    'aria-input':          'Entrada de código SVG',
+    'aria-lang-toggle':    'Trocar idioma',
+    'aria-output':         'Saída de código ASS',
+    'aria-preview':        'Pré-visualização do caminho vetorial',
+    'aria-dropzone':       'Fazer upload de arquivo SVG, arrastar e soltar ou clicar para selecionar',
+    'bg-title':            'Ajuste o brilho do fundo para adaptar às diferentes cores da forma',
+    'brand-title':         'SVG para ASS Draw',
+    'btn-clear':           'Limpar',
+    'btn-convert':         'Converter',
+    'btn-copy':            'Copiar',
+    'btn-discuss':         'Discussão',
+    'btn-install':         'Instalar',
+    'btn-paste':           'Colar',
+    'btn-subset':          'Subconjunto ASS',
+    'btn-upload':          'Fazer upload',
+    'discuss-header':      'Discussão · Discussion',
+    'discuss-loading':     'Carregando…',
+    'dz-hint':             'Formato .svg',
+    'dz-main':             'Arraste o arquivo SVG aqui, ou clique para selecionar',
+    'err-incomplete':      'Parâmetros insuficientes no comando de caminho "{cmd}"',
+    'err-no-path':         'Nenhum dado de caminho SVG válido encontrado. Verifique a entrada.',
+    'err-untraced':        'Tags de forma não suportadas detectadas; tentou-se a conversão para caminhos, mas algumas podem ser perdidas. Execute "Contorno de traçado" ou "Objeto para caminho" antes de exportar.',
+    'footer-feedback':     'Reportar problema',
+    'footer-home':         'Início',
     'footer-license-html': 'Código aberto sob <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Autor <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'Feito com amor ❤️ 用爱发电',
-    'footer-source':     'Código-fonte',
-    'footer-tool':       'SVG para ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'Brilho do fundo:',
-    'label-output':      'Saída ASS',
-    'label-preview':     'Pré-visualização',
-    'label-scale':       'Precisão',
-    'label-tags':        'Tags extras (Header Tags)',
-    'opt-16x':           '16x (\\p5 Máximo)',
-    'opt-8x':            '8x (\\p4 Recomendado)',
-    'placeholder-input': 'Cole o código SVG aqui (tags <svg> ou <path>)...\n\n💡 Dicas:\nSe usar IA, peça: "Exporte todas as formas como elementos <path>."\nSe usar Figma / Illustrator / Inkscape, execute "Contorno de traçado" ou "Objeto para caminho" antes de exportar.',
-    'placeholder-output':'Aguardando conversão...',
-    'placeholder-tags':  'Ex.: \\pos(960,540)',
-    'step1-title':       'Inserir código SVG',
-    'step2-title':       'Configurações',
-    'step3-title':       'Resultado e Visualização',
-    'toast-basic-warn':  'Caminhos extraídos, mas formas básicas sem contorno foram ignoradas.',
-    'toast-copied':      'Código ASS copiado',
-    'toast-copy-fail':   'Falha ao copiar, copie manualmente',
-    'toast-invalid':     'Dados de caminho inválidos',
-    'toast-merged':      '{n} caminhos mesclados',
-    'toast-no-copy':     'Nenhum conteúdo para copiar',
-    'toast-no-input':    'Por favor insira o código SVG',
-    'toast-success':     'Conversão bem-sucedida!',
-    'toast-too-large':   'Entrada muito grande (>{size}KB), a conversão pode travar a página',
-    'ver-sub':           'SVG para ASS Draw v{ver} · Conversão Inteligente · Alta Precisão',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'Feito com amor ❤️ 用爱发电',
+    'footer-source':       'Código-fonte',
+    'footer-tool':         'SVG para ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'Conteúdo colado (cole novamente ou faça upload para alterar)',
+    'hint-upload':         'Arquivo enviado: {name}',
+    'label-bg':            'Brilho do fundo:',
+    'label-output':        'Saída ASS',
+    'label-preview':       'Pré-visualização',
+    'label-scale':         'Precisão',
+    'label-tags':          'Tags extras (Header Tags)',
+    'opt-16x':             '16x (\\p5 Máximo)',
+    'opt-8x':              '8x (\\p4 Recomendado)',
+    'placeholder-input':   'Cole o código SVG aqui...',
+    'placeholder-output':  'Aguardando conversão...',
+    'placeholder-tags':    'Ex.: \\pos(960,540)',
+    'step1-title':         'Entrada SVG',
+    'step2-title':         'Configurações',
+    'step3-title':         'Resultado e Visualização',
+    'toast-basic-shapes':  'Formas básicas convertidas automaticamente para caminhos e mescladas',
+    'toast-copied':        'Código ASS copiado',
+    'toast-copy-fail':     'Falha ao copiar, copie manualmente',
+    'toast-invalid':       'Dados de caminho inválidos',
+    'toast-merged':        '{n} caminhos mesclados',
+    'toast-no-copy':       'Nenhum conteúdo para copiar',
+    'toast-no-input':      'Por favor insira o código SVG ou faça upload de um arquivo',
+    'toast-paste-fail':    'Falha ao colar, verifique as permissões do navegador ou cole manualmente',
+    'toast-read-fail':     'Falha ao ler o arquivo',
+    'toast-success':       'Conversão bem-sucedida!',
+    'toast-too-large':     'Entrada muito grande (>{size}KB), a conversão pode travar a página',
+    'ver-sub':             'SVG para ASS Draw v{ver} · Conversão Inteligente · Alta Precisão',
   },
   ru: {
-    'app.subtitle':      'SVG Вектор в Команды Рисования ASS · Умная Очистка·Высокая Точность·Предпросмотр в Реальном Времени',
-    'aria-input':        'Ввод SVG-кода',
-    'aria-lang-toggle':  'Сменить язык',
-    'aria-output':       'Вывод ASS-кода',
-    'aria-preview':      'Предпросмотр векторного пути',
-    'bg-title':          'Настройте яркость фона предпросмотра для разных цветов фигур',
-    'btn-convert':       'Конвертировать',
-    'btn-copy':          'Копировать',
-    'btn-discuss':       'Обсуждение',
-    'btn-install':       'Установить',
-    'btn-subset':        'Субсет ASS',
-    'brand-title':       'SVG в ASS Draw',
-    'discuss-header':    'Обсуждение · Discussion',
-    'discuss-loading':   'Загрузка…',
-    'err-incomplete':    'Недостаточно параметров для команды пути "{cmd}"',
-    'err-no-path':       'Корректные данные SVG-пути не найдены. Проверьте ввод.',
-    'err-untraced':      'Обнаружены необведённые фигуры! Перед экспортом выполните «Обвести контуром» или «Объект в кривые» в редакторе.',
-    'footer-feedback':   'Сообщить о проблеме',
-    'footer-home':       'Главная',
+    'app.subtitle':        'SVG Вектор в Команды Рисования ASS · Умная Очистка·Высокая Точность·Предпросмотр в Реальном Времени',
+    'aria-input':          'Ввод SVG-кода',
+    'aria-lang-toggle':    'Сменить язык',
+    'aria-output':         'Вывод ASS-кода',
+    'aria-preview':        'Предпросмотр векторного пути',
+    'aria-dropzone':       'Загрузить SVG-файл, перетащить или нажать для выбора',
+    'bg-title':            'Настройте яркость фона предпросмотра для разных цветов фигур',
+    'brand-title':         'SVG в ASS Draw',
+    'btn-clear':           'Очистить',
+    'btn-convert':         'Конвертировать',
+    'btn-copy':            'Копировать',
+    'btn-discuss':         'Обсуждение',
+    'btn-install':         'Установить',
+    'btn-paste':           'Вставить',
+    'btn-subset':          'Субсет ASS',
+    'btn-upload':          'Загрузить файл',
+    'discuss-header':      'Обсуждение · Discussion',
+    'discuss-loading':     'Загрузка…',
+    'dz-hint':             'Формат .svg',
+    'dz-main':             'Перетащите SVG-файл сюда или нажмите для выбора',
+    'err-incomplete':      'Недостаточно параметров для команды пути "{cmd}"',
+    'err-no-path':         'Корректные данные SVG-пути не найдены. Проверьте ввод.',
+    'err-untraced':        'Обнаружены неподдерживаемые теги фигур; выполнена попытка конвертации в пути, но часть может быть утеряна. Выполните «Обвести контуром» или «Объект в кривые» перед экспортом.',
+    'footer-feedback':     'Сообщить о проблеме',
+    'footer-home':         'Главная',
     'footer-license-html': 'Открытый исходный код под лицензией <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Автор <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'Сделано с любовью ❤️ 用爱发电',
-    'footer-source':     'Исходный код',
-    'footer-tool':       'SVG в ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'Яркость фона:',
-    'label-output':      'Вывод ASS',
-    'label-preview':     'Предпросмотр',
-    'label-scale':       'Точность',
-    'label-tags':        'Дополнительные теги (Header Tags)',
-    'opt-16x':           '16x (\\p5 Максимум)',
-    'opt-8x':            '8x (\\p4 Рекомендуется)',
-    'placeholder-input': 'Вставьте SVG-код сюда (теги <svg> или <path>)...\n\n💡 Советы:\nЕсли используете ИИ, скажите ему: «Выведи все фигуры как элементы <path>.»\nЕсли используете Figma / Illustrator / Inkscape, выполните «Обвести контуром» или «Объект в кривые» перед экспортом.',
-    'placeholder-output':'Ожидание конвертации...',
-    'placeholder-tags':  'Например \\pos(960,540)',
-    'step1-title':       'Ввести SVG-код',
-    'step2-title':       'Настройки',
-    'step3-title':       'Результат и предпросмотр',
-    'toast-basic-warn':  'Пути извлечены, но необведённые базовые фигуры были проигнорированы!',
-    'toast-copied':      'ASS-код скопирован',
-    'toast-copy-fail':   'Ошибка копирования, скопируйте вручную',
-    'toast-invalid':     'Некорректные данные пути',
-    'toast-merged':      'Объединено {n} путей',
-    'toast-no-copy':     'Нечего копировать',
-    'toast-no-input':    'Введите SVG-код',
-    'toast-success':     'Конвертация успешна!',
-    'toast-too-large':   'Слишком большой ввод (>{size}КБ), конвертация может зависнуть страницу',
-    'ver-sub':           'SVG в ASS Draw v{ver} · Умная конвертация · Высокая точность',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'Сделано с любовью ❤️ 用爱发电',
+    'footer-source':       'Исходный код',
+    'footer-tool':         'SVG в ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'Содержимое вставлено (вставьте снова или загрузите файл для изменения)',
+    'hint-upload':         'Файл загружен: {name}',
+    'label-bg':            'Яркость фона:',
+    'label-output':        'Вывод ASS',
+    'label-preview':       'Предпросмотр',
+    'label-scale':         'Точность',
+    'label-tags':          'Дополнительные теги (Header Tags)',
+    'opt-16x':             '16x (\\p5 Максимум)',
+    'opt-8x':              '8x (\\p4 Рекомендуется)',
+    'placeholder-input':   'Вставьте SVG-код сюда...',
+    'placeholder-output':  'Ожидание конвертации...',
+    'placeholder-tags':    'Например \\pos(960,540)',
+    'step1-title':         'Ввод SVG',
+    'step2-title':         'Настройки',
+    'step3-title':         'Результат и предпросмотр',
+    'toast-basic-shapes':  'Базовые фигуры автоматически преобразованы в пути и объединены',
+    'toast-copied':        'ASS-код скопирован',
+    'toast-copy-fail':     'Ошибка копирования, скопируйте вручную',
+    'toast-invalid':       'Некорректные данные пути',
+    'toast-merged':        'Объединено {n} путей',
+    'toast-no-copy':       'Нечего копировать',
+    'toast-no-input':      'Введите SVG-код или загрузите файл',
+    'toast-paste-fail':    'Ошибка вставки, проверьте разрешения браузера или вставьте вручную',
+    'toast-read-fail':     'Ошибка чтения файла',
+    'toast-success':       'Конвертация успешна!',
+    'toast-too-large':     'Слишком большой ввод (>{size}КБ), конвертация может зависнуть страницу',
+    'ver-sub':             'SVG в ASS Draw v{ver} · Умная конвертация · Высокая точность',
   },
   ar: {
-    'app.subtitle':      'SVG متجه إلى أوامر رسم ASS · تنظيف ذكي·دقة عالية·معاينة مباشرة',
-    'aria-input':        'إدخال كود SVG',
-    'aria-lang-toggle':  'تغيير اللغة',
-    'aria-output':       'مخرجات كود ASS',
-    'aria-preview':      'معاينة مسار المتجه',
-    'bg-title':          'اضبط سطوع خلفية المعاينة لتناسب ألوان الأشكال المختلفة',
-    'btn-convert':       'تحويل',
-    'btn-copy':          'نسخ',
-    'btn-discuss':       'نقاش',
-    'btn-install':       'تثبيت',
-    'btn-subset':        'أداة Subset لـ ASS',
-    'brand-title':       'SVG إلى ASS Draw',
-    'discuss-header':    'نقاش · Discussion',
-    'discuss-loading':   'جارٍ التحميل…',
-    'err-incomplete':    'معاملات ناقصة في أمر المسار "{cmd}"',
-    'err-no-path':       'لم يتم العثور على بيانات مسار SVG صالحة. تحقق من الكود.',
-    'err-untraced':      'تم اكتشاف أشكال غير محوَّلة إلى مسارات! نفّذ «تحديد خطوط المسار» أو «تحويل الكائنات إلى مسارات» في محرر الرسوميات قبل التصدير.',
-    'footer-feedback':   'الإبلاغ عن مشكلة',
-    'footer-home':       'الرئيسية',
+    'app.subtitle':        'SVG متجه إلى أوامر رسم ASS · تنظيف ذكي·دقة عالية·معاينة مباشرة',
+    'aria-input':          'إدخال كود SVG',
+    'aria-lang-toggle':    'تغيير اللغة',
+    'aria-output':         'مخرجات كود ASS',
+    'aria-preview':        'معاينة مسار المتجه',
+    'aria-dropzone':       'رفع ملف SVG، اسحب وأفلت أو انقر للاختيار',
+    'bg-title':            'اضبط سطوع خلفية المعاينة لتناسب ألوان الأشكال المختلفة',
+    'brand-title':         'SVG إلى ASS Draw',
+    'btn-clear':           'مسح',
+    'btn-convert':         'تحويل',
+    'btn-copy':            'نسخ',
+    'btn-discuss':         'نقاش',
+    'btn-install':         'تثبيت',
+    'btn-paste':           'لصق',
+    'btn-subset':          'أداة Subset لـ ASS',
+    'btn-upload':          'رفع ملف',
+    'discuss-header':      'نقاش · Discussion',
+    'discuss-loading':     'جارٍ التحميل…',
+    'dz-hint':             'صيغة .svg',
+    'dz-main':             'اسحب ملف SVG هنا، أو انقر للاختيار',
+    'err-incomplete':      'معاملات ناقصة في أمر المسار "{cmd}"',
+    'err-no-path':         'لم يتم العثور على بيانات مسار SVG صالحة. تحقق من الكود.',
+    'err-untraced':        'تم اكتشاف علامات أشكال غير مدعومة؛ تمت محاولة التحويل إلى مسارات لكن قد تضيع بعضها. نفّذ «تحديد خطوط المسار» أو «تحويل الكائنات إلى مسارات» قبل التصدير.',
+    'footer-feedback':     'الإبلاغ عن مشكلة',
+    'footer-home':         'الرئيسية',
     'footer-license-html': 'مفتوح المصدر تحت <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · المطوِّر <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'صُنع بمحبة ❤️ 用爱发电',
-    'footer-source':     'الكود المصدري',
-    'footer-tool':       'SVG إلى ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'سطوع الخلفية:',
-    'label-output':      'مخرجات ASS',
-    'label-preview':     'معاينة',
-    'label-scale':       'الدقة',
-    'label-tags':        'وسوم إضافية (Header Tags)',
-    'opt-16x':           '16x (\\p5 أقصى دقة)',
-    'opt-8x':            '8x (\\p4 موصى به)',
-    'placeholder-input': 'الصق كود SVG هنا (وسوم <svg> أو <path>)...\n\n💡 نصائح:\nإذا استخدمت الذكاء الاصطناعي، اطلب: «أخرج جميع الأشكال كعناصر <path>.»\nإذا استخدمت Figma / Illustrator / Inkscape، نفّذ «تحديد خطوط المسار» أو «تحويل الكائنات إلى مسارات» قبل التصدير.',
-    'placeholder-output':'في انتظار التحويل...',
-    'placeholder-tags':  'مثال: \\pos(960,540)',
-    'step1-title':       'إدخال كود SVG',
-    'step2-title':       'إعدادات التحويل',
-    'step3-title':       'النتيجة والمعاينة',
-    'toast-basic-warn':  'تم استخراج المسارات، لكن الأشكال الأساسية غير المحوَّلة تم تجاهلها!',
-    'toast-copied':      'تم نسخ كود ASS',
-    'toast-copy-fail':   'فشل النسخ، انسخ يدوياً',
-    'toast-invalid':     'بيانات مسار غير صالحة',
-    'toast-merged':      'تم دمج {n} مسار',
-    'toast-no-copy':     'لا يوجد محتوى للنسخ',
-    'toast-no-input':    'الرجاء إدخال كود SVG',
-    'toast-success':     'تم التحويل بنجاح!',
-    'toast-too-large':   'الإدخال كبير جداً (>{size}كيلوبايت)، قد يتجمّد المتصفح أثناء التحويل',
-    'ver-sub':           'SVG إلى ASS Draw v{ver} · تحويل ذكي · دقة عالية',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'صُنع بمحبة ❤️ 用爱发电',
+    'footer-source':       'الكود المصدري',
+    'footer-tool':         'SVG إلى ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'تم لصق المحتوى (الصق مجدداً أو ارفع ملفاً للتغيير)',
+    'hint-upload':         'تم رفع الملف: {name}',
+    'label-bg':            'سطوع الخلفية:',
+    'label-output':        'مخرجات ASS',
+    'label-preview':       'معاينة',
+    'label-scale':         'الدقة',
+    'label-tags':          'وسوم إضافية (Header Tags)',
+    'opt-16x':             '16x (\\p5 أقصى دقة)',
+    'opt-8x':              '8x (\\p4 موصى به)',
+    'placeholder-input':   '...الصق كود SVG هنا',
+    'placeholder-output':  '...في انتظار التحويل',
+    'placeholder-tags':    'مثال: \\pos(960,540)',
+    'step1-title':         'إدخال SVG',
+    'step2-title':         'إعدادات التحويل',
+    'step3-title':         'النتيجة والمعاينة',
+    'toast-basic-shapes':  'تم تحويل الأشكال الأساسية تلقائياً إلى مسارات ودمجها',
+    'toast-copied':        'تم نسخ كود ASS',
+    'toast-copy-fail':     'فشل النسخ، انسخ يدوياً',
+    'toast-invalid':       'بيانات مسار غير صالحة',
+    'toast-merged':        'تم دمج {n} مسار',
+    'toast-no-copy':       'لا يوجد محتوى للنسخ',
+    'toast-no-input':      'الرجاء إدخال كود SVG أو رفع ملف',
+    'toast-paste-fail':    'فشل اللصق، تحقق من أذونات المتصفح أو الصق يدوياً',
+    'toast-read-fail':     'فشل قراءة الملف',
+    'toast-success':       'تم التحويل بنجاح!',
+    'toast-too-large':     'الإدخال كبير جداً (>{size}كيلوبايت)، قد يتجمّد المتصفح أثناء التحويل',
+    'ver-sub':             'SVG إلى ASS Draw v{ver} · تحويل ذكي · دقة عالية',
   },
   tr: {
-    'app.subtitle':      'SVG Vektör\'ten ASS Çizim Komutlarına · Akıllı Temizlik·Yüksek Hassasiyet·Canlı Önizleme',
-    'aria-input':        'SVG Kod Girişi',
-    'aria-lang-toggle':  'Dil değiştir',
-    'aria-output':       'ASS Kod Çıktısı',
-    'aria-preview':      'Vektör yolu önizlemesi',
-    'bg-title':          'Farklı şekil renklerine uyum için önizleme arka planının parlaklığını ayarlayın',
-    'btn-convert':       'Dönüştür',
-    'btn-copy':          'Kopyala',
-    'btn-discuss':       'Tartışma',
-    'btn-install':       'Yükle',
-    'btn-subset':        'ASS Alt Küme Aracı',
-    'brand-title':       'SVG → ASS Draw',
-    'discuss-header':    'Tartışma · Discussion',
-    'discuss-loading':   'Yükleniyor…',
-    'err-incomplete':    '"{cmd}" yol komutunda eksik parametre',
-    'err-no-path':       'Geçerli SVG yol verisi bulunamadı. Lütfen girdinizi kontrol edin.',
-    'err-untraced':      'Kontursuz şekiller tespit edildi! Dışa aktarmadan önce editörünüzde "Kontur Ana Hattı" veya "Nesneyi Yola Dönüştür" işlemini yapın.',
-    'footer-feedback':   'Sorun Bildir',
-    'footer-home':       'Ana Sayfa',
+    'app.subtitle':        'SVG Vektör\'ten ASS Çizim Komutlarına · Akıllı Temizlik·Yüksek Hassasiyet·Canlı Önizleme',
+    'aria-input':          'SVG Kod Girişi',
+    'aria-lang-toggle':    'Dil değiştir',
+    'aria-output':         'ASS Kod Çıktısı',
+    'aria-preview':        'Vektör yolu önizlemesi',
+    'aria-dropzone':       'SVG dosyası yükle, sürükle bırak veya seçmek için tıkla',
+    'bg-title':            'Farklı şekil renklerine uyum için önizleme arka planının parlaklığını ayarlayın',
+    'brand-title':         'SVG → ASS Draw',
+    'btn-clear':           'Temizle',
+    'btn-convert':         'Dönüştür',
+    'btn-copy':            'Kopyala',
+    'btn-discuss':         'Tartışma',
+    'btn-install':         'Yükle',
+    'btn-paste':           'Yapıştır',
+    'btn-subset':          'ASS Alt Küme Aracı',
+    'btn-upload':          'Dosya Yükle',
+    'discuss-header':      'Tartışma · Discussion',
+    'discuss-loading':     'Yükleniyor…',
+    'dz-hint':             '.svg formatı',
+    'dz-main':             'SVG dosyasını buraya sürükle veya tıklayarak seç',
+    'err-incomplete':      '"{cmd}" yol komutunda eksik parametre',
+    'err-no-path':         'Geçerli SVG yol verisi bulunamadı. Lütfen girdinizi kontrol edin.',
+    'err-untraced':        'Desteklenmeyen şekil etiketleri tespit edildi; yollara dönüştürme denendi ancak bazıları kaybolabilir. Dışa aktarmadan önce "Kontur Ana Hattı" veya "Nesneyi Yola Dönüştür" işlemini yapın.',
+    'footer-feedback':     'Sorun Bildir',
+    'footer-home':         'Ana Sayfa',
     'footer-license-html': '<a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> ile açık kaynak · Yazar <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>',
-    'footer-org':        'MontageSubs · 蒙太奇字幕组',
-    'footer-slogan':     'Sevgiyle yapıldı ❤️ 用爱发电',
-    'footer-source':     'Kaynak Kodu',
-    'footer-tool':       'SVG → ASS Draw (svg-to-ass) v{ver}',
-    'label-bg':          'Arka Plan Parlaklığı:',
-    'label-output':      'ASS Çıktı',
-    'label-preview':     'Önizleme',
-    'label-scale':       'Hassasiyet',
-    'label-tags':        'Ek Etiketler (Header Tags)',
-    'opt-16x':           '16x (\\p5 Maksimum)',
-    'opt-8x':            '8x (\\p4 Önerilen)',
-    'placeholder-input': 'SVG kodunu buraya yapıştırın (<svg> veya <path> etiketleri)...\n\n💡 İpuçları:\nYapay zeka kullanıyorsanız şunu söyleyin: "Tüm şekilleri <path> öğeleri olarak çıkar."\nFigma / Illustrator / Inkscape kullanıyorsanız, dışa aktarmadan önce "Kontur Ana Hattı" veya "Nesneyi Yola Dönüştür" işlemini yapın.',
-    'placeholder-output':'Dönüştürme bekleniyor...',
-    'placeholder-tags':  'Örn. \\pos(960,540)',
-    'step1-title':       'SVG Kodu Gir',
-    'step2-title':       'Ayarlar',
-    'step3-title':       'Sonuç ve Önizleme',
-    'toast-basic-warn':  'Yollar çıkarıldı, ancak kontursuz temel şekiller yoksayıldı!',
-    'toast-copied':      'ASS kodu kopyalandı',
-    'toast-copy-fail':   'Kopyalama başarısız, lütfen elle kopyalayın',
-    'toast-invalid':     'Geçersiz yol verisi',
-    'toast-merged':      '{n} yol birleştirildi',
-    'toast-no-copy':     'Kopyalanacak içerik yok',
-    'toast-no-input':    'Lütfen SVG kodu girin',
-    'toast-success':     'Dönüştürme başarılı!',
-    'toast-too-large':   'Girdi çok büyük (>{size}KB), dönüştürme sayfayı dondurabilir',
-    'ver-sub':           'SVG to ASS Draw v{ver} · Akıllı Dönüştürme · Yüksek Hassasiyet',
+    'footer-org':          'MontageSubs · 蒙太奇字幕组',
+    'footer-slogan':       'Sevgiyle yapıldı ❤️ 用爱发电',
+    'footer-source':       'Kaynak Kodu',
+    'footer-tool':         'SVG → ASS Draw (svg-to-ass) v{ver}',
+    'hint-paste':          'İçerik yapıştırıldı (değiştirmek için yeniden yapıştırın veya dosya yükleyin)',
+    'hint-upload':         'Dosya yüklendi: {name}',
+    'label-bg':            'Arka Plan Parlaklığı:',
+    'label-output':        'ASS Çıktı',
+    'label-preview':       'Önizleme',
+    'label-scale':         'Hassasiyet',
+    'label-tags':          'Ek Etiketler (Header Tags)',
+    'opt-16x':             '16x (\\p5 Maksimum)',
+    'opt-8x':              '8x (\\p4 Önerilen)',
+    'placeholder-input':   'SVG kodunu buraya yapıştırın...',
+    'placeholder-output':  'Dönüştürme bekleniyor...',
+    'placeholder-tags':    'Örn. \\pos(960,540)',
+    'step1-title':         'SVG Girişi',
+    'step2-title':         'Ayarlar',
+    'step3-title':         'Sonuç ve Önizleme',
+    'toast-basic-shapes':  'Temel şekiller otomatik olarak yollara dönüştürüldü ve birleştirildi',
+    'toast-copied':        'ASS kodu kopyalandı',
+    'toast-copy-fail':     'Kopyalama başarısız, lütfen elle kopyalayın',
+    'toast-invalid':       'Geçersiz yol verisi',
+    'toast-merged':        '{n} yol birleştirildi',
+    'toast-no-copy':       'Kopyalanacak içerik yok',
+    'toast-no-input':      'Lütfen SVG kodu girin veya dosya yükleyin',
+    'toast-paste-fail':    'Yapıştırma başarısız, tarayıcı izinlerini kontrol edin veya elle yapıştırın',
+    'toast-read-fail':     'Dosya okunamadı',
+    'toast-success':       'Dönüştürme başarılı!',
+    'toast-too-large':     'Girdi çok büyük (>{size}KB), dönüştürme sayfayı dondurabilir',
+    'ver-sub':             'SVG to ASS Draw v{ver} · Akıllı Dönüştürme · Yüksek Hassasiyet',
   },
 };
 
 function t(key, vars) {
   var str = (I18N[currentLang] && I18N[currentLang][key]) || (I18N['zh'][key]) || key;
   if (vars) {
-    Object.keys(vars).forEach(function(k) { str = str.replace('{' + k + '}', vars[k]); });
+    Object.keys(vars).forEach(function(k) { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]); });
   }
   return str;
 }
@@ -1215,10 +1415,8 @@ function applyLang(lang) {
 
   const title = t('brand-title');
   document.title = title;
-  document.querySelector('meta[name="description"]')?.setAttribute('content',
-    document.querySelector('meta[name="description"]').getAttribute('content'));
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('ver-sub'));
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('app.subtitle'));
   const manifest = document.getElementById('pwa-manifest');
   if (manifest) manifest.setAttribute('href', lang === 'zh' ? 'manifest.json' : 'manifest-en.json');
 
@@ -1251,7 +1449,7 @@ function setLang(lang) {
   wrap.classList.remove('open');
   document.getElementById('btn-lang-toggle').setAttribute('aria-expanded', 'false');
 }
-// ─── Discussion ──────────────────────────────────────────────────────────────
+
 var discussLoaded = false;
 function loadDiscuss() {
   var section = document.getElementById('discuss-section');
@@ -1281,7 +1479,6 @@ function loadDiscuss() {
   document.getElementById('discuss-section').appendChild(script);
 }
 
-// ─── Toast ───────────────────────────────────────────────────────────────────
 var _toastTimer = null;
 function showToast(msg, type) {
   type = type || 'success';
@@ -1292,7 +1489,6 @@ function showToast(msg, type) {
   _toastTimer = setTimeout(function() { el.className = ''; }, 3000);
 }
 
-// ─── Background slider ───────────────────────────────────────────────────────
 document.getElementById('bgSlider').addEventListener('input', function(e) {
   var val = e.target.value;
   var bg = document.getElementById('previewBg');
@@ -1301,10 +1497,104 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
   bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ',' + opacity + ')';
 });
 
-// ─── Init lang ───────────────────────────────────────────────────────────────
+var _inputSource = null;
+
+function updateInputHint(source, fileName) {
+  var hint = document.getElementById('input-source-hint');
+  var clearBtn = document.getElementById('btn-clear-input');
+  if (!source) {
+    hint.classList.add('hidden');
+    hint.textContent = '';
+    clearBtn.style.display = 'none';
+    _inputSource = null;
+    return;
+  }
+  _inputSource = source;
+  if (source === 'paste') {
+    hint.textContent = t('hint-paste');
+  } else {
+    hint.textContent = t('hint-upload', {name: fileName || ''});
+  }
+  hint.classList.remove('hidden');
+  clearBtn.style.display = 'inline-flex';
+}
+
+function clearInput() {
+  document.getElementById('svgInput').value = '';
+  document.getElementById('inp-svg').value = '';
+  updateInputHint(null);
+}
+
+function triggerSvgUpload() {
+  document.getElementById('inp-svg').click();
+}
+
+function pasteFromClipboard() {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.readText().then(function(text) {
+      if (text) {
+        document.getElementById('svgInput').value = text;
+        updateInputHint('paste');
+      } else {
+        showToast(t('toast-no-input'), 'warn');
+      }
+    }).catch(function() {
+      showToast(t('toast-paste-fail'), 'error');
+    });
+  } else {
+    showToast(t('toast-paste-fail'), 'warn');
+  }
+}
+
+document.getElementById('svgInput').addEventListener('input', function() {
+  if (this.value) {
+    updateInputHint('paste');
+  } else {
+    updateInputHint(null);
+  }
+});
+
+document.getElementById('inp-svg').addEventListener('change', function() {
+  var file = this.files && this.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    document.getElementById('svgInput').value = e.target.result;
+    updateInputHint('upload', file.name);
+  };
+  reader.onerror = function() {
+    showToast(t('toast-read-fail'), 'error');
+  };
+  reader.readAsText(file);
+});
+
+var dzSvg = document.getElementById('dz-svg');
+dzSvg.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  dzSvg.classList.add('drag-over');
+});
+dzSvg.addEventListener('dragleave', function() {
+  dzSvg.classList.remove('drag-over');
+});
+dzSvg.addEventListener('drop', function(e) {
+  e.preventDefault();
+  dzSvg.classList.remove('drag-over');
+  var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('svgInput').value = ev.target.result;
+    updateInputHint('upload', file.name);
+  };
+  reader.onerror = function() {
+    showToast(t('toast-read-fail'), 'error');
+  };
+  reader.readAsText(file);
+});
+
 document.addEventListener('DOMContentLoaded', function() {
   applyLang(currentLang);
-  
+
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('lang-wrap');
     if (wrap && !wrap.contains(e.target)) {
@@ -1318,7 +1608,7 @@ document.addEventListener('DOMContentLoaded', function() {
 (function() {
     function arcToBezier(px, py, cx, cy, rx, ry, xAxisRotation, largeArcFlag, sweepFlag) {
         var curves = [];
-        if (rx === 0 || ry === 0) return null; 
+        if (rx === 0 || ry === 0) return null;
         var phi = xAxisRotation * (Math.PI / 180);
         var sinPhi = Math.sin(phi), cosPhi = Math.cos(phi);
         var pxp = cosPhi * (px - cx) / 2 + sinPhi * (py - cy) / 2;
@@ -1383,7 +1673,7 @@ document.addEventListener('DOMContentLoaded', function() {
             while (this.index < this.tokens.length) {
                 var prevIndex = this.index;
                 var token = this.tokens[this.index];
-                
+
                 if (this.isCommand(token)) {
                     currentCommand = token;
                     this.index++;
@@ -1391,11 +1681,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (currentCommand === 'M') currentCommand = 'L';
                     if (currentCommand === 'm') currentCommand = 'l';
                 }
-                
+
                 var cmds = this.processCommand(currentCommand);
                 if (cmds) commands.push(...cmds);
                 this.lastCommand = currentCommand;
-                
+
                 if (this.index === prevIndex) {
                     this.index++;
                 }
@@ -1404,7 +1694,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         processCommand(cmd) {
             var result = [];
-            var cX = this.penX, cY = this.penY; // 初始化为当前笔位，防止未知命令时 NaN 传播
+            var cX = this.penX, cY = this.penY;
             const isRel = (c) => c === c.toLowerCase();
             const requireNum = () => {
                 var v = this.nextNum();
@@ -1478,26 +1768,140 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function basicShapesToPaths(svgStr) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(svgStr, 'image/svg+xml');
+        var parseError = doc.querySelector('parsererror');
+        if (parseError) return null;
+
+        var paths = [];
+        var hasBasicShapes = false;
+
+        doc.querySelectorAll('path').forEach(function(el) {
+            var d = el.getAttribute('d');
+            if (d) paths.push(d);
+        });
+
+        var transformAttr = function(el) {
+            var t = el.getAttribute('transform');
+            return t || '';
+        };
+
+        doc.querySelectorAll('circle').forEach(function(el) {
+            hasBasicShapes = true;
+            var cx = parseFloat(el.getAttribute('cx') || 0);
+            var cy = parseFloat(el.getAttribute('cy') || 0);
+            var r = parseFloat(el.getAttribute('r') || 0);
+            if (isNaN(r) || r <= 0) return;
+            var k = 0.5522847498;
+            var d = 'M ' + (cx + r) + ' ' + cy +
+                ' C ' + (cx + r) + ' ' + (cy + k*r) + ' ' + (cx + k*r) + ' ' + (cy + r) + ' ' + cx + ' ' + (cy + r) +
+                ' C ' + (cx - k*r) + ' ' + (cy + r) + ' ' + (cx - r) + ' ' + (cy + k*r) + ' ' + (cx - r) + ' ' + cy +
+                ' C ' + (cx - r) + ' ' + (cy - k*r) + ' ' + (cx - k*r) + ' ' + (cy - r) + ' ' + cx + ' ' + (cy - r) +
+                ' C ' + (cx + k*r) + ' ' + (cy - r) + ' ' + (cx + r) + ' ' + (cy - k*r) + ' ' + (cx + r) + ' ' + cy + ' Z';
+            paths.push(d);
+        });
+
+        doc.querySelectorAll('ellipse').forEach(function(el) {
+            hasBasicShapes = true;
+            var cx = parseFloat(el.getAttribute('cx') || 0);
+            var cy = parseFloat(el.getAttribute('cy') || 0);
+            var rx = parseFloat(el.getAttribute('rx') || 0);
+            var ry = parseFloat(el.getAttribute('ry') || 0);
+            if (isNaN(rx) || rx <= 0 || isNaN(ry) || ry <= 0) return;
+            var k = 0.5522847498;
+            var d = 'M ' + (cx + rx) + ' ' + cy +
+                ' C ' + (cx + rx) + ' ' + (cy + k*ry) + ' ' + (cx + k*rx) + ' ' + (cy + ry) + ' ' + cx + ' ' + (cy + ry) +
+                ' C ' + (cx - k*rx) + ' ' + (cy + ry) + ' ' + (cx - rx) + ' ' + (cy + k*ry) + ' ' + (cx - rx) + ' ' + cy +
+                ' C ' + (cx - rx) + ' ' + (cy - k*ry) + ' ' + (cx - k*rx) + ' ' + (cy - ry) + ' ' + cx + ' ' + (cy - ry) +
+                ' C ' + (cx + k*rx) + ' ' + (cy - ry) + ' ' + (cx + rx) + ' ' + (cy - k*ry) + ' ' + (cx + rx) + ' ' + cy + ' Z';
+            paths.push(d);
+        });
+
+        doc.querySelectorAll('rect').forEach(function(el) {
+            hasBasicShapes = true;
+            var x = parseFloat(el.getAttribute('x') || 0);
+            var y = parseFloat(el.getAttribute('y') || 0);
+            var w = parseFloat(el.getAttribute('width') || 0);
+            var h = parseFloat(el.getAttribute('height') || 0);
+            var rx = parseFloat(el.getAttribute('rx') || 0);
+            var ry = parseFloat(el.getAttribute('ry') || 0);
+            if (isNaN(w) || w <= 0 || isNaN(h) || h <= 0) return;
+            if (rx > w/2) rx = w/2;
+            if (ry > h/2) ry = h/2;
+            if (rx === 0 && ry === 0) {
+                var d = 'M ' + x + ' ' + y + ' L ' + (x+w) + ' ' + y + ' L ' + (x+w) + ' ' + (y+h) + ' L ' + x + ' ' + (y+h) + ' Z';
+                paths.push(d);
+            } else {
+                if (rx === 0) rx = ry;
+                if (ry === 0) ry = rx;
+                var k = 0.5522847498;
+                var d = 'M ' + (x+rx) + ' ' + y +
+                    ' L ' + (x+w-rx) + ' ' + y +
+                    ' C ' + (x+w-rx+k*rx) + ' ' + y + ' ' + (x+w) + ' ' + (y+ry-k*ry) + ' ' + (x+w) + ' ' + (y+ry) +
+                    ' L ' + (x+w) + ' ' + (y+h-ry) +
+                    ' C ' + (x+w) + ' ' + (y+h-ry+k*ry) + ' ' + (x+w-rx+k*rx) + ' ' + (y+h) + ' ' + (x+w-rx) + ' ' + (y+h) +
+                    ' L ' + (x+rx) + ' ' + (y+h) +
+                    ' C ' + (x+rx-k*rx) + ' ' + (y+h) + ' ' + x + ' ' + (y+h-ry+k*ry) + ' ' + x + ' ' + (y+h-ry) +
+                    ' L ' + x + ' ' + (y+ry) +
+                    ' C ' + x + ' ' + (y+ry-k*ry) + ' ' + (x+rx-k*rx) + ' ' + y + ' ' + (x+rx) + ' ' + y + ' Z';
+                paths.push(d);
+            }
+        });
+
+        doc.querySelectorAll('line').forEach(function(el) {
+            hasBasicShapes = true;
+            var x1 = parseFloat(el.getAttribute('x1') || 0);
+            var y1 = parseFloat(el.getAttribute('y1') || 0);
+            var x2 = parseFloat(el.getAttribute('x2') || 0);
+            var y2 = parseFloat(el.getAttribute('y2') || 0);
+            var d = 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2;
+            paths.push(d);
+        });
+
+        doc.querySelectorAll('polyline').forEach(function(el) {
+            hasBasicShapes = true;
+            var pts = (el.getAttribute('points') || '').trim().split(/[\s,]+/).map(parseFloat).filter(function(v) { return !isNaN(v); });
+            if (pts.length < 4) return;
+            var d = 'M ' + pts[0] + ' ' + pts[1];
+            for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
+            paths.push(d);
+        });
+
+        doc.querySelectorAll('polygon').forEach(function(el) {
+            hasBasicShapes = true;
+            var pts = (el.getAttribute('points') || '').trim().split(/[\s,]+/).map(parseFloat).filter(function(v) { return !isNaN(v); });
+            if (pts.length < 4) return;
+            var d = 'M ' + pts[0] + ' ' + pts[1];
+            for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
+            d += ' Z';
+            paths.push(d);
+        });
+
+        if (paths.length === 0) return null;
+        return { pathData: paths.join(' '), hasBasicShapes: hasBasicShapes, count: paths.length };
+    }
+
     function extractPathData(htmlStr) {
-        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return htmlStr; 
-        
-        var hasBasicShapes = /<(circle|rect|line|polygon|polyline|ellipse)/i.test(htmlStr);
+        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return { pathData: htmlStr, hasBasicShapes: false, count: 1 };
+
+        var result = basicShapesToPaths(htmlStr);
+        if (result) {
+            if (result.hasBasicShapes) {
+                showToast(t('toast-basic-shapes'), 'success');
+            } else {
+                showToast(t('toast-merged', {n: result.count}), 'success');
+            }
+            return result;
+        }
+
         var matches = [];
         var regex = /\bd\s*=\s*["']([\s\S]*?)["']/gi;
         var match;
         while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
-        
         if (matches.length > 0) {
-            if (hasBasicShapes) {
-                showToast(t('toast-basic-warn'), 'warn');
-            } else {
-                showToast(t('toast-merged', {n: matches.length}), 'success');
-            }
-            return matches.join(' ');
-        }
-        
-        if (hasBasicShapes) {
-            throw new Error(t('err-untraced'));
+            showToast(t('toast-merged', {n: matches.length}), 'success');
+            return { pathData: matches.join(' '), hasBasicShapes: false, count: matches.length };
         }
 
         throw new Error(t('err-no-path'));
@@ -1511,15 +1915,15 @@ document.addEventListener('DOMContentLoaded', function() {
             var rawInput = document.getElementById('svgInput').value.trim();
             if(!rawInput) { showToast(t('toast-no-input'), 'warn'); return; }
 
-            // 超大输入保护：超过 500KB 提示用户（主线程同步处理，可能卡顿）
             if (rawInput.length > 500000) {
                 showToast(t('toast-too-large', {size: Math.round(rawInput.length/1024)}), 'warn');
             }
 
-            var cleanInput = extractPathData(rawInput);
+            var extracted = extractPathData(rawInput);
+            var cleanInput = extracted.pathData;
             var scale = parseFloat(document.getElementById('scaleFactor').value);
             var extraTags = document.getElementById('extraTags').value.trim();
-            
+
             var parser = new SVGParser(cleanInput);
             var absCommands = parser.parse();
 
@@ -1533,7 +1937,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (isX) { if(v < minX) minX=v; if(v > maxX) maxX=v; }
                 else      { if(v < minY) minY=v; if(v > maxY) maxY=v; }
             };
-            // 求三次贝塞尔在单轴上的极值点（导数为零的 t 值），比用控制点更精确
             var bezierAxisExtrema = function(p0, p1, p2, p3) {
                 var pts = [p0, p3];
                 var a = -3*p0 + 9*p1 - 9*p2 + 3*p3;
@@ -1558,12 +1961,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var assStr = "";
             var f = function(n) { return Math.round(n * scale); };
-            var penX = 0, penY = 0; // 跟踪当前笔位，用于贝塞尔起点
+            var penX = 0, penY = 0;
 
             absCommands.forEach(function(c) {
                 if (c.type === 'M') {
                     assStr += "m " + f(c.x) + " " + f(c.y) + " ";
-                    // M 是笔位移动，不渲染内容，不纳入视觉 bounding box
                     penX = c.x; penY = c.y;
                 }
                 if (c.type === 'L') {
@@ -1590,7 +1992,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var pTag = pMap[scale] || '\\p1';
             var head = "{" + extraTags + pTag + "}";
             document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
-            
+
             if (!rawInput.includes('<')) showToast(t('toast-success'), 'success');
 
         } catch (e) {
