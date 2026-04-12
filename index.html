@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SVG 转 ASS 绘图指令 · 蒙太奇字幕组 MontageSubs</title>
+<title>SVG 转 ASS 绘图指令</title>
 <meta name="description" content="现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放、实时矢量预览，纯前端本地处理，无需安装。由蒙太奇字幕组 MontageSubs 开发。">
 <meta name="keywords" content="SVG转ASS,SVG to ASS,SVG2ASS,ASS绘图指令,Aegisub绘图,矢量转字幕,ASS draw,svg-to-ass,MontageSubs,蒙太奇字幕组,字幕特效,Typesetter,在线工具,贝塞尔曲线,路径转换,ASS特效,字幕制作">
 <meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.2.1">
+<meta name="version" content="3.2.2">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -1182,7 +1182,6 @@ function applyLang(lang) {
   try { localStorage.setItem('svg2ass-lang', lang); } catch(e) {}
   var langAttrMap = {'zh': 'zh-CN', 'zh-TW': 'zh-TW', 'pt-BR': 'pt-BR'};
   document.documentElement.lang = langAttrMap[lang] || lang;
-
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     el.textContent = t(el.getAttribute('data-i18n'));
   });
@@ -1198,6 +1197,15 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
     el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
   });
+
+  var title = t('brand-title');
+  document.title = title;
+  document.querySelector('meta[name="description"]')?.setAttribute('content',
+    document.querySelector('meta[name="description"]').getAttribute('content'));
+  document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('ver-sub'));
+  var manifest = document.getElementById('pwa-manifest');
+  if (manifest) manifest.setAttribute('href', lang === 'zh' ? 'manifest.json' : 'manifest-en.json');
 
   var _ver = document.querySelector('meta[name="version"]');
   var _verStr = _ver ? _ver.content : '';
@@ -1215,7 +1223,6 @@ function applyLang(lang) {
     btn.classList.toggle('active', btn.id === 'lang-' + lang);
   });
 }
-
 function toggleLangMenu() {
   var wrap = document.getElementById('lang-wrap');
   var expanded = wrap.classList.toggle('open');
@@ -1279,15 +1286,17 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
 });
 
 // ─── Init lang ───────────────────────────────────────────────────────────────
-applyLang(currentLang);
-
-document.addEventListener('click', function(e) {
-  var wrap = document.getElementById('lang-wrap');
-  if (wrap && !wrap.contains(e.target)) {
-    wrap.classList.remove('open');
-    var btn = document.getElementById('btn-lang-toggle');
-    if (btn) btn.setAttribute('aria-expanded', 'false');
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  applyLang(currentLang);
+  
+  document.addEventListener('click', function(e) {
+    var wrap = document.getElementById('lang-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+      wrap.classList.remove('open');
+      var btn = document.getElementById('btn-lang-toggle');
+      if (btn) btn.setAttribute('aria-expanded', 'false');
+    }
+  });
 });
 
 (function() {
