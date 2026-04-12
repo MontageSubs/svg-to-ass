@@ -88,34 +88,6 @@ M 50 2 C 76.5 2 98 23.5 98 50 C 98 76.5 76.5 98 50 98 Z
 
 **Upload SVG File**
 
-Upload a `.svg` file directly. The tool automatically reads and processes it.```markdown
-## Supported Input Formats
-
-**SVG Standard Code**
-
-Paste complete SVG source code. Supports various shape elements (path, circle, rect, etc.):
-
-```svg
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 50 2 C 76.5 2 98 23.5 98 50 ..."/>
-  <circle cx="50" cy="50" r="40"/>
-</svg>
-```
-
-**SVG Path Data**
-
-Single path element or raw path commands:
-
-```svg
-<path d="M 50 2 C 76.5 2 98 23.5 98 50 C 98 76.5 76.5 98 50 98 Z"/>
-```
-
-```
-M 50 2 C 76.5 2 98 23.5 98 50 C 98 76.5 76.5 98 50 98 Z
-```
-
-**Upload SVG File**
-
 Upload a `.svg` file directly. The tool automatically reads and processes it.
 
 
@@ -144,7 +116,8 @@ Aegisub drawing coordinates are integers. At `\p1`, precision is limited to 1 pi
 ```
 svg-to-ass/
 ├── index.html        # Tool (single-file, all logic included)
-├── manifest.json     # PWA manifest
+├── manifest.json     # PWA manifest (Chinese)
+├── manifest-en.json  # PWA manifest (English)
 ├── sw.js             # Service Worker (caching strategy)
 ├── LICENSE
 ├── README.md         # Chinese documentation (primary)
