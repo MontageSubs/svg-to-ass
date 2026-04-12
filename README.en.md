@@ -32,7 +32,7 @@ Everything processes locally. Your inputs stay on your device.
 
 **Smart Path Extraction and Dirty-Data Cleaning**
 
-Paste your full SVG source code directly. The tool automatically locates all `<path>` elements, extracts their `d` attribute data, merges multiple paths, and converts them in one step. No manual tag cleanup required. If the code also contains unconverted basic shape elements, the tool extracts whatever paths it can find and displays a warning.
+Paste or upload SVG code. The tool automatically parses multiple shape elements including `<path>`, `<circle>`, `<rect>`, and more.
 
 **High-Precision Coordinate Scaling**
 
