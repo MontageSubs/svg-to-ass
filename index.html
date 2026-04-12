@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.2.4">
+<meta name="version" content="3.2.5">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -688,6 +688,7 @@ var currentLang = 'zh';
 
 var I18N = {
   zh: {
+    'app.subtitle':      'SVG矢量转ASS绘图指令 · 智能清洗·高精度缩放·实时预览',
     'aria-input':        'SVG 代码输入',
     'aria-lang-toggle':  '切换语言',
     'aria-output':       'ASS 代码输出框',
@@ -736,6 +737,7 @@ var I18N = {
     'ver-sub':           'SVG to ASS Draw v{ver} · 智能转换 · 高精度',
   },
   'zh-TW': {
+    'app.subtitle':      'SVG向量轉ASS繪圖指令 · 智慧清洗·高精度縮放·即時預覽',
     'aria-input':        'SVG 代碼輸入',
     'aria-lang-toggle':  '切換語言',
     'aria-output':       'ASS 代碼輸出框',
@@ -784,6 +786,7 @@ var I18N = {
     'ver-sub':           'SVG to ASS Draw v{ver} · 智慧轉換 · 高精度',
   },
   en: {
+    'app.subtitle':      'SVG Vector to ASS Drawing Commands · Smart Clean · High Precision · Live Preview',
     'aria-input':        'SVG Code Input',
     'aria-lang-toggle':  'Switch Language',
     'aria-output':       'ASS Code Output',
@@ -832,6 +835,7 @@ var I18N = {
     'ver-sub':           'SVG to ASS Draw v{ver} · Smart Convert · High Precision',
   },
   ja: {
+    'app.subtitle':      'SVGベクター→ASS描画コマンド · スマートクリーニング・高精度・リアルタイムプレビュー',
     'aria-input':        'SVGコード入力',
     'aria-lang-toggle':  '言語を切り替える',
     'aria-output':       'ASS出力コード',
@@ -880,6 +884,7 @@ var I18N = {
     'ver-sub':           'SVG to ASS Draw v{ver} · スマート変換 · 高精度',
   },
   ko: {
+    'app.subtitle':      'SVG 벡터→ASS 드로우 명령어 · 스마트 클리닝·고정밀·실시간 미리보기',
     'aria-input':        'SVG 코드 입력',
     'aria-lang-toggle':  '언어 변경',
     'aria-output':       'ASS 코드 출력',
@@ -928,6 +933,7 @@ var I18N = {
     'ver-sub':           'SVG to ASS Draw v{ver} · 스마트 변환 · 고정밀',
   },
   es: {
+    'app.subtitle':      'SVG Vector a Comandos de Dibujo ASS · Limpieza Inteligente·Alta Precisión·Vista Previa en Vivo',
     'aria-input':        'Entrada de código SVG',
     'aria-lang-toggle':  'Cambiar idioma',
     'aria-output':       'Salida de código ASS',
@@ -976,6 +982,7 @@ var I18N = {
     'ver-sub':           'SVG a ASS Draw v{ver} · Conversión Inteligente · Alta Precisión',
   },
   'pt-BR': {
+    'app.subtitle':      'SVG Vetor para Comandos de Desenho ASS · Limpeza Inteligente·Alta Precisão·Pré-visualização em Tempo Real',
     'aria-input':        'Entrada de código SVG',
     'aria-lang-toggle':  'Trocar idioma',
     'aria-output':       'Saída de código ASS',
@@ -1024,6 +1031,7 @@ var I18N = {
     'ver-sub':           'SVG para ASS Draw v{ver} · Conversão Inteligente · Alta Precisão',
   },
   ru: {
+    'app.subtitle':      'SVG Вектор в Команды Рисования ASS · Умная Очистка·Высокая Точность·Предпросмотр в Реальном Времени',
     'aria-input':        'Ввод SVG-кода',
     'aria-lang-toggle':  'Сменить язык',
     'aria-output':       'Вывод ASS-кода',
@@ -1072,6 +1080,7 @@ var I18N = {
     'ver-sub':           'SVG в ASS Draw v{ver} · Умная конвертация · Высокая точность',
   },
   ar: {
+    'app.subtitle':      'SVG متجه إلى أوامر رسم ASS · تنظيف ذكي·دقة عالية·معاينة مباشرة',
     'aria-input':        'إدخال كود SVG',
     'aria-lang-toggle':  'تغيير اللغة',
     'aria-output':       'مخرجات كود ASS',
@@ -1120,6 +1129,7 @@ var I18N = {
     'ver-sub':           'SVG إلى ASS Draw v{ver} · تحويل ذكي · دقة عالية',
   },
   tr: {
+    'app.subtitle':      'SVG Vektör\'ten ASS Çizim Komutlarına · Akıllı Temizlik·Yüksek Hassasiyet·Canlı Önizleme',
     'aria-input':        'SVG Kod Girişi',
     'aria-lang-toggle':  'Dil değiştir',
     'aria-output':       'ASS Kod Çıktısı',
@@ -1180,49 +1190,48 @@ function t(key, vars) {
 function applyLang(lang) {
   currentLang = lang;
   try { localStorage.setItem('svg2ass-lang', lang); } catch(e) {}
-  var langAttrMap = {'zh': 'zh-CN', 'zh-TW': 'zh-TW', 'pt-BR': 'pt-BR'};
+  const langAttrMap = { zh: 'zh-CN', 'zh-TW': 'zh-TW', en: 'en-US', ja: 'ja', ko: 'ko', es: 'es-419', pt: 'pt-BR', ru: 'ru', ar: 'ar', tr: 'tr' };
   document.documentElement.lang = langAttrMap[lang] || lang;
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    el.textContent = t(el.getAttribute('data-i18n'));
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (el.tagName === 'INPUT' && el.type !== 'checkbox') {
+      el.placeholder = val;
+    } else {
+      el.textContent = val;
+    }
   });
-  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
     el.innerHTML = t(el.getAttribute('data-i18n-html'));
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
     el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
   });
-  document.querySelectorAll('[data-i18n-aria]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
     el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
   });
-  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
     el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
   });
 
-  var title = t('brand-title');
+  const title = t('brand-title');
   document.title = title;
-  document.querySelector('meta[name="description"]')?.setAttribute('content',
-    document.querySelector('meta[name="description"]').getAttribute('content'));
+  const descMeta = document.querySelector('meta[name="description"]');
+  if (descMeta) descMeta.setAttribute('content', descMeta.getAttribute('content'));
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
-  document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('ver-sub'));
-  var manifest = document.getElementById('pwa-manifest');
-  if (manifest) manifest.setAttribute('href', lang === 'zh' ? 'manifest.json' : 'manifest-en.json');
+  document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('app.subtitle'));
+  const manifest = document.getElementById('pwa-manifest');
+  if (manifest) manifest.setAttribute('href', currentLang === 'zh' ? 'manifest.json' : 'manifest-en.json');
 
-  var _ver = document.querySelector('meta[name="version"]');
-  var _verStr = _ver ? _ver.content : '';
-  var _vs = document.getElementById('ver-sub');
-  if (_vs) _vs.textContent = t('ver-sub').replace('{ver}', _verStr);
-  var _vf = document.getElementById('ver');
-  if (_vf) _vf.textContent = t('footer-tool').replace('{ver}', _verStr);
+  const v = document.querySelector('meta[name="version"]');
+  const verEl = document.getElementById('ver');
+  if (verEl) verEl.textContent = t('footer.tool') + (v ? ' v' + v.content : '');
 
-  var o8 = document.getElementById('opt-8x');
-  var o16 = document.getElementById('opt-16x');
-  if (o8) o8.textContent = t('opt-8x');
-  if (o16) o16.textContent = t('opt-16x');
-
-  document.querySelectorAll('#lang-menu button').forEach(function(btn) {
-    btn.classList.toggle('active', btn.id === 'lang-' + lang);
+  ['zh', 'zh-TW', 'en', 'ja', 'ko', 'es'].forEach(l => {
+    document.getElementById('lang-' + l)?.classList.toggle('active', currentLang === l);
   });
 }
+
 function toggleLangMenu() {
   var wrap = document.getElementById('lang-wrap');
   var expanded = wrap.classList.toggle('open');
