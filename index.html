@@ -10,7 +10,7 @@
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.2">
+<meta name="version" content="3.2.1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
 <meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
@@ -570,14 +570,14 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
         <div class="step-body">
           <div class="flex-gap">
             <div class="input-group">
-              <label data-i18n="label-scale">精度 Scale</label>
+              <label for="scaleFactor" data-i18n="label-scale">精度 Scale</label>
               <select id="scaleFactor" class="custom-select">
                 <option value="8" selected id="opt-8x">8x (\p4 推荐)</option>
                 <option value="16" id="opt-16x">16x (\p5 极致)</option>
               </select>
             </div>
             <div class="input-group" style="flex:1">
-              <label data-i18n="label-tags">附加标签 (Header Tags)</label>
+              <label for="extraTags" data-i18n="label-tags">附加标签 (Header Tags)</label>
               <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000" data-i18n-placeholder="placeholder-tags" placeholder="例如 \pos(960,540)">
             </div>
             <div class="input-group">
