@@ -1,5 +1,5 @@
 # SVG 转 ASS 绘图指令
-**SVG to ASS Draw · MontageSubs**
+**SVG to ASS Draw · NickCollect**
 
 <br/>
 
