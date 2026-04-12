@@ -1,6 +1,6 @@
 'use strict';
 
-const CACHE_NAME = 'svg-to-ass-v3.2.5';
+const CACHE_NAME = 'svg-to-ass-v3.2.6';
 const PRECACHE = [
   '/svg-to-ass/',
   '/svg-to-ass/index.html',
