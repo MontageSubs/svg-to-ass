@@ -52,10 +52,8 @@ SVG 转 ASS 绘图指令工具是由 @NickCollect 开发的开源浏览器端工
 
 ## 使用方法
 
-本工具完全基于浏览器运行，无需安装：
-
 1. 打开 [https://subs.js.org/svg-to-ass/](https://subs.js.org/svg-to-ass/)
-2. 将 SVG 代码粘贴到左侧输入框（步骤 1）
+2. 将 SVG 代码粘贴或上传到左侧输入框（步骤 1）
 3. 在步骤 2 中选择精度并配置附加标签，点击 **转换 Convert**
 4. 在右侧预览区确认效果，点击 **复制 Copy**，将代码粘贴到 Aegisub 字幕行即可
 
