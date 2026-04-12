@@ -46,10 +46,6 @@ Renders the converted shape instantly in the right panel. A brightness slider le
 
 Automatically prepends `\fscx1000\fscy1000` and the appropriate `\p` tag. Supports custom inline tags such as `\pos` or `\c`. The output is ready to paste directly into an Aegisub dialogue line.
 
-**Bilingual Interface (Chinese / English)**
-
-Automatically follows the browser language (Chinese environments default to Chinese, all others default to English). A toggle button in the top-right corner lets you switch at any time, and your preference is saved across sessions.
-
 ## Usage
 
 1. Open [https://subs.js.org/svg-to-ass/](https://subs.js.org/svg-to-ass/)
