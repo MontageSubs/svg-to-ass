@@ -1,11 +1,11 @@
 # SVG 转 ASS 绘图指令
-**SVG to ASS Draw Converter · MontageSubs**
+**SVG to ASS Draw · MontageSubs**
 
 <br/>
 
-> **在浏览器中将 SVG 矢量路径一键转换为 Aegisub ASS 绘图指令，无需安装任何软件。**
+> **在浏览器中将 SVG 矢量路径一键转换为 Aegisub ASS 绘图指令，所有处理均在本地进行。**
 >
-> *All processing runs locally in your browser. No files are ever uploaded to a server.*
+> *智能转换 · 高精度*
 
 <div align="right">
 
@@ -118,7 +118,8 @@ Aegisub 的绘图坐标为整数，`\p1` 模式下精度单位为 1 像素，容
 ```
 svg-to-ass/
 ├── index.html        # 工具主体（单文件，包含全部逻辑）
-├── manifest.json     # PWA 配置
+├── manifest.json     # PWA 配置 (中文)
+├── manifest-en.json  # PWA 配置 (英文)
 ├── sw.js             # Service Worker（缓存策略）
 ├── LICENSE
 ├── README.md         # 中文说明（本文件）
