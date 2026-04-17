@@ -111,14 +111,18 @@ Aegisub 的绘图坐标为整数，`\p1` 模式下精度单位为 1 像素，容
 
 ```
 svg-to-ass/
-├── index.html        # 工具主体（单文件，包含全部逻辑）
-├── manifest.json     # PWA 配置 (中文)
-├── manifest-en.json  # PWA 配置 (英文)
-├── sw.js             # Service Worker（缓存策略）
-├── LICENSE
-├── README.md         # 中文说明（本文件）
-└── README.en.md      # 英文说明
+├── app/                      # 工具主体
+│   ├── index.html            # 工具主文件
+│   ├── sw.js                 # Service Worker（缓存策略）
+│   ├── manifest.json         # PWA 配置（中文）
+│   ├── manifest-en.json      # PWA 配置（英文）
+│   ├── sitemap.xml           # 搜索引擎站点地图
+│   └── icons/                # 应用图标
+├── LICENSE                   # 许可文件
+├── README.md                 # 中文说明（本文件）
+└── README.en.md              # 英文说明
 ```
+
 
 ## 参与贡献
 

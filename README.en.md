@@ -109,13 +109,16 @@ Aegisub drawing coordinates are integers. At `\p1`, precision is limited to 1 pi
 
 ```
 svg-to-ass/
-├── index.html        # Tool (single-file, all logic included)
-├── manifest.json     # PWA manifest (Chinese)
-├── manifest-en.json  # PWA manifest (English)
-├── sw.js             # Service Worker (caching strategy)
-├── LICENSE
-├── README.md         # Chinese documentation (primary)
-└── README.en.md      # English documentation (this file)
+├── app/                      # Tool
+│   ├── index.html            # Tool main file
+│   ├── sw.js                 # Service Worker (caching strategy)
+│   ├── manifest.json         # PWA manifest (Chinese)
+│   ├── manifest-en.json      # PWA manifest (English)
+│   ├── sitemap.xml           # Sitemap for search engines
+│   └── icons/                # App icons
+├── LICENSE                   # MIT License
+├── README.md                 # Chinese documentation (primary)
+└── README.en.md              # English documentation
 ```
 
 ## Contributing
