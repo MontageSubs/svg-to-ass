@@ -1,55 +1,67 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SVG 转 ASS 绘图指令 | 蒙太奇字幕组 MontageSubs</title>
-<meta name="description" content="现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放、实时矢量预览，纯前端本地处理，无需安装。由蒙太奇字幕组 MontageSubs 开发。">
-<meta name="keywords" content="SVG转ASS,SVG to ASS,SVG2ASS,ASS绘图指令,Aegisub绘图,矢量转字幕,ASS draw,svg-to-ass,MontageSubs,蒙太奇字幕组,字幕特效,Typesetter,在线工具,贝塞尔曲线,路径转换,ASS特效,字幕制作">
-<meta name="author" content="NickCollect / MontageSubs (蒙太奇字幕组)">
+<title>SVG to ASS Draw Converter | Aegisub Drawing Commands | MontageSubs</title>
+<meta name="description" content="Free online SVG to ASS draw converter for .ass/.ssa subtitles. Convert vector graphics from Illustrator or Inkscape into ASS drawing commands. Smart data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, no installation.">
+<meta name="keywords" content="SVG to ASS draw,SVG2ASS,ASS converter,Aegisub drawing,subtitle typesetting,drawing commands,vector to ASS,ASS draw converter,subtitle effects,typesetting tool,Bezier curves,path conversion,Illustrator to Aegisub,Inkscape to ASS,online converter">
+<meta name="author" content="NickCollect / MontageSubs">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
+<link rel="alternate" hreflang="zh-CN" href="https://subs.js.org/svg-to-ass/?lang=zh">
+<link rel="alternate" hreflang="zh-TW" href="https://subs.js.org/svg-to-ass/?lang=zh-TW">
+<link rel="alternate" hreflang="en" href="https://subs.js.org/svg-to-ass/">
+<link rel="alternate" hreflang="ja" href="https://subs.js.org/svg-to-ass/?lang=ja">
+<link rel="alternate" hreflang="ko" href="https://subs.js.org/svg-to-ass/?lang=ko">
+<link rel="alternate" hreflang="es" href="https://subs.js.org/svg-to-ass/?lang=es">
+<link rel="alternate" hreflang="ru" href="https://subs.js.org/svg-to-ass/?lang=ru">
+<link rel="alternate" hreflang="pt-BR" href="https://subs.js.org/svg-to-ass/?lang=pt-BR">
+<link rel="alternate" hreflang="tr" href="https://subs.js.org/svg-to-ass/?lang=tr">
+<link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.3.1">
+<meta name="version" content="3.3.2">
 <meta property="og:type" content="website">
-<meta property="og:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
-<meta property="og:description" content="在浏览器中一键将 SVG 矢量路径转换为 Aegisub ASS 绘图指令：智能清洗、高精度缩放、实时预览，纯前端本地处理，无需安装。">
+<meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
+<meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
 <meta property="og:url" content="https://subs.js.org/svg-to-ass/">
-<meta property="og:site_name" content="MontageSubs (蒙太奇字幕组)">
-<meta property="og:locale" content="zh_CN">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SVG 转 ASS 绘图指令 · MontageSubs">
-<meta name="twitter:description" content="浏览器端 SVG 转 ASS 绘图指令：智能脏数据清洗 + 8x/16x 高精度 + 实时预览，纯前端本地处理，零服务器。">
+<meta property="og:site_name" content="MontageSubs">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SVG to ASS Draw Converter · MontageSubs">
+<meta name="twitter:description" content="Convert SVG to ASS drawing commands for subtitle typesetting. Smart cleaning, 8x/16x precision, real-time preview. Browser-based, free, no installation.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
 <link rel="manifest" href="manifest.json" id="pwa-manifest">
 <link rel="apple-touch-icon" href="icons/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="SVG转ASS">
+<meta name="apple-mobile-web-app-title" content="SVG to ASS Draw">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "SVG 转 ASS 绘图指令",
-  "alternateName": "SVG to ASS Converter",
+  "name": "SVG to ASS Draw Converter",
+  "alternateName": "SVG2ASS",
   "url": "https://subs.js.org/svg-to-ass/",
-  "description": "现代化高精度的 SVG 转 Aegisub ASS 绘图指令在线工具。智能清洗脏数据、支持 8x/16x 高精度缩放与实时矢量预览，所有处理均在本地浏览器完成，无需安装。",
+  "description": "Open-source browser-based utility for converting SVG vector paths into ASS/SSA drawing commands. Purpose-built for subtitle typesetters to import graphics from Adobe Illustrator and Inkscape. Includes intelligent data cleaning, 8x/16x precision scaling, real-time vector preview, and pure browser-based processing.",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "All",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "CNY" },
+  "inLanguage": ["en", "zh-CN", "zh-TW", "ja", "ko", "es", "ru", "pt-BR", "tr", "ar"],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": {
     "@type": "Organization",
     "name": "MontageSubs",
-    "alternateName": "蒙太奇字幕组",
     "url": "https://github.com/MontageSubs"
   },
   "featureList": [
-    "SVG 路径数据转 ASS 绘图指令",
-    "智能脏数据清洗与路径合并",
-    "8x (\\p4) 与 16x (\\p5) 高精度缩放",
-    "实时矢量效果预览",
-    "纯前端处理，文件不离开浏览器"
+    "SVG to ASS drawing commands conversion",
+    "Support for Adobe Illustrator and Inkscape exports",
+    "Intelligent data cleaning and path optimization",
+    "8x (\\p4) and 16x (\\p5) precision scaling for Aegisub",
+    "Real-time vector drawing preview",
+    "Pure browser-based processing, all data stays local"
   ]
 }
 </script>
