@@ -20,7 +20,7 @@
 <link rel="alternate" hreflang="tr" href="https://subs.js.org/svg-to-ass/?lang=tr">
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.3.4">
+<meta name="version" content="3.3.5">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -594,27 +594,27 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <noscript>
   <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--paper,#f6f5f2);z-index:9999;font-family:sans-serif;text-align:center;padding:2rem;">
     <div style="max-width:400px;">
-      <p style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;">需要启用 JavaScript · JavaScript Required</p>
-      <p style="font-size:0.9rem;color:#555;line-height:1.6;">本工具在浏览器本地运行，依赖 JavaScript 处理路径转换。请在浏览器设置中启用 JavaScript 后刷新页面。<br><br>This tool runs locally in your browser and requires JavaScript for path conversion. Please enable JavaScript in your browser settings and reload.</p>
+      <p style="font-size:1.1rem;font-weight:600;margin-bottom:0.75rem;" lang="en">JavaScript is Required</p>
+      <p style="font-size:0.9rem;color:#555;line-height:1.6;" lang="en">This tool runs locally in your browser and relies on JavaScript. Please enable JavaScript in your browser settings and reload the page.</p>
+      <p style="font-size:0.8rem;color:#aaa;line-height:1.6;margin-top:0.75rem;border-top:1px solid #ddd;padding-top:0.75rem;" lang="zh">需要启用 JavaScript，请在浏览器设置中启用后刷新页面。</p>
     </div>
   </div>
 </noscript>
 
 <header class="site-header" role="banner">
   <a href="https://subs.js.org/svg-to-ass/" class="brand-link">
-    <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
-    <h1 class="brand-title" data-i18n="brand-title">SVG 转 ASS 绘图指令</h1>
+    <span class="brand-org">MontageSubs · 蒙太奇字幕组</span>
+    <h1 class="brand-title" data-i18n="brand-title">SVG to ASS Draw</h1>
   </a>
-  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw · 智能转换 · 高精度</span>
+  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw v{ver} · Smart Convert · High Precision</span>
   <div class="header-right">
     <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none"
-      data-i18n="btn-install">安装</button>
-    <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()" data-i18n="btn-discuss">讨论</button>
-    <a href="https://subs.js.org/ass-subset/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-subset">ASS
-      子集化工具</a>
+      data-i18n="btn-install">Install</button>
+    <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()" data-i18n="btn-discuss">Discussion</button>
+    <a href="https://subs.js.org/ass-subset/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-subset">ASS Subsetter</a>
     <div class="lang-wrap" id="lang-wrap">
       <button class="btn-hdr" id="btn-lang-toggle" onclick="toggleLangMenu()"
-        data-i18n-aria="aria-lang-toggle" aria-label="切换语言" aria-haspopup="menu" aria-expanded="false">A/文</button>
+        data-i18n-aria="aria-lang-toggle" aria-label="Switch Language" aria-haspopup="menu" aria-expanded="false">A/文</button>
       <div class="lang-menu" id="lang-menu" role="menu">
         <button onclick="setLang('ar')" id="lang-ar" role="menuitem">Arabic · العربية</button>
         <button onclick="setLang('zh')" id="lang-zh" class="active" role="menuitem">Chinese Simplified · 简体中文</button>
@@ -637,54 +637,54 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
       <div class="step active step-input">
         <div class="step-head">
           <span class="step-num" aria-hidden="true">1</span>
-          <h2 class="step-title" data-i18n="step1-title">输入 SVG</h2>
+          <h2 class="step-title" data-i18n="step1-title">Input SVG</h2>
           <span class="step-subtitle" aria-hidden="true">Input Source</span>
         </div>
         <div class="step-body">
           <label class="drop-zone hidden" id="dz-svg" for="inp-svg"
-            data-i18n-aria="aria-dropzone" aria-label="上传 SVG 文件">
+            data-i18n-aria="aria-dropzone" aria-label="Upload SVG file, drag and drop or click to select">
             <div class="dz-icon" aria-hidden="true">📂</div>
-            <div class="dz-main" data-i18n="dz-main">拖拽 SVG 文件到此，或点击选择</div>
-            <div class="dz-hint" data-i18n="dz-hint">.svg 格式</div>
+            <div class="dz-main" data-i18n="dz-main">Drag SVG file here, or click to select</div>
+            <div class="dz-hint" data-i18n="dz-hint">.svg format</div>
           </label>
           <input type="file" id="inp-svg" accept=".svg,image/svg+xml" class="file-input-hidden"
-            aria-label="选择 SVG 文件">
+            aria-label="Select SVG file">
           <div class="input-toolbar">
-            <button class="btn-hdr" id="btn-paste" onclick="pasteFromClipboard()" data-i18n="btn-paste">粘贴</button>
-            <button class="btn-hdr" id="btn-upload-svg" onclick="triggerSvgUpload()" data-i18n="btn-upload">上传文件</button>
-            <button class="btn-hdr" id="btn-clear-input" onclick="clearInput()" style="display:none" data-i18n="btn-clear">清除</button>
+            <button class="btn-hdr" id="btn-paste" onclick="pasteFromClipboard()" data-i18n="btn-paste">Paste</button>
+            <button class="btn-hdr" id="btn-upload-svg" onclick="triggerSvgUpload()" data-i18n="btn-upload">Upload File</button>
+            <button class="btn-hdr" id="btn-clear-input" onclick="clearInput()" style="display:none" data-i18n="btn-clear">Clear</button>
           </div>
           <div id="input-source-hint" class="input-source-hint hidden" aria-live="polite"></div>
-          <textarea id="svgInput" class="custom-textarea" data-i18n-aria="aria-input" aria-label="SVG 代码输入"
+          <textarea id="svgInput" class="custom-textarea" data-i18n-aria="aria-input" aria-label="SVG Code Input"
             data-i18n-placeholder="placeholder-input"
-            placeholder="在此粘贴 SVG 代码..."></textarea>
+            placeholder="Paste SVG code here..."></textarea>
         </div>
       </div>
 
       <div class="step active step-settings">
         <div class="step-head">
           <span class="step-num" aria-hidden="true">2</span>
-          <h2 class="step-title" data-i18n="step2-title">转换设置</h2>
+          <h2 class="step-title" data-i18n="step2-title">Settings</h2>
           <span class="step-subtitle" aria-hidden="true">Settings</span>
         </div>
         <div class="step-body">
           <div class="flex-gap">
             <div class="input-group">
-              <label for="scaleFactor" data-i18n="label-scale">精度 Scale</label>
-              <select id="scaleFactor" class="custom-select" aria-label="精度选择">
-                <option value="8" selected id="opt-8x">8x (\p4 推荐)</option>
-                <option value="16" id="opt-16x">16x (\p5 极致)</option>
+              <label for="scaleFactor" data-i18n="label-scale">Precision (Scale)</label>
+              <select id="scaleFactor" class="custom-select" aria-label="Precision selection">
+                <option value="8" selected id="opt-8x">8x (\\p4 Recommended)</option>
+                <option value="16" id="opt-16x">16x (\\p5 Maximum)</option>
               </select>
             </div>
             <div class="input-group" style="flex:1">
-              <label for="extraTags" data-i18n="label-tags">附加标签 (Header Tags)</label>
+              <label for="extraTags" data-i18n="label-tags">Extra Tags (Header Tags)</label>
               <input type="text" id="extraTags" class="custom-input" value="\fscx1000\fscy1000"
-                data-i18n-placeholder="placeholder-tags" placeholder="例如 \pos(960,540)"
-                aria-label="附加标签">
+                data-i18n-placeholder="placeholder-tags" placeholder="e.g. \\pos(960,540)"
+                aria-label="Extra Tags">
             </div>
             <div class="input-group">
               <button id="btnConvert" class="btn btn-primary" style="height: 34px;" data-i18n="btn-convert"
-                aria-label="开始转换">转换</button>
+                aria-label="Start conversion">Convert</button>
             </div>
           </div>
         </div>
@@ -695,34 +695,34 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
       <div class="step active step-result">
         <div class="step-head">
           <span class="step-num" aria-hidden="true">3</span>
-          <h2 class="step-title" data-i18n="step3-title">结果与预览</h2>
+          <h2 class="step-title" data-i18n="step3-title">Result & Preview</h2>
           <span class="step-subtitle" aria-hidden="true">Result &amp; Preview</span>
         </div>
         <div class="step-body">
           <div class="result-header">
-            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-output">ASS 代码输出</span>
+            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-output">ASS Output</span>
             <div style="display:flex;gap:0.4rem;">
-              <button id="btnCopy" class="btn-hdr" data-i18n="btn-copy" aria-label="复制 ASS 代码">复制</button>
+              <button id="btnCopy" class="btn-hdr" data-i18n="btn-copy" aria-label="Copy ASS code">Copy</button>
             </div>
           </div>
           <textarea id="assOutput" class="custom-textarea" readonly
             data-i18n-placeholder="placeholder-output"
-            data-i18n-aria="aria-output" aria-label="ASS 代码输出框"
+            data-i18n-aria="aria-output" aria-label="ASS Code Output"
             aria-live="polite" aria-atomic="true"
-            placeholder="等待转换..."></textarea>
+            placeholder="Waiting for conversion..."></textarea>
           <div class="result-header mt2">
-            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-preview">效果预览</span>
+            <span style="font-size: 0.85rem; font-weight: 600;" data-i18n="label-preview">Preview</span>
             <div class="slider-group">
-              <label for="bgSlider" data-i18n="label-bg">背景亮度:</label>
+              <label for="bgSlider" data-i18n="label-bg">Background:</label>
               <input type="range" min="0" max="100" value="90" id="bgSlider"
-                data-i18n-title="bg-title" title="调整预览背景亮度以适配不同颜色的形状"
-                aria-label="预览背景亮度">
+                data-i18n-title="bg-title" title="Adjust preview background brightness for different shape colors"
+                aria-label="Preview background brightness">
             </div>
           </div>
           <div class="preview-box">
             <div id="previewBg" aria-hidden="true"></div>
             <svg id="svgPreview" class="preview-svg" role="img"
-              data-i18n-aria="aria-preview" aria-label="矢量路径预览">
+              data-i18n-aria="aria-preview" aria-label="Vector path preview">
               <path id="assPath" fill="#3d4150" fill-opacity="0.9" stroke="#c0392b" stroke-width="1.5"
                 stroke-linecap="round" style="vector-effect:non-scaling-stroke"/>
             </svg>
@@ -736,38 +736,37 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <div id="discuss-section" class="hidden">
-  <div class="discuss-header" data-i18n="discuss-header">讨论 · Discussion</div>
-  <div id="discuss-loading" data-i18n="discuss-loading">加载中…</div>
+  <div class="discuss-header" data-i18n="discuss-header">Discussion</div>
+  <div id="discuss-loading" data-i18n="discuss-loading">Loading…</div>
 </div>
-
 <footer class="site-footer" role="contentinfo">
   <div class="footer-left">
-    <nav class="footer-nav" aria-label="外部链接">
-      <a href="https://subs.js.org/" target="_blank" rel="noopener" data-i18n="footer-home">主页</a>
+    <nav class="footer-nav" aria-label="External links">
+      <a href="https://subs.js.org/" target="_blank" rel="noopener" data-i18n="footer-home">Home</a>
       <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://t.me/s/MTSubs" target="_blank" rel="noopener">Telegram</a>
       <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://github.com/MontageSubs" target="_blank" rel="noopener">GitHub</a>
       <span class="footer-sep" aria-hidden="true">|</span>
-      <a href="https://weibo.com/u/8358891788" target="_blank" rel="noopener">微博</a>
+      <a href="https://weibo.com/u/8358891788" target="_blank" rel="noopener">Weibo</a>
       <span class="footer-sep" aria-hidden="true">|</span>
       <a href="https://bsky.app/profile/montagesubs.bsky.social" target="_blank" rel="noopener">BlueSky</a>
     </nav>
     <div class="footer-brand">
-      <span class="footer-org" data-i18n="footer-org">蒙太奇字幕组 · MontageSubs</span>
-      <span class="footer-slogan" data-i18n="footer-slogan">用爱发电 ❤️ Powered by Love</span>
+      <span class="footer-org" data-i18n="footer-org">MontageSubs · 蒙太奇字幕组</span>
+      <span class="footer-slogan" data-i18n="footer-slogan">Powered by Love ❤️ 用爱发电</span>
     </div>
   </div>
   <div class="footer-right">
     <div class="footer-line" id="footer-license" data-i18n-html="footer-license-html">
-      以 <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> 开源 · 作者 <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>
+      Open source under <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Author <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>
     </div>
-    <div class="footer-line"><span id="ver">SVG 转 ASS 绘图指令 (svg-to-ass)</span></div>
+    <div class="footer-line"><span id="ver">SVG to ASS Draw (svg-to-ass) v{ver}</span></div>
     <div class="footer-btns">
-      <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn" data-i18n="footer-feedback">反馈</a>
+      <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn" data-i18n="footer-feedback">Report Issue</a>
       <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">
         <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;fill:currentColor;flex-shrink:0" aria-hidden="true"><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8"/></svg>
-        <span data-i18n="footer-source">查看源代码</span>
+        <span data-i18n="footer-source">Source Code</span>
       </a>
     </div>
   </div>
@@ -954,7 +953,7 @@ var I18N = {
     'label-bg':            'Background:',
     'label-output':        'ASS Output',
     'label-preview':       'Preview',
-    'label-scale':         'Precision',
+    'label-scale':         'Precision (Scale)',
     'label-tags':          'Extra Tags (Header Tags)',
     'opt-16x':             '16x (\\p5 Maximum)',
     'opt-8x':              '8x (\\p4 Recommended)',
