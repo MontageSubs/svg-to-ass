@@ -1,11 +1,9 @@
 'use strict';
 
-const CACHE_NAME = 'svg-to-ass-v3.3.6';
+const CACHE_NAME = 'svg-to-ass-v3.4';
 const PRECACHE = [
   '/svg-to-ass/',
   '/svg-to-ass/index.html',
-  '/svg-to-ass/manifest.json',
-  '/svg-to-ass/manifest-en.json',
 ];
 
 self.addEventListener('install', e => {

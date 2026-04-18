@@ -1,0 +1,31 @@
+{
+  "name": "SVG 轉 ASS 繪圖指令",
+  "short_name": "SVG轉ASS",
+  "description": "現代化高精度的 SVG 矢量圖形轉 ASS 字幕繪圖指令線上工具。智慧處理、高精度縮放、即時預覽，純前端本地處理。",
+  "start_url": "/svg-to-ass/",
+  "scope": "/svg-to-ass/",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#c0392b",
+  "lang": "zh-TW",
+  "icons": [
+    {
+      "src": "/svg-to-ass/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

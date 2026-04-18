@@ -1,0 +1,31 @@
+{
+  "name": "SVG a ASS Conversor de Dibujo",
+  "short_name": "SVG a ASS",
+  "description": "Conversor en línea moderno y de alta precisión que transforma vectores SVG en comandos de dibujo ASS.",
+  "start_url": "/svg-to-ass/",
+  "scope": "/svg-to-ass/",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#c0392b",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/svg-to-ass/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

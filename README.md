@@ -114,8 +114,7 @@ svg-to-ass/
 ├── app/                      # 工具主体
 │   ├── index.html            # 工具主文件
 │   ├── sw.js                 # Service Worker（缓存策略）
-│   ├── manifest.json         # PWA 配置（中文）
-│   ├── manifest-en.json      # PWA 配置（英文）
+│   ├── manifests/            # PWA 配置（10 种语言）
 │   ├── sitemap.xml           # 搜索引擎站点地图
 │   └── icons/                # 应用图标
 ├── LICENSE                   # 许可文件

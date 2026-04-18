@@ -9,7 +9,7 @@
 <meta name="author" content="NickCollect / MontageSubs">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://subs.js.org/svg-to-ass/">
-<link rel="alternate" hreflang="zh-CN" href="https://subs.js.org/svg-to-ass/?lang=zh">
+<link rel="alternate" hreflang="zh-CN" href="https://subs.js.org/svg-to-ass/?lang=zh-CN">
 <link rel="alternate" hreflang="zh-TW" href="https://subs.js.org/svg-to-ass/?lang=zh-TW">
 <link rel="alternate" hreflang="en" href="https://subs.js.org/svg-to-ass/">
 <link rel="alternate" hreflang="ja" href="https://subs.js.org/svg-to-ass/?lang=ja">
@@ -20,7 +20,7 @@
 <link rel="alternate" hreflang="tr" href="https://subs.js.org/svg-to-ass/?lang=tr">
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.3.6">
+<meta name="version" content="3.4.3">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -33,7 +33,7 @@
 <meta name="twitter:description" content="Convert SVG to ASS drawing commands for subtitle typesetting. Smart cleaning, 8x/16x precision, real-time preview. Browser-based, free, no installation.">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6f5f2">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#13151c">
-<link rel="manifest" href="manifest.json" id="pwa-manifest">
+<link rel="manifest" href="manifests/manifest.json" id="pwa-manifest">
 <link rel="apple-touch-icon" href="icons/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -619,7 +619,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
         data-i18n-aria="aria-lang-toggle" aria-label="Switch Language" aria-haspopup="menu" aria-expanded="false">A/文</button>
       <div class="lang-menu" id="lang-menu" role="menu">
         <button onclick="setLang('ar')" id="lang-ar" role="menuitem">Arabic · العربية</button>
-        <button onclick="setLang('zh')" id="lang-zh" class="active" role="menuitem">Chinese Simplified · 简体中文</button>
+        <button onclick="setLang('zh-CN')" id="lang-zh-CN" class="active" role="menuitem">Chinese Simplified · 简体中文</button>
         <button onclick="setLang('zh-TW')" id="lang-zh-TW" role="menuitem">Chinese Traditional · 繁體中文</button>
         <button onclick="setLang('en')" id="lang-en" role="menuitem">English</button>
         <button onclick="setLang('ja')" id="lang-ja" role="menuitem">Japanese · 日本語</button>
@@ -777,31 +777,53 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <script>
 'use strict';
 
-var currentLang = 'zh';
+var currentLang = 'en';
 
 (function() {
-  var saved = null;
-  try { saved = localStorage.getItem('svg2ass-lang'); } catch(e) {}
-  if (saved && ({ar:1,zh:1,'zh-TW':1,en:1,ja:1,ko:1,'pt-BR':1,ru:1,es:1,tr:1})[saved]) {
-    currentLang = saved;
-  } else {
-    var nav = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
-    if (nav.startsWith('zh-tw') || nav.startsWith('zh-hk') || nav.startsWith('zh-mo')) currentLang = 'zh-TW';
-    else if (nav.startsWith('zh')) currentLang = 'zh';
-    else if (nav.startsWith('en')) currentLang = 'en';
-    else if (nav.startsWith('ja')) currentLang = 'ja';
-    else if (nav.startsWith('ko')) currentLang = 'ko';
-    else if (nav.startsWith('ru')) currentLang = 'ru';
-    else if (nav.startsWith('es')) currentLang = 'es';
-    else if (nav.startsWith('pt')) currentLang = 'pt-BR';
-    else if (nav.startsWith('ar')) currentLang = 'ar';
-    else if (nav.startsWith('tr')) currentLang = 'tr';
-    else currentLang = 'en';
+  function normalizeLang(raw) {
+    var s = (raw || '').toLowerCase().trim();
+    if (!s) return null;
+    if (s === 'zh-tw' || s === 'zh-hk' || s === 'zh-mo') return 'zh-CN' === s ? 'zh-CN' : (s === 'zh-tw' ? 'zh-TW' : 'zh-TW');
+    if (s.startsWith('zh-tw')) return 'zh-TW';
+    if (s.startsWith('zh-hk') || s.startsWith('zh-mo')) return 'zh-TW';
+    if (s.startsWith('zh')) return 'zh-CN';
+    if (s.startsWith('en')) return 'en';
+    if (s.startsWith('ja')) return 'ja';
+    if (s.startsWith('ko')) return 'ko';
+    if (s.startsWith('ru')) return 'ru';
+    if (s.startsWith('es')) return 'es';
+    if (s.startsWith('pt')) return 'pt-BR';
+    if (s.startsWith('ar')) return 'ar';
+    if (s.startsWith('tr')) return 'tr';
+    return null;
   }
+
+  var VALID = {'ar':1,'zh-CN':1,'zh-TW':1,'en':1,'ja':1,'ko':1,'pt-BR':1,'ru':1,'es':1,'tr':1};
+
+  try {
+    var urlLang = new URLSearchParams(window.location.search).get('lang');
+    if (urlLang) {
+      var normalized = normalizeLang(urlLang);
+      if (normalized && VALID[normalized]) {
+        currentLang = normalized;
+        try { localStorage.setItem('svg2ass-lang', normalized); } catch(e) {}
+        return;
+      }
+    }
+  } catch(e) {}
+
+  try {
+    var saved = localStorage.getItem('svg2ass-lang');
+    if (saved && VALID[saved]) { currentLang = saved; return; }
+  } catch(e) {}
+
+  var nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
+  var detected = normalizeLang(nav);
+  currentLang = detected || 'en';
 })();
 
 var I18N = {
-  zh: {
+  'zh-CN': {
     'app.subtitle':        'SVG矢量转ASS绘图指令 · 智能清洗·高精度缩放·实时预览',
     'aria-input':          'SVG 代码输入',
     'aria-lang-toggle':    '切换语言',
@@ -1394,7 +1416,7 @@ var I18N = {
 };
 
 function t(key, vars) {
-  var str = (I18N[currentLang] && I18N[currentLang][key]) || (I18N['zh'][key]) || key;
+  var str = (I18N[currentLang] && I18N[currentLang][key]) || (I18N['en'][key]) || key;
   if (vars) {
     Object.keys(vars).forEach(function(k) { str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]); });
   }
@@ -1404,7 +1426,7 @@ function t(key, vars) {
 function applyLang(lang) {
   currentLang = lang;
   try { localStorage.setItem('svg2ass-lang', lang); } catch(e) {}
-  const langAttrMap = { zh: 'zh-CN', 'zh-TW': 'zh-TW', 'pt-BR': 'pt-BR', en: 'en-US', ja: 'ja', ko: 'ko', es: 'es-419', ru: 'ru', ar: 'ar', tr: 'tr' };
+  const langAttrMap = { 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'pt-BR': 'pt-BR', en: 'en', ja: 'ja', ko: 'ko', es: 'es', ru: 'ru', ar: 'ar', tr: 'tr' };
   document.documentElement.lang = langAttrMap[lang] || lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     const val = t(el.getAttribute('data-i18n'));
@@ -1432,7 +1454,10 @@ function applyLang(lang) {
   document.querySelector('meta[property="og:title"]')?.setAttribute('content', title);
   document.querySelector('meta[property="og:description"]')?.setAttribute('content', t('app.subtitle'));
   const manifest = document.getElementById('pwa-manifest');
-  if (manifest) manifest.setAttribute('href', lang === 'zh' ? 'manifest.json' : 'manifest-en.json');
+  if (manifest) {
+    var _mLangs = {'zh-CN':'manifests/manifest-zh-CN.json','zh-TW':'manifests/manifest-zh-TW.json','ja':'manifests/manifest-ja.json','ko':'manifests/manifest-ko.json','es':'manifests/manifest-es.json','pt-BR':'manifests/manifest-pt-BR.json','ru':'manifests/manifest-ru.json','ar':'manifests/manifest-ar.json','tr':'manifests/manifest-tr.json'};
+    manifest.setAttribute('href', _mLangs[lang] || 'manifests/manifest.json');
+  }
 
   const _ver = document.querySelector('meta[name="version"]');
   const _verStr = _ver ? _ver.content : '';
@@ -1462,6 +1487,9 @@ function setLang(lang) {
   var wrap = document.getElementById('lang-wrap');
   wrap.classList.remove('open');
   document.getElementById('btn-lang-toggle').setAttribute('aria-expanded', 'false');
+  var params = new URLSearchParams(window.location.search);
+  params.set('lang', lang);
+  window.history.replaceState({}, document.title, window.location.pathname + '?' + params.toString());
 }
 
 var discussLoaded = false;
@@ -1482,8 +1510,8 @@ function loadDiscuss() {
   script.setAttribute('data-reactions-enabled', '0');
   script.setAttribute('data-emit-metadata', '0');
   script.setAttribute('data-theme', theme);
-  var langMap = {'ar': 'ar', 'zh': 'zh-CN', 'zh-TW': 'zh-TW', 'en': 'en', 'ja': 'ja', 'ko': 'ko', 'pt-BR': 'pt-BR', 'ru': 'ru', 'es': 'es', 'tr': 'tr'};
-  script.setAttribute('data-lang', langMap[currentLang] || 'zh-CN');
+  var langMap = {'ar': 'ar', 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'en': 'en', 'ja': 'ja', 'ko': 'ko', 'pt-BR': 'pt-BR', 'ru': 'ru', 'es': 'es', 'tr': 'tr'};
+  script.setAttribute('data-lang', langMap[currentLang] || 'en');
   script.crossOrigin = 'anonymous';
   script.async = true;
   script.onload = function() {

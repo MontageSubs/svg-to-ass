@@ -1,0 +1,31 @@
+{
+  "name": "SVG to ASS 드로잉 변환기",
+  "short_name": "SVG→ASS",
+  "description": "SVG 벡터를 ASS 드로잉 명령으로 변환하는 현대적인 고정밀 온라인 도구.",
+  "start_url": "/svg-to-ass/",
+  "scope": "/svg-to-ass/",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#c0392b",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/svg-to-ass/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

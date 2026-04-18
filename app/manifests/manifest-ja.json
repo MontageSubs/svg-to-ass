@@ -1,0 +1,31 @@
+{
+  "name": "SVG to ASS 描画コマンド変換",
+  "short_name": "SVG→ASS",
+  "description": "SVG ベクターを ASS 描画コマンドに変換するモダンな高精度オンラインツール。",
+  "start_url": "/svg-to-ass/",
+  "scope": "/svg-to-ass/",
+  "display": "standalone",
+  "background_color": "#f6f5f2",
+  "theme_color": "#c0392b",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/svg-to-ass/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/svg-to-ass/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

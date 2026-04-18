@@ -112,8 +112,7 @@ svg-to-ass/
 ├── app/                      # Tool
 │   ├── index.html            # Tool main file
 │   ├── sw.js                 # Service Worker (caching strategy)
-│   ├── manifest.json         # PWA manifest (Chinese)
-│   ├── manifest-en.json      # PWA manifest (English)
+│   ├── manifests/            # PWA manifests (10 languages)
 │   ├── sitemap.xml           # Sitemap for search engines
 │   └── icons/                # App icons
 ├── LICENSE                   # MIT License
