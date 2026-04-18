@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SVG to ASS Draw Converter | MontageSubs</title>
+<title>SVG to ASS Draw Converter - Subtitle Tool - MontageSubs</title>
 <meta name="description" content="Free online SVG to ASS draw converter. Transform vector graphics into drawing commands with smart data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, no installation.">
 <meta name="keywords" content="SVG to ASS draw,SVG2ASS,ASS converter,Aegisub drawing,subtitle typesetting,drawing commands,vector to ASS,ASS draw converter,subtitle effects,typesetting tool,Bezier curves,path conversion,Illustrator to Aegisub,Inkscape to ASS,online converter">
 <meta name="author" content="NickCollect / MontageSubs">
@@ -20,7 +20,7 @@
 <link rel="alternate" hreflang="tr" href="https://subs.js.org/svg-to-ass/?lang=tr">
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.3.5">
+<meta name="version" content="3.3.6">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -38,6 +38,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="SVG to ASS Draw">
+<meta name="google-site-verification" content="hJciUXV_ZwOwu21CfQ8PPxBa_JzIhWjc_g7ygsBfO64" />
+<meta name="msvalidate.01" content="24124C73924AE5FCC1EDCECA2EC8D023" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -604,9 +606,9 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
 <header class="site-header" role="banner">
   <a href="https://subs.js.org/svg-to-ass/" class="brand-link">
     <span class="brand-org">MontageSubs · 蒙太奇字幕组</span>
-    <h1 class="brand-title" data-i18n="brand-title">SVG to ASS Draw</h1>
+    <h1 class="brand-title" data-i18n="brand-title">SVG to ASS Draw Converter</h1>
   </a>
-  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw v{ver} · Smart Convert · High Precision</span>
+  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw Converter v{ver} · Smart Convert · High Precision</span>
   <div class="header-right">
     <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none"
       data-i18n="btn-install">Install</button>
@@ -761,7 +763,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <div class="footer-line" id="footer-license" data-i18n-html="footer-license-html">
       Open source under <a href="https://github.com/MontageSubs/svg-to-ass/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a> · Author <a href="https://github.com/NickCollect" target="_blank" rel="noopener">NickCollect</a>
     </div>
-    <div class="footer-line"><span id="ver">SVG to ASS Draw (svg-to-ass) v{ver}</span></div>
+    <div class="footer-line"><span id="ver">SVG to ASS Draw Converter (svg-to-ass) v{ver}</span></div>
     <div class="footer-btns">
       <a href="https://github.com/MontageSubs/svg-to-ass/issues" target="_blank" rel="noopener" class="footer-btn" data-i18n="footer-feedback">Report Issue</a>
       <a href="https://github.com/MontageSubs/svg-to-ass" target="_blank" rel="noopener" class="footer-btn">
@@ -856,7 +858,7 @@ var I18N = {
     'toast-read-fail':     '读取文件失败',
     'toast-success':       '转换成功！',
     'toast-too-large':     '输入过大（>{size}KB），转换可能导致页面卡顿',
-    'ver-sub':             'SVG to ASS Draw v{ver} · 智能转换 · 高精度',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 智能转换 · 高精度',
   },
   'zh-TW': {
     'app.subtitle':        'SVG向量轉ASS繪圖指令 · 智慧清洗·高精度縮放·即時預覽',
@@ -915,7 +917,7 @@ var I18N = {
     'toast-read-fail':     '讀取檔案失敗',
     'toast-success':       '轉換成功！',
     'toast-too-large':     '輸入過大（>{size}KB），轉換可能導致頁面卡頓',
-    'ver-sub':             'SVG to ASS Draw v{ver} · 智慧轉換 · 高精度',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 智慧轉換 · 高精度',
   },
   en: {
     'app.subtitle':        'SVG Vector to ASS Drawing Commands · Smart Clean · High Precision · Live Preview',
@@ -925,7 +927,7 @@ var I18N = {
     'aria-preview':        'Vector path preview',
     'aria-dropzone':       'Upload SVG file, drag and drop or click to select',
     'bg-title':            'Adjust preview background brightness for different shape colors',
-    'brand-title':         'SVG to ASS Draw',
+    'brand-title':         'SVG to ASS Draw Converter',
     'btn-clear':           'Clear',
     'btn-convert':         'Convert',
     'btn-copy':            'Copy',
@@ -947,7 +949,7 @@ var I18N = {
     'footer-org':          'MontageSubs · 蒙太奇字幕组',
     'footer-slogan':       'Powered by Love ❤️ 用爱发电',
     'footer-source':       'Source Code',
-    'footer-tool':         'SVG to ASS Draw (svg-to-ass) v{ver}',
+    'footer-tool':         'SVG to ASS Draw Converter (svg-to-ass) v{ver}',
     'hint-paste':          'Content pasted (re-paste or upload file to change)',
     'hint-upload':         'File uploaded: {name}',
     'label-bg':            'Background:',
@@ -974,7 +976,7 @@ var I18N = {
     'toast-read-fail':     'Failed to read file',
     'toast-success':       'Conversion successful!',
     'toast-too-large':     'Input too large (>{size}KB), conversion may freeze the page',
-    'ver-sub':             'SVG to ASS Draw v{ver} · Smart Convert · High Precision',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · Smart Convert · High Precision',
   },
   ja: {
     'app.subtitle':        'SVGベクター→ASS描画コマンド · スマートクリーニング・高精度・リアルタイムプレビュー',
@@ -1033,7 +1035,7 @@ var I18N = {
     'toast-read-fail':     'ファイルの読み込みに失敗しました',
     'toast-success':       '変換成功！',
     'toast-too-large':     '入力が大きすぎます（>{size}KB）、変換でページがフリーズする可能性があります',
-    'ver-sub':             'SVG to ASS Draw v{ver} · スマート変換 · 高精度',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · スマート変換 · 高精度',
   },
   ko: {
     'app.subtitle':        'SVG 벡터→ASS 드로우 명령어 · 스마트 클리닝·고정밀·실시간 미리보기',
@@ -1092,7 +1094,7 @@ var I18N = {
     'toast-read-fail':     '파일 읽기 실패',
     'toast-success':       '변환 성공！',
     'toast-too-large':     '입력이 너무 큽니다 (>{size}KB), 변환 시 페이지가 멈출 수 있습니다',
-    'ver-sub':             'SVG to ASS Draw v{ver} · 스마트 변환 · 고정밀',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 스마트 변환 · 고정밀',
   },
   es: {
     'app.subtitle':        'SVG Vector a Comandos de Dibujo ASS · Limpieza Inteligente·Alta Precisión·Vista Previa en Vivo',
@@ -1387,7 +1389,7 @@ var I18N = {
     'toast-read-fail':     'Dosya okunamadı',
     'toast-success':       'Dönüştürme başarılı!',
     'toast-too-large':     'Girdi çok büyük (>{size}KB), dönüştürme sayfayı dondurabilir',
-    'ver-sub':             'SVG to ASS Draw v{ver} · Akıllı Dönüştürme · Yüksek Hassasiyet',
+    'ver-sub':             'SVG to ASS Draw Converter v{ver} · Akıllı Dönüştürme · Yüksek Hassasiyet',
   },
 };
 
