@@ -6,7 +6,7 @@
 
 <div align="right">
 
-**中文 | [English](./README.md)**
+**中文 | [English](./README.en.md)**
 
 </div><br/>
 
@@ -116,9 +116,10 @@ svg-to-ass/
 │   ├── manifests/            # PWA 配置（10 种语言）
 │   ├── sitemap.xml           # 搜索引擎站点地图
 │   └── icons/                # 应用图标
-├── LICENSE                   # MIT 许可证
 ├── README.md                 # 中文说明（本文件）
-└── README.en.md              # 英文说明
+├── README.en.md              # 英文说明
+├── CHANGELOG.md              # 中英双语更新日志
+└── LICENSE                   # MIT 许可证
 ```
 
 ## 本地化
