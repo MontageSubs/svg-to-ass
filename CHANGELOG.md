@@ -1,5 +1,23 @@
 # Changelog | 更新日志
 
+## v3.4
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- 完善多语言支持（10 种语言）和 PWA 离线
+- 优化元数据
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- Enhanced multi-language support (10 languages) and improved PWA offline functionality
+- Optimized metadata
+
+</details>
+
 ## v3.3
 
 <details>
