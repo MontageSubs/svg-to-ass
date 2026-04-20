@@ -110,15 +110,16 @@ ASS/SSA subtitle drawing coordinates are integers. At `\p1` mode, precision is l
 
 ```
 svg-to-ass/
-├── app/                      # Tool application
-│   ├── index.html            # Tool main file
+├── app/                      # Application source code
+│   ├── index.html            # Main application file
 │   ├── sw.js                 # Service Worker (caching strategy)
-│   ├── manifests/            # PWA manifests (10 languages)
-│   ├── sitemap.xml           # Sitemap for search engines
-│   └── icons/                # App icons
-├── LICENSE                   # MIT License
-├── README.md                 # Chinese documentation
-└── README.en.md              # English documentation (this file)
+│   ├── manifests/            # PWA configuration (10 languages)
+│   ├── sitemap.xml           # Search engine sitemap
+│   └── icons/                # Application icons
+├── README.md                 # Documentation in Chinese
+├── README.en.md              # Documentation in English (this file)
+├── CHANGELOG.md              # Change log (Bilingual)
+└── LICENSE                   # MIT License
 ```
 
 ## Localization
