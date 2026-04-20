@@ -34,7 +34,7 @@ For typesetters, importing vector graphics (logos, geometric patterns, fine icon
 ## Features
 
 ### Smart Path Extraction and Data Cleaning
-Paste or upload SVG code. The tool automatically parses and cleans all shape elements, precisely extracting vector path data without requiring manual source code modification.
+Paste or upload SVG, the tool automatically parses the graphic structure, intelligently identifies boundaries and paths, precisely extracts vector information.
 
 ### High-Precision Coordinate Scaling
 Provides **8x** (`\p4`) and **16x** (`\p5`) high-precision modes. By pre-scaling coordinates, the tool fundamentally solves the jagged-edge problem in ASS/SSA `\p1` mode caused by limited integer precision, making converted shapes smoother and more refined.
@@ -145,7 +145,7 @@ Join the discussion in [Issues](https://github.com/MontageSubs/svg-to-ass/issues
 <summary><strong>Core Team</strong></summary>
 
 - **NickCollect** ([@NickCollect](https://github.com/NickCollect)) — Lead developer, core algorithms, frontend interaction design
-- **小P** ([@mtsubs](https://github.com/mtsubs)) — Frontend UI development
+- **Meow P** ([@mtsubs](https://github.com/mtsubs)) — Frontend UI development
 
 </details>
 
