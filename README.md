@@ -19,7 +19,7 @@
 
 ## 概述
 
-**SVG 转 ASS 绘图指令工具** 是由 NickCollect 开发的开源浏览器工具，用于将 SVG 矢量图形路径一键转换为 Aegisub ASS `\p` 绘图指令代码。
+**SVG 转 ASS 绘图指令工具** 是由 [@NickCollect](https://github.com/NickCollect) 开发的开源浏览器工具，用于将 SVG 矢量图形路径一键转换为 Aegisub ASS `\p` 绘图指令代码。
 
 对于字幕特效师（Typesetter）而言，将矢量图形（Logo、几何图案、精细图标等）从 Adobe Illustrator 或 Inkscape 导入 ASS/SSA 字幕历来是一个繁琐的环节。传统流程依赖古老插件，不仅安装麻烦，还面临精度丢失、图形锯齿等问题。本工具提供一个**无需安装、打开即用**的现代化替代方案，支持高精度转换与实时预览，让复杂矢量特效制作变得简单直观。所有处理均在浏览器本地完成，输入数据不离开用户设备。
 
@@ -145,7 +145,7 @@ svg-to-ass/
 <summary><strong>核心团队</strong></summary>
 
 - **NickCollect** ([@NickCollect](https://github.com/NickCollect)) — 项目首席开发者，核心算法与前端交互设计
-- **小P** ([@mtsubs](https://github.com/mtsubs)) — 前端 UI 开发
+- **小p** ([@mtsubs](https://github.com/mtsubs)) — 前端 UI 开发
 
 </details>
 
