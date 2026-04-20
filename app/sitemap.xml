@@ -2,20 +2,20 @@
 <urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="https://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://subs.js.org/ass-subset/</loc>
+    <loc>https://subs.js.org/svg-to-ass/</loc>
     <lastmod>2026-04-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://subs.js.org/ass-subset/?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://subs.js.org/ass-subset/?lang=zh-CN"/>
-    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://subs.js.org/ass-subset/?lang=zh-TW"/>
-    <xhtml:link rel="alternate" hreflang="ja" href="https://subs.js.org/ass-subset/?lang=ja"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://subs.js.org/ass-subset/?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://subs.js.org/ass-subset/?lang=es"/>
-    <xhtml:link rel="alternate" hreflang="ru" href="https://subs.js.org/ass-subset/?lang=ru"/>
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://subs.js.org/ass-subset/?lang=pt-BR"/>
-    <xhtml:link rel="alternate" hreflang="tr" href="https://subs.js.org/ass-subset/?lang=tr"/>
-    <xhtml:link rel="alternate" hreflang="ar" href="https://subs.js.org/ass-subset/?lang=ar"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://subs.js.org/ass-subset/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://subs.js.org/svg-to-ass/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://subs.js.org/svg-to-ass/?lang=zh-CN"/>
+    <xhtml:link rel="alternate" hreflang="zh-TW" href="https://subs.js.org/svg-to-ass/?lang=zh-TW"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://subs.js.org/svg-to-ass/?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://subs.js.org/svg-to-ass/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://subs.js.org/svg-to-ass/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://subs.js.org/svg-to-ass/?lang=ru"/>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://subs.js.org/svg-to-ass/?lang=pt-BR"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://subs.js.org/svg-to-ass/?lang=tr"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/"/>
   </url>
 </urlset>
