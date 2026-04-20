@@ -19,7 +19,7 @@
 
 ## Overview
 
-**SVG to ASS Draw Converter** is an open-source, browser-based tool developed by NickCollect for converting SVG vector graphics into ASS/SSA `\p` drawing command code.
+**SVG to ASS Draw Converter** is an open-source, browser-based tool developed by [@NickCollect](https://github.com/NickCollect) for converting SVG vector graphics into ASS/SSA `\p` drawing command code.
 
 For typesetters, importing vector graphics (logos, geometric patterns, fine icons, etc.) from Adobe Illustrator or Inkscape into ASS/SSA subtitles has historically been a tedious workflow. Traditional solutions relied on outdated plugins that are difficult to install and prone to precision loss and jagged edges. This tool provides a **modern, install-free alternative** that runs entirely in the browser, supporting high-precision conversion and real-time preview, making complex vector effects creation simple and intuitive. All processing happens locally — your input data never leaves your device.
 
