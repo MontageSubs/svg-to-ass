@@ -1,11 +1,8 @@
 # SVG to ASS Draw Converter
-**Powered by Love ❤️ NickCollect**
 
-<br/>
+**SVG to ASS Draw Converter · Vector Graphics in One Click**
 
-> **Convert SVG vector paths into Aegisub ASS drawing commands, entirely in your browser — all processing happens locally.**
->
-> *Smart Convert · High Precision*
+> Convert SVG vector graphics into ASS/SSA subtitle format drawing commands in your browser — all processing happens locally.
 
 <div align="right">
 
@@ -22,44 +19,49 @@
 
 ## Overview
 
-The SVG to ASS Draw Converter is an open-source, browser-based utility developed by @NickCollect for converting SVG vector paths into Aegisub ASS `\p` drawing command code.
+**SVG to ASS Draw Converter** is an open-source, browser-based tool developed by NickCollect for converting SVG vector graphics into ASS/SSA `\p` drawing command code.
 
-For typesetters, importing vector graphics (logos, geometric patterns, etc.) from Adobe Illustrator or Inkscape into Aegisub has historically been a tedious workflow. Traditional solutions relied on outdated plugins that are difficult to install and prone to precision loss and jagged edges. This tool provides a modern, install-free alternative that runs entirely in the browser.
+For typesetters, importing vector graphics (logos, geometric patterns, fine icons, etc.) from Adobe Illustrator or Inkscape into ASS/SSA subtitles has historically been a tedious workflow. Traditional solutions relied on outdated plugins that are difficult to install and prone to precision loss and jagged edges. This tool provides a **modern, install-free alternative** that runs entirely in the browser, supporting high-precision conversion and real-time preview, making complex vector effects creation simple and intuitive. All processing happens locally — your input data never leaves your device.
 
-Everything processes locally. Your inputs stay on your device.
+## Core Features
+
+- **Process Directly in Browser** — All conversions run locally, supporting offline use, protecting privacy, no additional software installation required.
+- **Multi-Format Input Support** — Paste SVG code, individual path data, or upload `.svg` files. Intelligently parses `<path>`, `<circle>`, `<rect>`, and other shape elements.
+- **High-Precision Coordinate Scaling** — Offers 8x (`\p4`) and 16x (`\p5`) high-precision modes, fundamentally solving the jagged-edge problem in ASS/SSA `\p1` mode caused by limited integer precision.
+- **Real-Time Vector Preview** — Renders converted shapes instantly on the right panel with an adjustable brightness slider. Works equally well for black and white graphics to find optimal viewing contrast.
+- **One-Click ASS Command Generation** — Automatically prepends `\fscx1000\fscy1000` and precision tags, supports custom inline tags like `\pos`, `\c`, `\fs`. Ready to copy and paste directly into ASS/SSA subtitles.
 
 ## Features
 
-**Smart Path Extraction and Dirty-Data Cleaning**
+### Smart Path Extraction and Data Cleaning
+Paste or upload SVG code. The tool automatically parses and cleans all shape elements, precisely extracting vector path data without requiring manual source code modification.
 
-Paste or upload SVG code. The tool automatically parses multiple shape elements including `<path>`, `<circle>`, `<rect>`, and more.
+### High-Precision Coordinate Scaling
+Provides **8x** (`\p4`) and **16x** (`\p5`) high-precision modes. By pre-scaling coordinates, the tool fundamentally solves the jagged-edge problem in ASS/SSA `\p1` mode caused by limited integer precision, making converted shapes smoother and more refined.
 
-**High-Precision Coordinate Scaling**
+### Real-Time Vector Preview
+Instantly renders converted shapes on the right panel with an adjustable brightness slider. Whether your graphics are pure black or pure white, you can find the optimal viewing contrast to ensure results match expectations.
 
-Offers two high-precision modes: 8x (`\p4`) and 16x (`\p5`). By pre-scaling coordinates before conversion, the tool eliminates the jagged edges that occur with small shapes in Aegisub's `\p1` mode, where integer precision is limited to one pixel.
+### Flexible Tag Customization
+Automatically generates `\fscx1000\fscy1000` and other precision tags, supports custom inline tags like `\pos`, `\c`, `\fs`. Copy the output and paste directly into ASS/SSA subtitle lines — no further adjustments needed.
 
-**Real-Time Vector Preview**
-
-Renders the converted shape instantly in the right panel. A brightness slider lets you adjust the preview background to suit both dark and light-colored graphics.
-
-**Automatic ASS Header Generation**
-
-Automatically prepends `\fscx1000\fscy1000` and the appropriate `\p` tag. Supports custom inline tags such as `\pos` or `\c`. The output is ready to paste directly into an Aegisub dialogue line.
+### Multiple Input Format Support
+- Complete SVG source code (with DOCTYPE and styles)
+- Individual path elements or raw path commands
+- Direct `.svg` file upload
 
 ## Usage
 
 1. Open [https://subs.js.org/svg-to-ass/](https://subs.js.org/svg-to-ass/)
 2. Paste or upload SVG code into the left input panel (Step 1)
-3. Choose precision and configure extra tags in Step 2, then click **Convert**
-4. Check the preview on the right, then click **Copy** and paste the result into Aegisub
-
----
+3. Choose precision and configure additional tags in Step 2, then click **Convert**
+4. Review the preview on the right, then click **Copy** and paste into your ASS/SSA subtitle
 
 ## Supported Input Formats
 
-**SVG Standard Code**
+### SVG Standard Code
 
-Paste complete SVG source code. Supports various shape elements (path, circle, rect, etc.):
+Paste complete SVG source code supporting various shape elements (path, circle, rect, etc.):
 
 ```svg
 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +70,7 @@ Paste complete SVG source code. Supports various shape elements (path, circle, r
 </svg>
 ```
 
-**SVG Path Data**
+### SVG Path Data
 
 Single path element or raw path commands:
 
@@ -76,95 +78,76 @@ Single path element or raw path commands:
 <path d="M 50 2 C 76.5 2 98 23.5 98 50 C 98 76.5 76.5 98 50 98 Z"/>
 ```
 
+Or input path directly:
+
 ```
 M 50 2 C 76.5 2 98 23.5 98 50 C 98 76.5 76.5 98 50 98 Z
 ```
 
-**Upload SVG File**
+### Upload SVG File
 
 Upload a `.svg` file directly. The tool automatically reads and processes it.
 
-
----
-
-## Precision Modes
+## Precision Explanation
 
 | Mode | Scale | ASS Tag | Use Case |
 |------|-------|---------|----------|
-| 8x | ×8 | `\p4` | Recommended — balances precision and output length |
-| 16x | ×16 | `\p5` | Very small shapes or cases requiring maximum precision |
+| **8x** | ×8 | `\p4` | **Recommended** — balances precision and output length |
+| **16x** | ×16 | `\p5` | Very small shapes or cases requiring maximum precision |
 
-Aegisub drawing coordinates are integers. At `\p1`, precision is limited to 1 pixel per unit, which causes jagged edges on small shapes. High-precision mode pre-scales coordinates so the effective resolution is much finer, resulting in smoother curves.
-
----
+ASS/SSA subtitle drawing coordinates are integers. At `\p1` mode, precision is limited to 1 pixel per unit, causing jagged edges on small shapes. High-precision mode pre-scales coordinates so the effective resolution is much finer, resulting in smoother curves.
 
 ## Tech Stack
 
-- Pure HTML5 & CSS3
-- Vanilla JavaScript (ES6+)
-- Native math (Bézier curve and elliptical arc conversion)
-- No backend — 100% local browser processing
+| Technology | Description |
+|-----------|-------------|
+| **HTML5 & CSS3** | Page structure and styling |
+| **Vanilla JavaScript (ES6+)** | Core logic, zero external dependencies |
+| **Native Math Calculations** | Bézier curve and elliptical arc conversion |
+| **Local Browser Processing** | 100% client-side, no backend services |
 
 ## Repository Structure
 
 ```
 svg-to-ass/
-├── app/                      # Tool
+├── app/                      # Tool application
 │   ├── index.html            # Tool main file
 │   ├── sw.js                 # Service Worker (caching strategy)
 │   ├── manifests/            # PWA manifests (10 languages)
 │   ├── sitemap.xml           # Sitemap for search engines
 │   └── icons/                # App icons
 ├── LICENSE                   # MIT License
-├── README.md                 # Chinese documentation (primary)
-└── README.en.md              # English documentation
+├── README.md                 # Chinese documentation
+└── README.en.md              # English documentation (this file)
 ```
+
+## Localization
+
+This tool fully supports **Chinese and English**, and also supports Spanish, Portuguese, Russian, Japanese, Korean, Arabic, Turkish, and more.
+
+If you find translation errors or would like to help improve other languages, please share your suggestions in [Issues](https://github.com/MontageSubs/svg-to-ass/issues) or [Discussions](https://github.com/MontageSubs/svg-to-ass/discussions). Community contributions are welcome!
 
 ## Contributing
 
-Contributions of all kinds are welcome:
+Contributions of all kinds are welcome, including but not limited to:
 
-- Submit bug reports or feature requests via [Issues](https://github.com/MontageSubs/svg-to-ass/issues)
-- Share usage tips or engage in technical discussion via [Discussions](https://github.com/MontageSubs/svg-to-ass/discussions)
-- Submit a Pull Request to improve code or documentation
+- **Feature Development** — New features, bug fixes, performance optimization, compatibility improvements
+- **Documentation** — Improve README, add usage guides, write tutorials and best practices
+- **Internationalization** — Translation improvements, new language support, localization optimization
+- **Feedback & Suggestions** — Bug reports, feature requests, user experience feedback
+- **Promotion & Sharing** — Recommend to friends, share on social media, write usage reviews
 
-## Changelog
+Join the discussion in [Issues](https://github.com/MontageSubs/svg-to-ass/issues) and [Discussions](https://github.com/MontageSubs/svg-to-ass/discussions). We'd love to have you!
 
-### v3.3
-- Support pasting full SVG code and uploading SVG files
-- Support parsing multiple shape elements like circle and rect
+### Contributors
 
-### v3.2
-- UI interface improvements
-- Added multi-language support
+<details>
+<summary><strong>Core Team</strong></summary>
 
-### v3.1
-- Added bilingual interface (Chinese / English): automatically follows the browser language, with a manual toggle button in the top-right corner; preference is saved to localStorage across sessions
-- Full i18n coverage: all UI text, placeholders, toast messages, error strings, and the Giscus discussion language update on switch
-- Implemented as a lightweight i18n engine using `data-i18n` attributes and a `t()` helper function — no external dependencies, single-file architecture unchanged
+- **NickCollect** ([@NickCollect](https://github.com/NickCollect)) — Lead developer, core algorithms, frontend interaction design
+- **小P** ([@mtsubs](https://github.com/mtsubs)) — Frontend UI development
 
-### v3.0.1
-- Fixed silent zero-fill on missing path arguments: truncated path data (e.g. a `C` command with two arguments instead of six) previously filled missing values with `0`, producing incorrect output without any warning. The parser now throws a descriptive error immediately, e.g. `路径数据不完整：命令 "C" 缺少参数`
-- Fixed multi-line `d` attribute extraction: paths exported by Illustrator, Inkscape, or AI tools often span multiple lines inside the `d` attribute. The previous regex `[^"']+` did not match newline characters, silently dropping entire paths. Changed to `[\s\S]*?` to handle multi-line values correctly
-- Fixed `M` command incorrectly influencing preview bounding box: `moveto` does not render geometry and should not affect `viewBox` computation. When a path began with a distant `M`, the preview shape appeared unnecessarily scaled down
-- Fixed preview stroke becoming invisible on large-coordinate SVGs: replaced fixed `stroke-width="1"` with `vector-effect: non-scaling-stroke` so the stroke remains visible at any coordinate scale
-- Fixed arc segments silently disappearing at near-zero angles: added `Math.max(1, ...)` guard to `arcToBezier` segment count to prevent floating-point precision from producing zero iterations
-- Fixed background brightness slider missing accessible label association: added `for="bgSlider"` to the `<label>` element so screen readers correctly identify the control
-- Removed unreachable dead code from precision tag map: `\p1` and `\p3` entries were never reachable from the UI and have been removed
-
-### v3.0
-- Fixed inaccurate preview bounding box: viewBox was previously computed from Bézier control points rather than actual curve extrema, causing shapes to appear incorrectly scaled or offset in the preview. Now uses derivative roots for precise bounds
-- Fixed silent NaN propagation in `S`/`T` commands caused by uninitialized control point variables
-- Fixed copy button API priority: now correctly prefers `navigator.clipboard`, with deprecated `document.execCommand` as a legacy fallback
-- Fixed icon MIME type declaration (`image/jpeg` → `image/png`)
-- Refactored path parser `switch` block: replaced all `var` with `let`/`const` inside explicit block scopes, eliminating cross-case variable hoisting issues
-- Moved toast timer ID from a DOM property to a closure variable
-- Added input size guard (>500 KB) to warn users before synchronous processing may block the main thread
-
-### v2.9
-- Initial public release
-
----
+</details>
 
 ## License
 
