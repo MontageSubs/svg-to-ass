@@ -157,7 +157,7 @@
 
 <div align="center">
 
-**Made with ❤️ | 用爱打造**
+**Made with ❤️ 用爱打造**
 
 </div>
 
