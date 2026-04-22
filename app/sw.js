@@ -1,15 +1,17 @@
 'use strict';
 
-const CACHE_NAME = 'svg-to-ass-v3.4.4';
+const CACHE_NAME = 'svg-to-ass-v3.4.5';
 const PRECACHE = [
+  '/svg-to-ass',
   '/svg-to-ass/',
   '/svg-to-ass/index.html',
+  '/svg-to-ass/sw.js'
 ];
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_NAME)
-      .then(c => c.addAll(PRECACHE))
+      .then(c => Promise.all(PRECACHE.map(p => c.add(p).catch(() => {}))))
       .then(() => self.skipWaiting())
   );
 });
@@ -26,15 +28,27 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  if (e.request.mode === 'navigate' || (e.request.headers.get('accept') || '').includes('text/html')) {
+    e.respondWith(
+      caches.open(CACHE_NAME).then(cache =>
+        cache.match('/svg-to-ass/index.html').then(cachedIndex => {
+          fetch('/svg-to-ass/index.html').then(resp => {
+            if (resp && resp.status === 200) cache.put('/svg-to-ass/index.html', resp.clone());
+          }).catch(() => {});
+          return cachedIndex || fetch(e.request);
+        })
+      )
+    );
+    return;
+  }
   if (!e.request.url.includes('/svg-to-ass/')) return;
-
   e.respondWith(
     caches.open(CACHE_NAME).then(cache =>
       cache.match(e.request).then(cached => {
         const fetchPromise = fetch(e.request).then(resp => {
           if (resp && resp.status === 200) cache.put(e.request, resp.clone());
           return resp;
-        }).catch(() => {});
+        }).catch(() => undefined);
         return cached || fetchPromise;
       })
     )
