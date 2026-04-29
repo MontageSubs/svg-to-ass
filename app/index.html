@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.4.7">
+<meta name="version" content="3.4.8">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -609,7 +609,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <span class="brand-org">蒙太奇字幕组 · MontageSubs</span>
     <h1 class="brand-title" data-i18n="brand-title">SVG to ASS Draw Converter</h1>
   </a>
-  <span class="sub" id="ver-sub" aria-hidden="true">SVG to ASS Draw Converter v{ver} · Smart Convert · High Precision</span>
+  <span class="sub" id="ver-sub" aria-hidden="true">Smart Convert · High Precision</span>
   <div class="header-right">
     <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none"
       data-i18n="btn-install">Install</button>
@@ -675,8 +675,11 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
             <div class="input-group">
               <label for="scaleFactor" data-i18n="label-scale">Precision (Scale)</label>
               <select id="scaleFactor" class="custom-select" aria-label="Precision selection">
-                <option value="8" selected id="opt-8x">8x (\\p4 Recommended)</option>
-                <option value="16" id="opt-16x">16x (\\p5 Maximum)</option>
+                <option value="1" id="opt-1x">1x (\p1)</option>
+                <option value="2" id="opt-2x">2x (\p2)</option>
+                <option value="4" id="opt-4x">4x (\p3)</option>
+                <option value="8" selected id="opt-8x">8x (\p4 Recommended)</option>
+                <option value="16" id="opt-16x">16x (\p5 Maximum)</option>
               </select>
             </div>
             <div class="input-group" style="flex:1">
@@ -863,6 +866,9 @@ var I18N = {
     'label-scale':         '精度 Scale',
     'label-tags':          '附加标签 (Header Tags)',
     'opt-16x':             '16x (\\p5 极致)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 推荐)',
     'placeholder-input':   '在此粘贴 SVG 代码...',
     'placeholder-output':  '等待转换...',
@@ -881,7 +887,7 @@ var I18N = {
     'toast-read-fail':     '读取文件失败',
     'toast-success':       '转换成功！',
     'toast-too-large':     '输入过大（>{size}KB），转换可能导致页面卡顿',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 智能转换 · 高精度',
+    'ver-sub':             '智能转换 · 高精度',
   },
   'zh-TW': {
     'app.subtitle':        'SVG向量轉ASS繪圖指令 · 智慧清洗·高精度縮放·即時預覽',
@@ -922,6 +928,9 @@ var I18N = {
     'label-scale':         '精度 Scale',
     'label-tags':          '附加標籤 (Header Tags)',
     'opt-16x':             '16x (\\p5 極致)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 推薦)',
     'placeholder-input':   '在此貼上 SVG 代碼...',
     'placeholder-output':  '等待轉換...',
@@ -940,7 +949,7 @@ var I18N = {
     'toast-read-fail':     '讀取檔案失敗',
     'toast-success':       '轉換成功！',
     'toast-too-large':     '輸入過大（>{size}KB），轉換可能導致頁面卡頓',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 智慧轉換 · 高精度',
+    'ver-sub':             '智慧轉換 · 高精度',
   },
   en: {
     'app.subtitle':        'SVG Vector to ASS Drawing Commands · Smart Clean · High Precision · Live Preview',
@@ -981,6 +990,9 @@ var I18N = {
     'label-scale':         'Precision (Scale)',
     'label-tags':          'Extra Tags (Header Tags)',
     'opt-16x':             '16x (\\p5 Maximum)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 Recommended)',
     'placeholder-input':   'Paste SVG code here...',
     'placeholder-output':  'Waiting for conversion...',
@@ -999,7 +1011,7 @@ var I18N = {
     'toast-read-fail':     'Failed to read file',
     'toast-success':       'Conversion successful!',
     'toast-too-large':     'Input too large (>{size}KB), conversion may freeze the page',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · Smart Convert · High Precision',
+    'ver-sub':             'Smart Convert · High Precision',
   },
   ja: {
     'app.subtitle':        'SVGベクター→ASS描画コマンド · スマートクリーニング・高精度・リアルタイムプレビュー',
@@ -1040,6 +1052,9 @@ var I18N = {
     'label-scale':         '精度',
     'label-tags':          '追加タグ (Header Tags)',
     'opt-16x':             '16x (\\p5 最高精度)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 推奨)',
     'placeholder-input':   'ここにSVGコードを貼り付けてください...',
     'placeholder-output':  '変換待機中...',
@@ -1058,7 +1073,7 @@ var I18N = {
     'toast-read-fail':     'ファイルの読み込みに失敗しました',
     'toast-success':       '変換成功！',
     'toast-too-large':     '入力が大きすぎます（>{size}KB）、変換でページがフリーズする可能性があります',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · スマート変換 · 高精度',
+    'ver-sub':             'スマート変換 · 高精度',
   },
   ko: {
     'app.subtitle':        'SVG 벡터→ASS 드로우 명령어 · 스마트 클리닝·고정밀·실시간 미리보기',
@@ -1099,6 +1114,9 @@ var I18N = {
     'label-scale':         '정밀도',
     'label-tags':          '추가 태그 (Header Tags)',
     'opt-16x':             '16x (\\p5 최고 정밀)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 권장)',
     'placeholder-input':   '여기에 SVG 코드를 붙여넣으세요...',
     'placeholder-output':  '변환 대기 중...',
@@ -1117,7 +1135,7 @@ var I18N = {
     'toast-read-fail':     '파일 읽기 실패',
     'toast-success':       '변환 성공！',
     'toast-too-large':     '입력이 너무 큽니다 (>{size}KB), 변환 시 페이지가 멈출 수 있습니다',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · 스마트 변환 · 고정밀',
+    'ver-sub':             '스마트 변환 · 고정밀',
   },
   es: {
     'app.subtitle':        'SVG Vector a Comandos de Dibujo ASS · Limpieza Inteligente·Alta Precisión·Vista Previa en Vivo',
@@ -1158,6 +1176,9 @@ var I18N = {
     'label-scale':         'Precisión',
     'label-tags':          'Etiquetas adicionales (Header Tags)',
     'opt-16x':             '16x (\\p5 Máximo)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 Recomendado)',
     'placeholder-input':   'Pega el código SVG aquí...',
     'placeholder-output':  'Esperando conversión...',
@@ -1176,7 +1197,7 @@ var I18N = {
     'toast-read-fail':     'Error al leer el archivo',
     'toast-success':       '¡Conversión exitosa!',
     'toast-too-large':     'Entrada muy grande (>{size}KB), la conversión puede congelar la página',
-    'ver-sub':             'SVG a ASS Draw v{ver} · Conversión Inteligente · Alta Precisión',
+    'ver-sub':             'Conversión Inteligente · Alta Precisión',
   },
   'pt-BR': {
     'app.subtitle':        'SVG Vetor para Comandos de Desenho ASS · Limpeza Inteligente·Alta Precisão·Pré-visualização em Tempo Real',
@@ -1217,6 +1238,9 @@ var I18N = {
     'label-scale':         'Precisão',
     'label-tags':          'Tags extras (Header Tags)',
     'opt-16x':             '16x (\\p5 Máximo)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 Recomendado)',
     'placeholder-input':   'Cole o código SVG aqui...',
     'placeholder-output':  'Aguardando conversão...',
@@ -1235,7 +1259,7 @@ var I18N = {
     'toast-read-fail':     'Falha ao ler o arquivo',
     'toast-success':       'Conversão bem-sucedida!',
     'toast-too-large':     'Entrada muito grande (>{size}KB), a conversão pode travar a página',
-    'ver-sub':             'SVG para ASS Draw v{ver} · Conversão Inteligente · Alta Precisão',
+    'ver-sub':             'Conversão Inteligente · Alta Precisão',
   },
   ru: {
     'app.subtitle':        'SVG Вектор в Команды Рисования ASS · Умная Очистка·Высокая Точность·Предпросмотр в Реальном Времени',
@@ -1276,6 +1300,9 @@ var I18N = {
     'label-scale':         'Точность',
     'label-tags':          'Дополнительные теги (Header Tags)',
     'opt-16x':             '16x (\\p5 Максимум)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 Рекомендуется)',
     'placeholder-input':   'Вставьте SVG-код сюда...',
     'placeholder-output':  'Ожидание конвертации...',
@@ -1294,7 +1321,7 @@ var I18N = {
     'toast-read-fail':     'Ошибка чтения файла',
     'toast-success':       'Конвертация успешна!',
     'toast-too-large':     'Слишком большой ввод (>{size}КБ), конвертация может зависнуть страницу',
-    'ver-sub':             'SVG в ASS Draw v{ver} · Умная конвертация · Высокая точность',
+    'ver-sub':             'Умная конвертация · Высокая точность',
   },
   ar: {
     'app.subtitle':        'SVG متجه إلى أوامر رسم ASS · تنظيف ذكي·دقة عالية·معاينة مباشرة',
@@ -1335,6 +1362,9 @@ var I18N = {
     'label-scale':         'الدقة',
     'label-tags':          'وسوم إضافية (Header Tags)',
     'opt-16x':             '16x (\\p5 أقصى دقة)',
+    'opt-1x':              '1x (\\p1)',
+    'opt-2x':              '2x (\\p2)',
+    'opt-4x':              '4x (\\p3)',
     'opt-8x':              '8x (\\p4 موصى به)',
     'placeholder-input':   '...الصق كود SVG هنا',
     'placeholder-output':  '...في انتظار التحويل',
@@ -1353,7 +1383,7 @@ var I18N = {
     'toast-read-fail':     'فشل قراءة الملف',
     'toast-success':       'تم التحويل بنجاح!',
     'toast-too-large':     'الإدخال كبير جداً (>{size}كيلوبايت)، قد يتجمّد المتصفح أثناء التحويل',
-    'ver-sub':             'SVG إلى ASS Draw v{ver} · تحويل ذكي · دقة عالية',
+    'ver-sub':             'تحويل ذكي · دقة عالية',
   },
   tr: {
     'app.subtitle':        'SVG Vektör\'ten ASS Çizim Komutlarına · Akıllı Temizlik·Yüksek Hassasiyet·Canlı Önizleme',
@@ -1412,7 +1442,7 @@ var I18N = {
     'toast-read-fail':     'Dosya okunamadı',
     'toast-success':       'Dönüştürme başarılı!',
     'toast-too-large':     'Girdi çok büyük (>{size}KB), dönüştürme sayfayı dondurabilir',
-    'ver-sub':             'SVG to ASS Draw Converter v{ver} · Akıllı Dönüştürme · Yüksek Hassasiyet',
+    'ver-sub':             'Akıllı Dönüştürme · Yüksek Hassasiyet',
   },
 };
 
@@ -1460,17 +1490,24 @@ function applyLang(lang) {
     manifest.setAttribute('href', _mLangs[lang] || 'manifests/manifest.json');
   }
 
+  const _vs = document.getElementById('ver-sub');
+  if (_vs) _vs.textContent = t('ver-sub');
   const _ver = document.querySelector('meta[name="version"]');
   const _verStr = _ver ? _ver.content : '';
-  const _vs = document.getElementById('ver-sub');
-  if (_vs) _vs.textContent = t('ver-sub').replace('{ver}', _verStr);
   const _vf = document.getElementById('ver');
   if (_vf) _vf.textContent = t('footer-tool').replace('{ver}', _verStr);
 
-  const o8 = document.getElementById('opt-8x');
-  const o16 = document.getElementById('opt-16x');
-  if (o8) o8.textContent = t('opt-8x');
-  if (o16) o16.textContent = t('opt-16x');
+  ['1x', '2x', '4x', '8x', '16x'].forEach(function(val) {
+    const el = document.getElementById('opt-' + val);
+    if (el) el.textContent = t('opt-' + val);
+  });
+
+  if (_inputSource) {
+    var _hint = document.getElementById('input-source-hint');
+    if (_hint) {
+      _hint.textContent = _inputSource === 'paste' ? t('hint-paste') : t('hint-upload', {name: _inputFileName});
+    }
+  }
 
   document.querySelectorAll('#lang-menu button').forEach(function(btn) {
     btn.classList.toggle('active', btn.id === 'lang-' + lang);
@@ -1541,6 +1578,7 @@ document.getElementById('bgSlider').addEventListener('input', function(e) {
 });
 
 var _inputSource = null;
+var _inputFileName = '';
 
 function updateInputHint(source, fileName) {
   var hint = document.getElementById('input-source-hint');
@@ -1553,17 +1591,21 @@ function updateInputHint(source, fileName) {
     return;
   }
   _inputSource = source;
+  _inputFileName = fileName || '';
   if (source === 'paste') {
     hint.textContent = t('hint-paste');
   } else {
-    hint.textContent = t('hint-upload', {name: fileName || ''});
+    hint.textContent = t('hint-upload', {name: _inputFileName});
   }
   hint.classList.remove('hidden');
   clearBtn.style.display = 'inline-flex';
 }
 
 function clearInput() {
-  document.getElementById('svgInput').value = '';
+  var input = document.getElementById('svgInput');
+  input.focus();
+  input.select();
+  document.execCommand('insertText', false, '');
   document.getElementById('inp-svg').value = '';
   updateInputHint(null);
 }
@@ -1576,7 +1618,10 @@ function pasteFromClipboard() {
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.readText().then(function(text) {
       if (text) {
-        document.getElementById('svgInput').value = text;
+        var input = document.getElementById('svgInput');
+        input.focus();
+        input.select();
+        document.execCommand('insertText', false, text);
         updateInputHint('paste');
       } else {
         showToast(t('toast-no-input'), 'warn');
@@ -1602,7 +1647,10 @@ document.getElementById('inp-svg').addEventListener('change', function() {
   if (!file) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    document.getElementById('svgInput').value = e.target.result;
+    var input = document.getElementById('svgInput');
+    input.focus();
+    input.select();
+    document.execCommand('insertText', false, e.target.result);
     updateInputHint('upload', file.name);
   };
   reader.onerror = function() {
@@ -2031,7 +2079,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var vb = (minX - padding) + " " + (minY - padding) + " " + (w + padding*2) + " " + (h + padding*2);
             document.getElementById('svgPreview').setAttribute('viewBox', vb);
 
-            var pMap = {8:'\\p4', 16:'\\p5'};
+            var pMap = {1:'\\p1', 2:'\\p2', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
             var pTag = pMap[scale] || '\\p1';
             var head = "{" + extraTags + pTag + "}";
             document.getElementById('assOutput').value = head + assStr.trim() + "{\\p0}";
