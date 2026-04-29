@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.4.8">
+<meta name="version" content="3.4.9">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -1685,6 +1685,11 @@ dzSvg.addEventListener('drop', function(e) {
 
 document.addEventListener('DOMContentLoaded', function() {
   applyLang(currentLang);
+
+  document.getElementById('svgInput').value = '';
+  document.getElementById('assOutput').value = '';
+  document.getElementById('inp-svg').value = '';
+  updateInputHint(null);
 
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('lang-wrap');
