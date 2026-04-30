@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.4.11">
+<meta name="version" content="3.4.12">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -1673,7 +1673,6 @@ document.getElementById('inp-svg').addEventListener('change', function() {
 
 document.addEventListener('DOMContentLoaded', function() {
   applyLang(currentLang);
-
   document.getElementById('svgInput').value = '';
   document.getElementById('assOutput').value = '';
   document.getElementById('inp-svg').value = '';
@@ -1759,7 +1758,6 @@ document.addEventListener('DOMContentLoaded', function() {
             while (this.index < this.tokens.length) {
                 var prevIndex = this.index;
                 var token = this.tokens[this.index];
-
                 if (this.isCommand(token)) {
                     currentCommand = token;
                     this.index++;
@@ -1767,11 +1765,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (currentCommand === 'M') currentCommand = 'L';
                     if (currentCommand === 'm') currentCommand = 'l';
                 }
-
                 var cmds = this.processCommand(currentCommand);
                 if (cmds) commands.push(...cmds);
                 this.lastCommand = currentCommand;
-
                 if (this.index === prevIndex) {
                     this.index++;
                 }
@@ -1863,65 +1859,40 @@ document.addEventListener('DOMContentLoaded', function() {
         var paths = [];
         var hasBasicShapes = false;
 
-        var parseSingleTransform = function(str) {
-            var m = [1,0,0,1,0,0];
-            var t = str.trim();
-            var mm;
-            if ((mm = t.match(/^matrix\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
-                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
-                if (v.length === 6) return [v[0],v[1],v[2],v[3],v[4],v[5]];
-            } else if ((mm = t.match(/^translate\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
-                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
-                m[4] = v[0] || 0; m[5] = v[1] || 0;
-            } else if ((mm = t.match(/^scale\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
-                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
-                m[0] = v[0] || 1; m[3] = v.length > 1 ? v[1] : m[0];
-            } else if ((mm = t.match(/^rotate\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
-                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
-                var a = (v[0] || 0) * Math.PI / 180;
-                var cos = Math.cos(a), sin = Math.sin(a);
-                var cx = v[1] || 0, cy = v[2] || 0;
-                m = [cos, sin, -sin, cos, cx - cos*cx + sin*cy, cy + sin*cx - cos*cy];
-            } else if ((mm = t.match(/^skewX\s*\(\s*([\d.,eE+\-]+)\s*\)$/))) {
-                m[2] = Math.tan((parseFloat(mm[1]) || 0) * Math.PI / 180);
-            } else if ((mm = t.match(/^skewY\s*\(\s*([\d.,eE+\-]+)\s*\)$/))) {
-                m[1] = Math.tan((parseFloat(mm[1]) || 0) * Math.PI / 180);
+        var getElementMatrix = function(el) {
+            var m = new DOMMatrix();
+            var svgNode = doc.documentElement;
+            var vb = svgNode.getAttribute('viewBox');
+            var hasMatrix = false;
+            
+            if (vb) {
+                var p = vb.trim().split(/[\s,]+/).map(Number);
+                if (p.length >= 2 && (p[0] !== 0 || p[1] !== 0)) {
+                    m.translateSelf(-p[0], -p[1]);
+                    hasMatrix = true;
+                }
             }
+            
+            var tList = [];
+            var curr = el;
+            while (curr && curr.nodeType === 1) {
+                var t = curr.getAttribute('transform');
+                if (t && t.trim()) tList.push(t);
+                if (curr === svgNode) break;
+                curr = curr.parentNode;
+            }
+            
+            if (tList.length > 0) hasMatrix = true;
+            if (!hasMatrix) return null;
+            
+            tList.reverse().forEach(function(t) {
+                try { m.multiplySelf(new DOMMatrix(t)); } catch(e) {}
+            });
             return m;
         };
 
-        var multiplyMatrix = function(a, b) {
-            return [
-                a[0]*b[0] + a[2]*b[1],
-                a[1]*b[0] + a[3]*b[1],
-                a[0]*b[2] + a[2]*b[3],
-                a[1]*b[2] + a[3]*b[3],
-                a[0]*b[4] + a[2]*b[5] + a[4],
-                a[1]*b[4] + a[3]*b[5] + a[5]
-            ];
-        };
-
-        var getElementMatrix = function(el) {
-            var matrices = [];
-            var node = el;
-            while (node && node !== doc.documentElement) {
-                var attr = node.getAttribute && node.getAttribute('transform');
-                if (attr && attr.trim()) {
-                    var parts = attr.trim().match(/\w+\s*\([^)]*\)/g) || [];
-                    for (var i = parts.length - 1; i >= 0; i--) {
-                        matrices.unshift(parseSingleTransform(parts[i]));
-                    }
-                }
-                node = node.parentNode;
-            }
-            if (matrices.length === 0) return null;
-            var result = [1,0,0,1,0,0];
-            for (var i = 0; i < matrices.length; i++) result = multiplyMatrix(result, matrices[i]);
-            return result;
-        };
-
         var applyMatrix = function(m, x, y) {
-            return { x: m[0]*x + m[2]*y + m[4], y: m[1]*x + m[3]*y + m[5] };
+            return { x: m.a*x + m.c*y + m.e, y: m.b*x + m.d*y + m.f };
         };
 
         var transformD = function(d, m) {
@@ -2055,7 +2026,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function extractPathData(htmlStr) {
         if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return { pathData: htmlStr, hasBasicShapes: false, count: 1 };
-
         var result = basicShapesToPaths(htmlStr);
         if (result) {
             if (result.hasBasicShapes) {
@@ -2065,7 +2035,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             return result;
         }
-
         var matches = [];
         var regex = /\bd\s*=\s*["']([\s\S]*?)["']/gi;
         var match;
@@ -2074,7 +2043,6 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast(t('toast-merged', {n: matches.length}), 'success');
             return { pathData: matches.join(' '), hasBasicShapes: false, count: matches.length };
         }
-
         throw new Error(t('err-no-path'));
     }
 
@@ -2131,15 +2099,8 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             var assStr = "";
-            var pPrec = {1: 6, 2: 5, 4: 4, 8: 0, 16: 0};
-            var prec = pPrec[scale] !== undefined ? pPrec[scale] : 0;
             var f = function(n) {
-                if (prec === 0) return String(Math.round(n * scale));
-                var s = (n * scale).toFixed(prec);
-                if (s.indexOf('.') !== -1) {
-                    s = s.replace(/\.?0+$/, '');
-                }
-                return s;
+                return Number((n * scale).toFixed(3)).toString();
             };
             var penX = 0, penY = 0;
 
