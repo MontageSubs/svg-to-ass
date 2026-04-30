@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.4.10">
+<meta name="version" content="3.4.11">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -1863,15 +1863,94 @@ document.addEventListener('DOMContentLoaded', function() {
         var paths = [];
         var hasBasicShapes = false;
 
+        var parseSingleTransform = function(str) {
+            var m = [1,0,0,1,0,0];
+            var t = str.trim();
+            var mm;
+            if ((mm = t.match(/^matrix\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
+                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
+                if (v.length === 6) return [v[0],v[1],v[2],v[3],v[4],v[5]];
+            } else if ((mm = t.match(/^translate\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
+                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
+                m[4] = v[0] || 0; m[5] = v[1] || 0;
+            } else if ((mm = t.match(/^scale\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
+                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
+                m[0] = v[0] || 1; m[3] = v.length > 1 ? v[1] : m[0];
+            } else if ((mm = t.match(/^rotate\s*\(\s*([\d\s.,eE+\-]+)\s*\)$/))) {
+                var v = mm[1].trim().split(/[\s,]+/).map(parseFloat);
+                var a = (v[0] || 0) * Math.PI / 180;
+                var cos = Math.cos(a), sin = Math.sin(a);
+                var cx = v[1] || 0, cy = v[2] || 0;
+                m = [cos, sin, -sin, cos, cx - cos*cx + sin*cy, cy + sin*cx - cos*cy];
+            } else if ((mm = t.match(/^skewX\s*\(\s*([\d.,eE+\-]+)\s*\)$/))) {
+                m[2] = Math.tan((parseFloat(mm[1]) || 0) * Math.PI / 180);
+            } else if ((mm = t.match(/^skewY\s*\(\s*([\d.,eE+\-]+)\s*\)$/))) {
+                m[1] = Math.tan((parseFloat(mm[1]) || 0) * Math.PI / 180);
+            }
+            return m;
+        };
+
+        var multiplyMatrix = function(a, b) {
+            return [
+                a[0]*b[0] + a[2]*b[1],
+                a[1]*b[0] + a[3]*b[1],
+                a[0]*b[2] + a[2]*b[3],
+                a[1]*b[2] + a[3]*b[3],
+                a[0]*b[4] + a[2]*b[5] + a[4],
+                a[1]*b[4] + a[3]*b[5] + a[5]
+            ];
+        };
+
+        var getElementMatrix = function(el) {
+            var matrices = [];
+            var node = el;
+            while (node && node !== doc.documentElement) {
+                var attr = node.getAttribute && node.getAttribute('transform');
+                if (attr && attr.trim()) {
+                    var parts = attr.trim().match(/\w+\s*\([^)]*\)/g) || [];
+                    for (var i = parts.length - 1; i >= 0; i--) {
+                        matrices.unshift(parseSingleTransform(parts[i]));
+                    }
+                }
+                node = node.parentNode;
+            }
+            if (matrices.length === 0) return null;
+            var result = [1,0,0,1,0,0];
+            for (var i = 0; i < matrices.length; i++) result = multiplyMatrix(result, matrices[i]);
+            return result;
+        };
+
+        var applyMatrix = function(m, x, y) {
+            return { x: m[0]*x + m[2]*y + m[4], y: m[1]*x + m[3]*y + m[5] };
+        };
+
+        var transformD = function(d, m) {
+            var tmp = new SVGParser(d);
+            var cmds = tmp.parse();
+            var out = '';
+            cmds.forEach(function(c) {
+                if (c.type === 'M') {
+                    var p = applyMatrix(m, c.x, c.y);
+                    out += 'M ' + p.x + ' ' + p.y + ' ';
+                } else if (c.type === 'L') {
+                    var p = applyMatrix(m, c.x, c.y);
+                    out += 'L ' + p.x + ' ' + p.y + ' ';
+                } else if (c.type === 'C') {
+                    var p1 = applyMatrix(m, c.x1, c.y1);
+                    var p2 = applyMatrix(m, c.x2, c.y2);
+                    var p = applyMatrix(m, c.x, c.y);
+                    out += 'C ' + p1.x + ' ' + p1.y + ' ' + p2.x + ' ' + p2.y + ' ' + p.x + ' ' + p.y + ' ';
+                }
+            });
+            return out.trim();
+        };
+
         doc.querySelectorAll('path').forEach(function(el) {
             var d = el.getAttribute('d');
-            if (d) paths.push(d);
+            if (!d) return;
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
-
-        var transformAttr = function(el) {
-            var t = el.getAttribute('transform');
-            return t || '';
-        };
 
         doc.querySelectorAll('circle').forEach(function(el) {
             hasBasicShapes = true;
@@ -1885,7 +1964,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 ' C ' + (cx - k*r) + ' ' + (cy + r) + ' ' + (cx - r) + ' ' + (cy + k*r) + ' ' + (cx - r) + ' ' + cy +
                 ' C ' + (cx - r) + ' ' + (cy - k*r) + ' ' + (cx - k*r) + ' ' + (cy - r) + ' ' + cx + ' ' + (cy - r) +
                 ' C ' + (cx + k*r) + ' ' + (cy - r) + ' ' + (cx + r) + ' ' + (cy - k*r) + ' ' + (cx + r) + ' ' + cy + ' Z';
-            paths.push(d);
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         doc.querySelectorAll('ellipse').forEach(function(el) {
@@ -1901,7 +1981,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 ' C ' + (cx - k*rx) + ' ' + (cy + ry) + ' ' + (cx - rx) + ' ' + (cy + k*ry) + ' ' + (cx - rx) + ' ' + cy +
                 ' C ' + (cx - rx) + ' ' + (cy - k*ry) + ' ' + (cx - k*rx) + ' ' + (cy - ry) + ' ' + cx + ' ' + (cy - ry) +
                 ' C ' + (cx + k*rx) + ' ' + (cy - ry) + ' ' + (cx + rx) + ' ' + (cy - k*ry) + ' ' + (cx + rx) + ' ' + cy + ' Z';
-            paths.push(d);
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         doc.querySelectorAll('rect').forEach(function(el) {
@@ -1915,14 +1996,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isNaN(w) || w <= 0 || isNaN(h) || h <= 0) return;
             if (rx > w/2) rx = w/2;
             if (ry > h/2) ry = h/2;
+            var d;
             if (rx === 0 && ry === 0) {
-                var d = 'M ' + x + ' ' + y + ' L ' + (x+w) + ' ' + y + ' L ' + (x+w) + ' ' + (y+h) + ' L ' + x + ' ' + (y+h) + ' Z';
-                paths.push(d);
+                d = 'M ' + x + ' ' + y + ' L ' + (x+w) + ' ' + y + ' L ' + (x+w) + ' ' + (y+h) + ' L ' + x + ' ' + (y+h) + ' Z';
             } else {
                 if (rx === 0) rx = ry;
                 if (ry === 0) ry = rx;
                 var k = 0.5522847498;
-                var d = 'M ' + (x+rx) + ' ' + y +
+                d = 'M ' + (x+rx) + ' ' + y +
                     ' L ' + (x+w-rx) + ' ' + y +
                     ' C ' + (x+w-rx+k*rx) + ' ' + y + ' ' + (x+w) + ' ' + (y+ry-k*ry) + ' ' + (x+w) + ' ' + (y+ry) +
                     ' L ' + (x+w) + ' ' + (y+h-ry) +
@@ -1931,8 +2012,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     ' C ' + (x+rx-k*rx) + ' ' + (y+h) + ' ' + x + ' ' + (y+h-ry+k*ry) + ' ' + x + ' ' + (y+h-ry) +
                     ' L ' + x + ' ' + (y+ry) +
                     ' C ' + x + ' ' + (y+ry-k*ry) + ' ' + (x+rx-k*rx) + ' ' + y + ' ' + (x+rx) + ' ' + y + ' Z';
-                paths.push(d);
             }
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         doc.querySelectorAll('line').forEach(function(el) {
@@ -1942,7 +2024,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var x2 = parseFloat(el.getAttribute('x2') || 0);
             var y2 = parseFloat(el.getAttribute('y2') || 0);
             var d = 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2;
-            paths.push(d);
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         doc.querySelectorAll('polyline').forEach(function(el) {
@@ -1951,7 +2034,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (pts.length < 4) return;
             var d = 'M ' + pts[0] + ' ' + pts[1];
             for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
-            paths.push(d);
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         doc.querySelectorAll('polygon').forEach(function(el) {
@@ -1961,7 +2045,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var d = 'M ' + pts[0] + ' ' + pts[1];
             for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
             d += ' Z';
-            paths.push(d);
+            var m = getElementMatrix(el);
+            paths.push(m ? transformD(d, m) : d);
         });
 
         if (paths.length === 0) return null;
@@ -2046,7 +2131,16 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             var assStr = "";
-            var f = function(n) { return Math.round(n * scale); };
+            var pPrec = {1: 6, 2: 5, 4: 4, 8: 0, 16: 0};
+            var prec = pPrec[scale] !== undefined ? pPrec[scale] : 0;
+            var f = function(n) {
+                if (prec === 0) return String(Math.round(n * scale));
+                var s = (n * scale).toFixed(prec);
+                if (s.indexOf('.') !== -1) {
+                    s = s.replace(/\.?0+$/, '');
+                }
+                return s;
+            };
             var penX = 0, penY = 0;
 
             absCommands.forEach(function(c) {
