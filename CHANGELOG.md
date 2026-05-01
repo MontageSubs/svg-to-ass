@@ -1,5 +1,29 @@
 # Changelog | 更新日志
 
+## v3.5
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- 支持 p1 至 p5 五档精度等级，用户可根据需求灵活选择
+- p1 和 p3 精度下保留小数点，进一步提升转换精度
+- 预览结果反推优化：基于最终生成结果进行反向计算，确保预览与实际输出一致
+- 新增 SVG Transform 属性支持，更好兼容复杂 SVG 变换
+- ViewBox 坐标系识别：自动识别并计算 SVG viewBox 属性，精确定位坐标系原点
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- Support for five precision levels (p1–p5) enabling flexible selection based on user requirements
+- Decimal preservation at p1 and p3 precision levels for enhanced conversion accuracy
+- Improved preview validation through reverse-calculation against the final output to ensure consistency
+- Added SVG Transform attribute support with improved compatibility for complex transformations
+- ViewBox coordinate system recognition featuring automatic detection and calculation of viewBox attributes for precise coordinate origin positioning
+
+</details>
+
 ## v3.4
 
 <details>
