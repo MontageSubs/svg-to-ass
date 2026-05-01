@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.4.11">
+<meta name="version" content="3.5">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -2053,8 +2053,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return { pathData: paths.join(' '), hasBasicShapes: hasBasicShapes, count: paths.length };
     }
 
+    function extractViewBoxOrigin(htmlStr) {
+        var m = htmlStr.match(/<svg[^>]*\bviewBox\s*=\s*["']\s*([\-\d.eE]+)[\s,]+([\-\d.eE]+)/i);
+        if (!m) return {ox: 0, oy: 0};
+        var ox = parseFloat(m[1]), oy = parseFloat(m[2]);
+        return {ox: isNaN(ox) ? 0 : ox, oy: isNaN(oy) ? 0 : oy};
+    }
+
     function extractPathData(htmlStr) {
-        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return { pathData: htmlStr, hasBasicShapes: false, count: 1 };
+        if (!htmlStr.includes('<') && !htmlStr.includes('>') && !htmlStr.includes('=')) return { pathData: htmlStr, hasBasicShapes: false, count: 1, ox: 0, oy: 0 };
+
+        var origin = extractViewBoxOrigin(htmlStr);
 
         var result = basicShapesToPaths(htmlStr);
         if (result) {
@@ -2063,6 +2072,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 showToast(t('toast-merged', {n: result.count}), 'success');
             }
+            result.ox = origin.ox; result.oy = origin.oy;
             return result;
         }
 
@@ -2072,7 +2082,7 @@ document.addEventListener('DOMContentLoaded', function() {
         while ((match = regex.exec(htmlStr)) !== null) { matches.push(match[1]); }
         if (matches.length > 0) {
             showToast(t('toast-merged', {n: matches.length}), 'success');
-            return { pathData: matches.join(' '), hasBasicShapes: false, count: matches.length };
+            return { pathData: matches.join(' '), hasBasicShapes: false, count: matches.length, ox: origin.ox, oy: origin.oy };
         }
 
         throw new Error(t('err-no-path'));
@@ -2131,37 +2141,62 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             var assStr = "";
-            var pPrec = {1: 6, 2: 5, 4: 4, 8: 0, 16: 0};
+            var ox = extracted.ox || 0, oy = extracted.oy || 0;
+            var pPrec = {1: 3, 2: 2, 4: 1, 8: 0, 16: 0};
             var prec = pPrec[scale] !== undefined ? pPrec[scale] : 0;
-            var f = function(n) {
-                if (prec === 0) return String(Math.round(n * scale));
-                var s = (n * scale).toFixed(prec);
-                if (s.indexOf('.') !== -1) {
-                    s = s.replace(/\.?0+$/, '');
-                }
+            var f = function(n, isY) {
+                var v = (n - (isY ? oy : ox)) * scale;
+                if (prec === 0) return String(Math.round(v));
+                var s = v.toFixed(prec);
+                if (s.indexOf('.') !== -1) s = s.replace(/\.?0+$/, '');
                 return s;
             };
             var penX = 0, penY = 0;
 
             absCommands.forEach(function(c) {
                 if (c.type === 'M') {
-                    assStr += "m " + f(c.x) + " " + f(c.y) + " ";
+                    assStr += "m " + f(c.x, false) + " " + f(c.y, true) + " ";
                     penX = c.x; penY = c.y;
                 }
                 if (c.type === 'L') {
-                    assStr += "l " + f(c.x) + " " + f(c.y) + " ";
+                    assStr += "l " + f(c.x, false) + " " + f(c.y, true) + " ";
                     expandBounds(c.x, true); expandBounds(c.y, false);
                     penX = c.x; penY = c.y;
                 }
                 if (c.type === 'C') {
-                    assStr += "b " + f(c.x1) + " " + f(c.y1) + " " + f(c.x2) + " " + f(c.y2) + " " + f(c.x) + " " + f(c.y) + " ";
+                    assStr += "b " + f(c.x1, false) + " " + f(c.y1, true) + " " + f(c.x2, false) + " " + f(c.y2, true) + " " + f(c.x, false) + " " + f(c.y, true) + " ";
                     bezierAxisExtrema(penX, c.x1, c.x2, c.x).forEach(function(v){ expandBounds(v, true); });
                     bezierAxisExtrema(penY, c.y1, c.y2, c.y).forEach(function(v){ expandBounds(v, false); });
                     penX = c.x; penY = c.y;
                 }
             });
 
-            document.getElementById('assPath').setAttribute('d', cleanInput);
+            var tokens = assStr.trim().split(/\s+/);
+            var previewD = '';
+            var i = 0;
+            while (i < tokens.length) {
+                var cmd = tokens[i++];
+                if (cmd === 'm') {
+                    var px = parseFloat(tokens[i++]) / scale + ox;
+                    var py = parseFloat(tokens[i++]) / scale + oy;
+                    previewD += 'M ' + px + ' ' + py + ' ';
+                } else if (cmd === 'l') {
+                    var px = parseFloat(tokens[i++]) / scale + ox;
+                    var py = parseFloat(tokens[i++]) / scale + oy;
+                    previewD += 'L ' + px + ' ' + py + ' ';
+                } else if (cmd === 'b') {
+                    var x1 = parseFloat(tokens[i++]) / scale + ox;
+                    var y1 = parseFloat(tokens[i++]) / scale + oy;
+                    var x2 = parseFloat(tokens[i++]) / scale + ox;
+                    var y2 = parseFloat(tokens[i++]) / scale + oy;
+                    var x  = parseFloat(tokens[i++]) / scale + ox;
+                    var y  = parseFloat(tokens[i++]) / scale + oy;
+                    previewD += 'C ' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ' ' + x + ' ' + y + ' ';
+                } else {
+                    i++;
+                }
+            }
+            document.getElementById('assPath').setAttribute('d', previewD.trim());
             var w = maxX - minX; var h = maxY - minY;
             if (w <= 0) w = 100; if (h <= 0) h = 100;
             var padding = Math.max(w, h) * 0.1;
