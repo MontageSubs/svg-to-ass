@@ -1,5 +1,21 @@
 # Changelog | 更新日志
 
+## v3.9
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- 预览背景默认透明度调整：`bgSlider` 默认值 90 → 49.6（几乎透明），让 Liquid Glass 多色玻璃质感透出来；slider step 改为 0.1 以保留精确控制
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- Preview background opacity default tuned: `bgSlider` default value 90 → 49.6 (near-transparent), letting the Liquid Glass color tones show through; slider step changed to 0.1 to keep precise control
+
+</details>
+
 ## v3.8
 
 <details>
