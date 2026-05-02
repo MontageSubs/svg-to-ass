@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.6">
+<meta name="version" content="3.7">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -605,6 +605,7 @@ svg.preview-svg { z-index: 1; max-width: 90%; max-height: 90%; overflow: visible
     <button class="btn-hdr" id="btn-install-pwa" onclick="triggerPwaInstall()" style="display:none"
       data-i18n="btn-install">Install</button>
     <button class="btn-hdr" id="btn-discuss" onclick="loadDiscuss()" data-i18n="btn-discuss">Discussion</button>
+    <a href="https://subs.js.org/ass-to-svg/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-reverse">ASS to SVG</a>
     <a href="https://subs.js.org/ass-subset/" target="_blank" rel="noopener" class="btn-hdr" data-i18n="btn-subset">ASS Subsetter</a>
     <div class="lang-wrap" id="lang-wrap">
       <button class="btn-hdr" id="btn-lang-toggle" onclick="toggleLangMenu()"
@@ -835,6 +836,7 @@ var I18N = {
     'btn-discuss': '讨论',
     'btn-install': '安装',
     'btn-paste': '粘贴',
+    'btn-reverse': 'ASS 转 SVG',
     'btn-subset': 'ASS 子集化工具',
     'btn-upload': '上传文件',
     'discuss-header': '讨论 · Discussion',
@@ -899,6 +901,7 @@ var I18N = {
     'btn-discuss': '討論',
     'btn-install': '安裝',
     'btn-paste': '貼上',
+    'btn-reverse': 'ASS 轉 SVG',
     'btn-subset': 'ASS 子集化工具',
     'btn-upload': '上傳檔案',
     'discuss-header': '討論 · Discussion',
@@ -963,6 +966,7 @@ var I18N = {
     'btn-discuss': 'Discussion',
     'btn-install': 'Install',
     'btn-paste': 'Paste',
+    'btn-reverse': 'ASS to SVG',
     'btn-subset': 'ASS Subsetter',
     'btn-upload': 'Upload File',
     'discuss-header': 'Discussion',
@@ -1027,6 +1031,7 @@ var I18N = {
     'btn-discuss': 'ディスカッション',
     'btn-install': 'インストール',
     'btn-paste': '貼り付け',
+    'btn-reverse': 'ASS → SVG',
     'btn-subset': 'ASSサブセットツール',
     'btn-upload': 'ファイルをアップロード',
     'discuss-header': 'ディスカッション · Discussion',
@@ -1091,6 +1096,7 @@ var I18N = {
     'btn-discuss': '토론',
     'btn-install': '설치',
     'btn-paste': '붙여넣기',
+    'btn-reverse': 'ASS → SVG',
     'btn-subset': 'ASS 서브셋 도구',
     'btn-upload': '파일 업로드',
     'discuss-header': '토론 · Discussion',
@@ -1155,6 +1161,7 @@ var I18N = {
     'btn-discuss': 'Debate',
     'btn-install': 'Instalar',
     'btn-paste': 'Pegar',
+    'btn-reverse': 'ASS a SVG',
     'btn-subset': 'Subconjunto ASS',
     'btn-upload': 'Subir archivo',
     'discuss-header': 'Debate · Discussion',
@@ -1219,6 +1226,7 @@ var I18N = {
     'btn-discuss': 'Discussão',
     'btn-install': 'Instalar',
     'btn-paste': 'Colar',
+    'btn-reverse': 'ASS para SVG',
     'btn-subset': 'Subconjunto ASS',
     'btn-upload': 'Fazer upload',
     'discuss-header': 'Discussão · Discussion',
@@ -1283,6 +1291,7 @@ var I18N = {
     'btn-discuss': 'Обсуждение',
     'btn-install': 'Установить',
     'btn-paste': 'Вставить',
+    'btn-reverse': 'ASS в SVG',
     'btn-subset': 'Субсет ASS',
     'btn-upload': 'Загрузить файл',
     'discuss-header': 'Обсуждение · Discussion',
@@ -1347,6 +1356,7 @@ var I18N = {
     'btn-discuss': 'نقاش',
     'btn-install': 'تثبيت',
     'btn-paste': 'لصق',
+    'btn-reverse': 'ASS → SVG',
     'btn-subset': 'أداة Subset لـ ASS',
     'btn-upload': 'رفع ملف',
     'discuss-header': 'نقاش · Discussion',
@@ -1411,6 +1421,7 @@ var I18N = {
     'btn-discuss': 'Tartışma',
     'btn-install': 'Yükle',
     'btn-paste': 'Yapıştır',
+    'btn-reverse': 'ASS - SVG',
     'btn-subset': 'ASS Alt Küme Aracı',
     'btn-upload': 'Dosya Yükle',
     'discuss-header': 'Tartışma · Discussion',

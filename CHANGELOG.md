@@ -1,5 +1,21 @@
 # Changelog | 更新日志
 
+## v3.7
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- 新增配套工具入口：在 header 添加 [ASS 转 SVG](https://subs.js.org/ass-to-svg/) 链接，与现有 ASS Subsetter 平级。配合新工具可完成 SVG ↔ ASS 双向转换工作流
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- Added companion tool link in the header: [ASS to SVG](https://subs.js.org/ass-to-svg/), as a sibling to the existing ASS Subsetter. Together they enable a full SVG ↔ ASS round-trip workflow
+
+</details>
+
 ## v3.6
 
 <details>
