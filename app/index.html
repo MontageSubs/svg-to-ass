@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.10">
+<meta name="version" content="3.11">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -1917,23 +1917,38 @@ function toggleLangMenu() {
 }
 
 
+var manualThemeOverride = false;
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  if (typeof discussLoaded !== 'undefined' && discussLoaded) {
+    var iframe = document.querySelector('iframe.giscus-frame');
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { giscus: { setConfig: { theme: theme } } },
+        'https://giscus.app'
+      );
+    }
+  }
+}
+
 function toggleTheme() {
-  var html = document.documentElement;
-  var current = html.getAttribute('data-theme') || 'light';
-  var next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  try { localStorage.setItem('theme', next); } catch(e) {}
+  manualThemeOverride = true;
+  var current = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
 }
 
 (function initTheme() {
-  try {
-    var saved = localStorage.getItem('theme');
-    if (saved === 'dark' || saved === 'light') {
-      document.documentElement.setAttribute('data-theme', saved);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  } catch(e) {}
+  try { localStorage.removeItem('theme'); } catch(_) {}
+  if (!window.matchMedia) return;
+  var mql = window.matchMedia('(prefers-color-scheme: dark)');
+  applyTheme(mql.matches ? 'dark' : 'light');
+  var onSystemChange = function(e) {
+    if (manualThemeOverride) return;
+    applyTheme(e.matches ? 'dark' : 'light');
+  };
+  if (mql.addEventListener) mql.addEventListener('change', onSystemChange);
+  else if (mql.addListener) mql.addListener(onSystemChange);
 })();
 
 function setLang(lang) {
@@ -1953,7 +1968,7 @@ function loadDiscuss() {
   section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (discussLoaded) return;
   discussLoaded = true;
-  var theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  var theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   var script = document.createElement('script');
   script.src = 'https://giscus.app/client.js';
   script.setAttribute('data-repo', 'MontageSubs/svg-to-ass');
@@ -1992,10 +2007,18 @@ function applyBgSlider(val) {
   var opacity = Math.abs(val - 50) / 50;
   bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ',' + opacity + ')';
 }
-document.getElementById('bgSlider').addEventListener('input', function(e) {
-  applyBgSlider(e.target.value);
-});
-applyBgSlider(document.getElementById('bgSlider').value);
+(function initBgSlider() {
+  var slider = document.getElementById('bgSlider');
+  try {
+    var saved = localStorage.getItem('svg2ass-bgSlider');
+    if (saved !== null) slider.value = saved;
+  } catch(_) {}
+  slider.addEventListener('input', function(e) {
+    applyBgSlider(e.target.value);
+    try { localStorage.setItem('svg2ass-bgSlider', e.target.value); } catch(_) {}
+  });
+  applyBgSlider(slider.value);
+})();
 
 var _inputSource = null;
 var _inputFileName = '';
@@ -2134,6 +2157,28 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (e) {}
     rebaseBox.addEventListener('change', function() {
       try { localStorage.setItem('svg2ass-rebase', this.checked ? '1' : '0'); } catch (e) {}
+    });
+  }
+
+  var scaleFactorEl = document.getElementById('scaleFactor');
+  if (scaleFactorEl) {
+    try {
+      var savedScale = localStorage.getItem('svg2ass-scaleFactor');
+      if (savedScale !== null) scaleFactorEl.value = savedScale;
+    } catch (e) {}
+    scaleFactorEl.addEventListener('change', function() {
+      try { localStorage.setItem('svg2ass-scaleFactor', this.value); } catch (e) {}
+    });
+  }
+
+  var extraTagsEl = document.getElementById('extraTags');
+  if (extraTagsEl) {
+    try {
+      var savedTags = localStorage.getItem('svg2ass-extraTags');
+      if (savedTags !== null) extraTagsEl.value = savedTags;
+    } catch (e) {}
+    extraTagsEl.addEventListener('input', function() {
+      try { localStorage.setItem('svg2ass-extraTags', this.value); } catch (e) {}
     });
   }
 

@@ -1,5 +1,35 @@
 # Changelog | 更新日志
 
+## v3.11
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **主题切换逻辑重构 — 默认始终跟随系统**：之前点过日/月按钮的偏好会写入 `localStorage` 跨会话保留，现在改为：页面主题永远跟随用户系统设置（`prefers-color-scheme`），且**实时跟随**——使用页面期间在 macOS 系统设置切换 light/dark，页面立即响应（之前需要刷新）。日/月按钮仍可用，但仅作为**当前 session 的临时覆盖**，刷新后回到跟随系统。理由：用户系统是 dark mode 通常意味着当下就想看 dark；网页强行记住一次手动选择反而违背用户当前意图。老用户残留的 `localStorage.theme` 会在下次访问时自动清除
+- **评论区主题与页面同步**：giscus 评论框现在跟随页面当前主题（之前总是直接读系统 `prefers-color-scheme`，用户手动覆盖主题后评论框颜色不一致）；浏览过程中切换主题，已加载的评论框也会通过 `postMessage` 实时跟随
+- **新增：用户参数持久化**：以下设置现在保存到 `localStorage`，刷新页面后保持不变（之前每次都回默认）：
+  - 「Background」滑块位置
+  - 「Precision (Scale)」精度选择
+  - 「Extra Tags」额外标签输入框
+  
+  「Rebase to (0,0)」勾选状态原本就是持久化的，未变化
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Theme logic refactor — always follows system by default**: Previously, clicking the sun/moon button persisted the choice to `localStorage` across sessions. Now: the page theme always follows the user's system setting (`prefers-color-scheme`), and **tracks live** — switching macOS system theme while using the page applies immediately (previously required a reload). The sun/moon button still works but only as a **session-only override**; reload restores following the system. Rationale: a user with system dark mode usually wants to see dark **right now**; forcibly remembering a one-time manual choice across sessions undermines current intent. Stale `localStorage.theme` entries from older versions are automatically cleared on next visit
+- **Comments theme synced with page**: The giscus comment widget now matches the page's current theme (previously read `prefers-color-scheme` directly, mismatching whenever the user manually overrode the page theme); already-loaded comment widgets also follow via `postMessage` when the user toggles theme mid-session
+- **New: user parameters persisted**: The following settings are now saved to `localStorage` and survive page reloads (previously reset to defaults every time):
+  - "Background" slider position
+  - "Precision (Scale)" selector
+  - "Extra Tags" text input
+  
+  The "Rebase to (0,0)" checkbox was already persisted; unchanged
+
+</details>
+
 ## v3.10
 
 <details>
