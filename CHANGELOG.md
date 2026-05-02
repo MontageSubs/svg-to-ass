@@ -1,5 +1,29 @@
 # Changelog | 更新日志
 
+## v3.8
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **设计大改**：全面切换到 Liquid Glass 视觉语言——多色径向渐变背景（黄/天空蓝/粉/靛/绿），玻璃卡片（`backdrop-filter: blur(24px) saturate(180%)`），pill 按钮（`border-radius: 999px`），三色 step 头（蓝/黄/天空），渐变色 step number 徽标，圆角 18px 卡片
+- **字体升级**：Inter（UI）+ JetBrains Mono（代码），从系统字栈切换为 web fonts
+- **新增 Light/Dark 主题切换按钮**：header 右侧加月亮/太阳图标按钮，手动切换不依赖系统偏好；偏好写入 `localStorage`，跨会话保留；首次访问自动跟随 `prefers-color-scheme`
+- **品牌标识强化**：header 加 "S/A" 渐变圆形 brand-mark 徽章，提升识别度
+- 保留所有 v3.6/v3.7 功能：原点对齐到 (0,0)、ASS 转 SVG 跨工具入口、5 档精度、10 种语言、PWA 离线
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Design overhaul**: full visual rework to the Liquid Glass design language — multi-color radial-gradient background (yellow / sky / pink / indigo / green), glassmorphism cards (`backdrop-filter: blur(24px) saturate(180%)`), pill buttons (`border-radius: 999px`), tri-color step heads (blue / yellow / sky), gradient step-number badges, 18px card radius
+- **Typography upgrade**: Inter (UI) + JetBrains Mono (code), replacing the system font stack
+- **Light/Dark theme toggle**: new sun/moon button in the header for manual switching independent of system preference; choice persists in `localStorage` across sessions; first-time visit follows `prefers-color-scheme`
+- **Brand-mark badge**: gradient "S/A" circular mark added to the header for identity reinforcement
+- All v3.6/v3.7 features preserved: origin-to-(0,0) checkbox, ASS-to-SVG sibling-tool link, five precision tiers, 10 locales, PWA offline support
+
+</details>
+
 ## v3.7
 
 <details>
