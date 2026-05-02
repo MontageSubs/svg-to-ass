@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.9">
+<meta name="version" content="3.10">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -615,9 +615,14 @@ h2.step-title {
 }
 #previewBg {
   position: absolute; inset: 0;
-  background: rgba(255,255,255,0.92);
+  background: rgba(0,0,0,0);
   z-index: 0; pointer-events: none;
   transition: background 0.15s;
+}
+/* Dark mode: brighten slider track so it stays visible on dark surfaces */
+html[data-theme="dark"] .slider-group input[type="range"] {
+  background: rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
 }
 svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible; }
 #assPath { fill: var(--blue) !important; fill-opacity: 0.82 !important; stroke: var(--blue-deep) !important; stroke-width: 1.2 !important; }
@@ -1980,13 +1985,17 @@ function showToast(msg, type) {
   _toastTimer = setTimeout(function() { el.className = ''; }, 3000);
 }
 
-document.getElementById('bgSlider').addEventListener('input', function(e) {
-  var val = e.target.value;
+function applyBgSlider(val) {
   var bg = document.getElementById('previewBg');
+  if (!bg) return;
   var color = val > 50 ? 255 : 0;
   var opacity = Math.abs(val - 50) / 50;
   bg.style.background = 'rgba(' + color + ',' + color + ',' + color + ',' + opacity + ')';
+}
+document.getElementById('bgSlider').addEventListener('input', function(e) {
+  applyBgSlider(e.target.value);
 });
+applyBgSlider(document.getElementById('bgSlider').value);
 
 var _inputSource = null;
 var _inputFileName = '';

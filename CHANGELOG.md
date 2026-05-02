@@ -1,5 +1,25 @@
 # Changelog | 更新日志
 
+## v3.10
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **修复 dark mode 下两个 slider 相关视觉问题**：
+  - 「背景亮度」滑块轨道在 dark mode 下完全不可见（轨道颜色写死为深色低透明，在深色背景上隐形）；现在 dark mode 加了独立的浅色轨道样式
+  - 预览区域在页面初次加载时显示亮白色覆盖层（`#previewBg` CSS 默认值是 `rgba(255,255,255,0.92)`，但 slider 的 JS 监听器只在 `input` 事件时才更新背景，导致默认状态错位）；现在 CSS 默认改为完全透明，并在页面加载时主动调用一次 slider handler，让 `value="49.6"` 的状态从首屏就正确应用
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Fixed two dark-mode slider issues**:
+  - The "Background brightness" slider track was invisible in dark mode (the track color was hard-coded to a low-opacity dark slate that blended into dark surfaces); added an independent light-tinted track style for `html[data-theme="dark"]`
+  - On first paint, the preview area showed a bright white overlay (the `#previewBg` CSS default was `rgba(255,255,255,0.92)`, and the slider's `input` listener only fires on user interaction, so the default state was inconsistent with the slider's `value="49.6"`); CSS default now starts transparent, and the slider handler is invoked once on page load so the initial state matches the slider value
+
+</details>
+
 ## v3.9
 
 <details>
