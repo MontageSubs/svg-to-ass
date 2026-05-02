@@ -1,5 +1,25 @@
 # Changelog | 更新日志
 
+## v3.6
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- 新增「原点对齐到 (0,0)」选项：转换前可勾选此项，工具会自动平移所有坐标，让图形包围盒的左上角对齐到 ASS 坐标 (0,0)，配合 `\an7` + `\pos(x,y)` 使用时所见即所得，无需手动算偏移
+- 偏好写入 localStorage 跨会话保留；默认关闭，不影响现有用户习惯
+- 包围盒计算包含所有 `M` 端点与贝塞尔极值，移位精度等于实际渲染几何
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- Added "Set origin to (0,0)" option: when enabled, all coordinates are shifted so the bounding box top-left lands at ASS (0,0), making `\an7` + `\pos(x,y)` placement WYSIWYG with no manual offset math
+- Preference is persisted to localStorage across sessions; off by default to preserve existing behavior
+- Bounding box uses all `M` endpoints and Bézier curve extrema, so the shift matches the actual rendered geometry exactly
+
+</details>
+
 ## v3.5
 
 <details>
