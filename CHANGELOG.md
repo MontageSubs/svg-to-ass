@@ -1,5 +1,31 @@
 # Changelog | 更新日志
 
+## v3.12
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **新增：颜色还原，默认开启（与 ass-to-svg 行为对称）**：转换流程从「合并所有路径为单一 `\p1` 块、忽略所有颜色信息」升级为按形状逐组发出 ASS 颜色与描边/透明度/模糊标签：
+  - 解析 SVG 的 `fill` / `stroke` / `stroke-width` / `fill-opacity` / `stroke-opacity` / `opacity` / `filter`（含 `<g>` 上的继承属性、`style="..."` 内联样式、`url(#id)` 渐变定义的首个 `<stop>` 颜色）
+  - 输出对应的 `\1c` / `\3c` / `\bord` / `\1a` / `\3a` / `\blur` 标签；同色形状自动合并为同一段，不会冗余切换
+  - 预览区同步显示 SVG 原始颜色与描边/透明/模糊效果（之前永远是占位单色 `#3d4150`）
+- **新增「扁平模式（单 path）」勾选项 — 默认关闭**：Step 2 增加 `flatMode` 勾选，勾上回退到 v3.11 的合并单 `\p1` 块行为，关闭所有颜色/描边/透明度标签输出，便于下游流程作为单一无色形状处理；勾选状态写入 `localStorage` 跨会话保留。命名与 ass-to-svg v1.4 的 `Flat (legacy single path)` 完全对齐——两个工具的勾选项语义完全对称：默认都开颜色、勾上都关
+- **行为兼容性**：当输入是无 SVG 标签的纯路径数据（仅 `m/l/b` 命令或 `d` 字符串），无论是否勾选 flat 模式，输出都退化为单 `\p1` 黑色块，保持 v3.11 行为不变
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **New: color recovery, on by default (symmetric with ass-to-svg)**: Conversion upgrades from "merge all paths into one `\p1` block, drop all color information" to per-shape grouping with ASS color, stroke, alpha, and blur tags:
+  - Parses `fill` / `stroke` / `stroke-width` / `fill-opacity` / `stroke-opacity` / `opacity` / `filter` from each shape (with inheritance from ancestor `<g>` elements, `style="..."` inline declarations, and `url(#id)` gradient definitions resolved to their first `<stop>` color)
+  - Emits matching `\1c` / `\3c` / `\bord` / `\1a` / `\3a` / `\blur` tags; consecutive same-style shapes are merged into one block to avoid redundant tag switches
+  - Preview now mirrors the SVG's actual fills, strokes, opacities, and blur (previously always rendered the placeholder color `#3d4150`)
+- **New "Flat (legacy single path)" checkbox — off by default**: Step 2 adds a `flatMode` toggle that, when checked, falls back to the v3.11 merged single `\p1` block with no color/stroke/alpha tags — useful for downstream pipelines that expect one uncolored shape. Persists across sessions via `localStorage`. The naming and semantics are aligned 1:1 with ass-to-svg v1.4's `Flat (legacy single path)` toggle: both tools default to color-on; both let you opt out the same way
+- **Compatibility note**: For plain path input (no SVG markup, just `m/l/b` commands or a bare `d` string) the output reduces to a single black `\p1` block regardless of the checkbox — preserving v3.11 behavior for that input shape
+
+</details>
+
 ## v3.11
 
 <details>
