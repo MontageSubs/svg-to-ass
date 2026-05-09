@@ -28,8 +28,11 @@ For typesetters, importing vector graphics (logos, geometric patterns, fine icon
 - **Process Directly in Browser** — All conversions run locally, supporting offline use, protecting privacy, no additional software installation required.
 - **Multi-Format Input Support** — Paste SVG code, individual path data, or upload `.svg` files. Intelligently parses `<path>`, `<circle>`, `<rect>`, and other shape elements.
 - **High-Precision Coordinate Scaling** — Offers 8x (`\p4`) and 16x (`\p5`) high-precision modes, fundamentally solving the jagged-edge problem in ASS/SSA `\p1` mode caused by limited integer precision.
-- **Real-Time Vector Preview** — Renders converted shapes instantly on the right panel with an adjustable brightness slider. Works equally well for black and white graphics to find optimal viewing contrast.
-- **One-Click ASS Command Generation** — Automatically prepends `\fscx1000\fscy1000` and precision tags, supports custom inline tags like `\pos`, `\c`, `\fs`. Ready to copy and paste directly into ASS/SSA subtitles.
+- **Full Color / Stroke / Alpha / Blur Recovery** (on by default) — Per-shape ASS overrides: `\1c` (fill), `\3c` + `\bord` (stroke + width, auto-scaled by `\fscx`), `\1a` / `\3a` (alphas, automatically inverted to ASS convention), `\blur` (from `<feGaussianBlur>`). Reads inheritance from parent `<g>`, inline `style="..."`, and gradient `url(#id)` references resolved to their first `<stop>`. Consecutive same-style shapes are merged so you don't see redundant tag switches.
+- **"Flat (legacy single path)" Toggle** — One checkbox restores the pre-color merged-single-block behavior with no color/stroke/alpha tags — useful for downstream pipelines that expect one uncolored shape. Naming and semantics aligned 1:1 with the sibling ass-to-svg tool's flat toggle.
+- **Set origin to (0,0)** — One checkbox shifts every coordinate so the bounding box top-left lands at exactly `(0, 0)`. Pair with `\an7\pos(x,y)` and the drawing's top-left lands precisely at `(x, y)` on screen — no mental offset math.
+- **Real-Time Vector Preview** — Preview pane renders the SVG's actual fills / strokes / alphas / blur (matching what libass will draw from the ASS output), with a brightness slider for inspecting dark shapes. Flat mode keeps the original accent-stroke geometry-inspection look.
+- **One-Click ASS Command Generation** — Automatically prepends `\fscx1000\fscy1000` plus the per-shape color / stroke / alpha overrides described above; you can still append `\pos`, `\fs`, and other inline tags. Ready to copy and paste directly into ASS/SSA subtitles.
 
 ## Features
 
@@ -39,16 +42,30 @@ Paste or upload SVG, the tool automatically parses the graphic structure, intell
 ### High-Precision Coordinate Scaling
 Provides **8x** (`\p4`) and **16x** (`\p5`) high-precision modes. By pre-scaling coordinates, the tool fundamentally solves the jagged-edge problem in ASS/SSA `\p1` mode caused by limited integer precision, making converted shapes smoother and more refined.
 
+### Color / Stroke / Alpha / Blur Recovery (on by default)
+Per-shape ASS color, stroke, alpha, and blur tags:
+- Reads `fill` / `stroke` / `stroke-width` / `fill-opacity` / `stroke-opacity` / `opacity` / `filter`
+- Includes inheritance from ancestor `<g>` elements, `style="..."` inline declarations, and `url(#id)` gradient definitions resolved to their first `<stop>` color
+- Emits matching `\1c` / `\3c` / `\bord` / `\1a` / `\3a` / `\blur` tags; `\bord` and `\blur` auto-scale by the `\fscx` factor in your Extra Tags (default `\fscx1000` ⇒ ×10)
+- Consecutive same-style shapes are merged into one block to avoid redundant tag switches
+
+### "Flat (legacy single path)" Toggle
+Step 2 has a `flatMode` checkbox — when checked, falls back to the merged single `\p1` block with no color / stroke / alpha tags. Useful for downstream pipelines that expect one uncolored shape. Persists across sessions via `localStorage`. Naming and semantics aligned 1:1 with ass-to-svg's flat toggle: both tools default to color-on; both let you opt out the same way.
+
+### Set origin to (0,0)
+Step 2 has a "Set origin to (0,0)" checkbox. When enabled, every coordinate is shifted so the bounding box top-left lands at exactly `(0, 0)`. Pair with `\an7\pos(x,y)` and the drawing's top-left lands precisely at `(x, y)` on screen — no mental offset math.
+
 ### Real-Time Vector Preview
-Instantly renders converted shapes on the right panel with an adjustable brightness slider. Whether your graphics are pure black or pure white, you can find the optimal viewing contrast to ensure results match expectations.
+The preview pane renders the SVG's actual fills, strokes, alphas, and blur (matching what libass will draw from the ASS output), with a brightness slider for inspecting dark shapes. Flat mode keeps the original accent-stroke geometry-inspection look.
 
 ### Flexible Tag Customization
-Automatically generates `\fscx1000\fscy1000` and other precision tags, supports custom inline tags like `\pos`, `\c`, `\fs`. Copy the output and paste directly into ASS/SSA subtitle lines — no further adjustments needed.
+Automatically generates `\fscx1000\fscy1000` and the per-shape color / stroke / alpha overrides described above; you can still append `\pos`, `\fs`, and other inline tags on top. Copy the output and paste directly into ASS/SSA subtitle lines — no further adjustments needed.
 
 ### Multiple Input Format Support
 - Complete SVG source code (with DOCTYPE and styles)
 - Individual path elements or raw path commands
 - Direct `.svg` file upload
+- **Special case**: Plain path input (no `<svg>` wrapper, just `m/l/b` commands or a bare `d` string) always falls back to a single `\p1` black block — preserving v3.11 behavior regardless of the colors / flat toggles.
 
 ## Usage
 
@@ -121,6 +138,10 @@ svg-to-ass/
 ├── CHANGELOG.md              # Change log (Bilingual)
 └── LICENSE                   # MIT License
 ```
+
+## Companion Tool
+
+The reverse counterpart of this tool is [ASS to SVG Converter](https://subs.js.org/ass-to-svg/). The two tools' feature sets are now symmetric — both default to colors-on, both expose the same `Flat (legacy single path)` opt-out — together they support a full SVG ↔ ASS round-trip workflow.
 
 ## Localization
 
