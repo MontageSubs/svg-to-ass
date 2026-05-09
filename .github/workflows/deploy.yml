@@ -20,23 +20,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get trigger commit info
-        id: trigger
-        run: |
-          AUTHOR="${{ github.event.head_commit.author.name }}"
-          EMAIL="${{ github.event.head_commit.author.email }}"
-          MESSAGE="${{ github.event.head_commit.message }}"
-
-          echo "name=$AUTHOR" >> $GITHUB_OUTPUT
-          echo "email=$EMAIL" >> $GITHUB_OUTPUT
-          echo "message<<EOF" >> $GITHUB_OUTPUT
-          echo "$MESSAGE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Configure git
+        env:
+          AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
+          AUTHOR_EMAIL: ${{ github.event.head_commit.author.email }}
         run: |
-          git config --local user.name "${{ steps.trigger.outputs.name }}"
-          git config --local user.email "${{ steps.trigger.outputs.email }}"
+          # Fall back to github-actions[bot] when head_commit is absent
+          # (e.g. workflow_dispatch reruns), so the auto-commit step
+          # below still has a valid identity.
+          git config --local user.name  "${AUTHOR_NAME:-github-actions[bot]}"
+          git config --local user.email "${AUTHOR_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
 
       - name: Update sitemap
         id: sitemap
@@ -58,11 +51,17 @@ jobs:
 
       - name: Commit and push
         if: steps.sitemap.outputs.changed == 'true' || steps.version.outputs.changed == 'true'
+        env:
+          # Pass commit message via env so special chars (parens, quotes,
+          # backticks, newlines) reach git through $VAR expansion instead
+          # of being interpolated into a bash double-quoted string.
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           [ "${{ steps.sitemap.outputs.changed }}" = "true" ] && git add app/sitemap.xml
           [ "${{ steps.version.outputs.changed }}" = "true" ] && git add app/sw.js
-
-          git commit -m "${{ steps.trigger.outputs.message }}" --no-verify || true
+          # Fall back to a generic message for workflow_dispatch reruns
+          # where head_commit is null and COMMIT_MSG is empty.
+          git commit -m "${COMMIT_MSG:-chore: sync sitemap and sw.js}" --no-verify || true
           git push origin main || true
 
       - name: Setup Pages
