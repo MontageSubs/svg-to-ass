@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.12">
+<meta name="version" content="3.13">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -941,6 +941,15 @@ svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible
   cursor: pointer;
   margin: 0;
 }
+.origin-row { padding: 2px 6px 2px 12px; gap: 0.5rem; }
+.origin-row select.custom-select {
+  height: 26px;
+  padding: 0 26px 0 8px;
+  font-size: 12.5px;
+  background-size: 11px 11px;
+  background-position: right 6px center;
+  min-width: 0;
+}
 
 /* === v3.7 cross-link button colorway === */
 #btn-reverse:hover { background: var(--tile-3); box-shadow: 0 0 0 1px var(--ring-soft-3), inset 0 1px 0 var(--glass-highlight), 0 4px 12px -4px rgba(248,195,203,0.5); }
@@ -1051,9 +1060,14 @@ svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible
             </div>
           </div>
           <div class="step-options">
-            <label class="check-row">
-              <input type="checkbox" id="rebaseToZero">
-              <span data-i18n="label-rebase">Set origin to (0,0)</span>
+            <label class="check-row origin-row" for="originMode" data-i18n-title="origin-title"
+              title="Shift coordinates so the bounding box's top-left or center lands at (0,0). Pair with \an7 (top-left) or \an5 (center) + \pos(x,y) on the Dialogue line.">
+              <span data-i18n="label-origin">Origin</span>
+              <select id="originMode" class="custom-select" aria-label="Origin alignment">
+                <option value="none" data-i18n="origin-none">None</option>
+                <option value="topleft" data-i18n="origin-topleft">Top-left at (0,0)</option>
+                <option value="center" data-i18n="origin-center">Center at (0,0)</option>
+              </select>
             </label>
             <label class="check-row" data-i18n-title="flat-mode-title"
               title="Output a single merged drawing path like older versions — disables color tags, useful for clean import into pipelines that expect one uncolored shape.">
@@ -1234,7 +1248,10 @@ var I18N = {
     'label-bg': '背景亮度:',
     'label-output': 'ASS 代码输出',
     'label-preview': '效果预览',
-    'label-rebase': '原点对齐到 (0,0)',
+    'label-origin': '原点对齐',
+    'origin-none': '保持原坐标',
+    'origin-topleft': '左上角对齐到 (0,0)',
+    'origin-center': '中心对齐到 (0,0)',
     'label-flat-mode': '扁平模式（单 path）',
     'flat-mode-title': '合并为单条 \\p1 绘图块输出（与 v3.11 行为一致）—— 关闭颜色、描边、透明度标签，便于下游流程作为单一无色形状处理。',
     'label-scale': '精度 Scale',
@@ -1301,7 +1318,10 @@ var I18N = {
     'label-bg': '背景亮度：',
     'label-output': 'ASS 代碼輸出',
     'label-preview': '效果預覽',
-    'label-rebase': '原點對齊到 (0,0)',
+    'label-origin': '原點對齊',
+    'origin-none': '保持原座標',
+    'origin-topleft': '左上角對齊到 (0,0)',
+    'origin-center': '中心對齊到 (0,0)',
     'label-flat-mode': '扁平模式（單 path）',
     'flat-mode-title': '合併為單條 \\p1 繪圖塊輸出（與 v3.11 行為一致）—— 關閉色彩、描邊、透明度標籤，便於下游流程作為單一無色形狀處理。',
     'label-scale': '精度 Scale',
@@ -1368,7 +1388,10 @@ var I18N = {
     'label-bg': 'Background:',
     'label-output': 'ASS Output',
     'label-preview': 'Preview',
-    'label-rebase': 'Set origin to (0,0)',
+    'label-origin': 'Origin',
+    'origin-none': 'None',
+    'origin-topleft': 'Top-left at (0,0)',
+    'origin-center': 'Center at (0,0)',
     'label-flat-mode': 'Flat (legacy single path)',
     'flat-mode-title': 'Output a single merged \\p1 drawing block like the v3.11 era — disables color, stroke, and alpha tags, useful for downstream pipelines that expect one uncolored shape.',
     'label-scale': 'Precision (Scale)',
@@ -1435,7 +1458,10 @@ var I18N = {
     'label-bg': '背景の明るさ：',
     'label-output': 'ASS出力',
     'label-preview': 'プレビュー',
-    'label-rebase': '原点を (0,0) に揃える',
+    'label-origin': '原点配置',
+    'origin-none': 'そのまま',
+    'origin-topleft': '左上を (0,0) に',
+    'origin-center': '中心を (0,0) に',
     'label-flat-mode': 'フラット (単一パス)',
     'flat-mode-title': 'v3.11 と同じく単一の \\p1 描画ブロックにマージして出力します — 色・縁取り・透明度タグを無効化し、単色図形を期待する後段の処理に適します。',
     'label-scale': '精度',
@@ -1502,7 +1528,10 @@ var I18N = {
     'label-bg': '배경 밝기:',
     'label-output': 'ASS 출력',
     'label-preview': '미리보기',
-    'label-rebase': '원점을 (0,0)으로 설정',
+    'label-origin': '원점 정렬',
+    'origin-none': '그대로 유지',
+    'origin-topleft': '왼쪽 위를 (0,0)으로',
+    'origin-center': '중심을 (0,0)으로',
     'label-flat-mode': '플랫 (단일 경로)',
     'flat-mode-title': 'v3.11 시절처럼 단일 \\p1 드로잉 블록으로 병합 출력합니다 — 색상·테두리·투명도 태그를 비활성화하며, 단색 도형을 기대하는 후속 파이프라인에 유용합니다.',
     'label-scale': '정밀도',
@@ -1569,7 +1598,10 @@ var I18N = {
     'label-bg': 'Brillo del fondo:',
     'label-output': 'Salida ASS',
     'label-preview': 'Vista previa',
-    'label-rebase': 'Origen en (0,0)',
+    'label-origin': 'Origen',
+    'origin-none': 'Sin cambios',
+    'origin-topleft': 'Esquina sup. izq. en (0,0)',
+    'origin-center': 'Centro en (0,0)',
     'label-flat-mode': 'Plano (ruta única)',
     'flat-mode-title': 'Produce un solo bloque de dibujo \\p1 fusionado como en v3.11 — desactiva las etiquetas de color, contorno y opacidad, útil para flujos posteriores que esperan una forma sin color.',
     'label-scale': 'Precisión',
@@ -1636,7 +1668,10 @@ var I18N = {
     'label-bg': 'Brilho do fundo:',
     'label-output': 'Saída ASS',
     'label-preview': 'Pré-visualização',
-    'label-rebase': 'Origem em (0,0)',
+    'label-origin': 'Origem',
+    'origin-none': 'Sem alteração',
+    'origin-topleft': 'Canto sup. esq. em (0,0)',
+    'origin-center': 'Centro em (0,0)',
     'label-flat-mode': 'Plano (caminho único)',
     'flat-mode-title': 'Gera um único bloco de desenho \\p1 mesclado como na v3.11 — desativa as tags de cor, contorno e opacidade, útil para pipelines que esperam uma forma sem cor.',
     'label-scale': 'Precisão',
@@ -1703,7 +1738,10 @@ var I18N = {
     'label-bg': 'Яркость фона:',
     'label-output': 'Вывод ASS',
     'label-preview': 'Предпросмотр',
-    'label-rebase': 'Перенести начало в (0,0)',
+    'label-origin': 'Начало координат',
+    'origin-none': 'Без сдвига',
+    'origin-topleft': 'Левый верх в (0,0)',
+    'origin-center': 'Центр в (0,0)',
     'label-flat-mode': 'Плоский (один путь)',
     'flat-mode-title': 'Объединяет всё в один блок рисования \\p1, как в v3.11 — отключает теги цвета, обводки и прозрачности, удобно для последующих обработок, ожидающих единую неокрашенную фигуру.',
     'label-scale': 'Точность',
@@ -1770,7 +1808,10 @@ var I18N = {
     'label-bg': 'سطوع الخلفية:',
     'label-output': 'مخرجات ASS',
     'label-preview': 'معاينة',
-    'label-rebase': 'تعيين الأصل إلى (0,0)',
+    'label-origin': 'نقطة الأصل',
+    'origin-none': 'بدون تغيير',
+    'origin-topleft': 'الزاوية العلوية اليسرى عند (0,0)',
+    'origin-center': 'المركز عند (0,0)',
     'label-flat-mode': 'مسطح (مسار واحد)',
     'flat-mode-title': 'إخراج كتلة رسم \\p1 واحدة مدمجة مثل الإصدار 3.11 — يعطّل وسوم اللون والحدود والشفافية، مفيد لخطوط المعالجة اللاحقة التي تتوقع شكلاً واحداً بلا لون.',
     'label-scale': 'الدقة',
@@ -1837,7 +1878,10 @@ var I18N = {
     'label-bg': 'Arka Plan Parlaklığı:',
     'label-output': 'ASS Çıktı',
     'label-preview': 'Önizleme',
-    'label-rebase': 'Başlangıcı (0,0) yap',
+    'label-origin': 'Başlangıç',
+    'origin-none': 'Değiştirme',
+    'origin-topleft': 'Sol üst (0,0)',
+    'origin-center': 'Merkez (0,0)',
     'label-flat-mode': 'Düz (tek yol)',
     'flat-mode-title': 'v3.11\'deki gibi tek bir birleşik \\p1 çizim bloğu çıkarır — renk, kontur ve şeffaflık etiketlerini devre dışı bırakır, tek renksiz şekil bekleyen sonraki süreçlere uygundur.',
     'label-scale': 'Hassasiyet',
@@ -2176,13 +2220,23 @@ document.addEventListener('DOMContentLoaded', function() {
   updateInputHint(null);
   _syncButtons();
 
-  var rebaseBox = document.getElementById('rebaseToZero');
-  if (rebaseBox) {
+  var originSel = document.getElementById('originMode');
+  if (originSel) {
     try {
-      rebaseBox.checked = localStorage.getItem('svg2ass-rebase') === '1';
+      var savedOrigin = localStorage.getItem('svg2ass-origin');
+      if (savedOrigin === null) {
+        // Migrate from the v3.12 boolean key: rebase=1 → topleft; clean up.
+        var legacy = localStorage.getItem('svg2ass-rebase');
+        if (legacy === '1') savedOrigin = 'topleft';
+        if (legacy !== null) localStorage.removeItem('svg2ass-rebase');
+        if (savedOrigin) localStorage.setItem('svg2ass-origin', savedOrigin);
+      }
+      if (savedOrigin === 'topleft' || savedOrigin === 'center' || savedOrigin === 'none') {
+        originSel.value = savedOrigin;
+      }
     } catch (e) {}
-    rebaseBox.addEventListener('change', function() {
-      try { localStorage.setItem('svg2ass-rebase', this.checked ? '1' : '0'); } catch (e) {}
+    originSel.addEventListener('change', function() {
+      try { localStorage.setItem('svg2ass-origin', this.value); } catch (e) {}
     });
   }
 
@@ -2929,7 +2983,8 @@ document.addEventListener('DOMContentLoaded', function() {
             var ox = extracted.ox || 0, oy = extracted.oy || 0;
             var flatBox = document.getElementById('flatMode');
             var preserveOn = !(flatBox && flatBox.checked);
-            var rebaseBox = document.getElementById('rebaseToZero');
+            var originSel = document.getElementById('originMode');
+            var originMode = (originSel && originSel.value) || 'none';
             var pMap = {1:'\\p1', 2:'\\p2', 4:'\\p3', 8:'\\p4', 16:'\\p5'};
             var pTag = pMap[scale] || '\\p1';
             var pPrec = {1: 3, 2: 2, 4: 1, 8: 0, 16: 0};
@@ -2938,29 +2993,36 @@ document.addEventListener('DOMContentLoaded', function() {
             var assPathEl = document.getElementById('assPath');
             var colorGroupEl = document.getElementById('assColorGroup');
 
-            var computeRebase = function(cmdsArrays) {
-                var rMinX = Infinity, rMinY = Infinity, rHasGeom = false;
+            var computeBBox = function(cmdsArrays) {
+                var rMinX = Infinity, rMinY = Infinity, rMaxX = -Infinity, rMaxY = -Infinity, rHasGeom = false;
+                var trackX = function(v) { if (v < rMinX) rMinX = v; if (v > rMaxX) rMaxX = v; };
+                var trackY = function(v) { if (v < rMinY) rMinY = v; if (v > rMaxY) rMaxY = v; };
                 cmdsArrays.forEach(function(cmds) {
                     var rPenX = 0, rPenY = 0;
                     cmds.forEach(function(c) {
                         if (c.type === 'M') {
                             rPenX = c.x; rPenY = c.y;
                         } else if (c.type === 'L') {
-                            if (rPenX < rMinX) rMinX = rPenX;
-                            if (rPenY < rMinY) rMinY = rPenY;
-                            if (c.x  < rMinX) rMinX = c.x;
-                            if (c.y  < rMinY) rMinY = c.y;
+                            trackX(rPenX); trackY(rPenY);
+                            trackX(c.x);   trackY(c.y);
                             rPenX = c.x; rPenY = c.y;
                             rHasGeom = true;
                         } else if (c.type === 'C') {
-                            bezierAxisExtrema(rPenX, c.x1, c.x2, c.x).forEach(function(v){ if (v < rMinX) rMinX = v; });
-                            bezierAxisExtrema(rPenY, c.y1, c.y2, c.y).forEach(function(v){ if (v < rMinY) rMinY = v; });
+                            bezierAxisExtrema(rPenX, c.x1, c.x2, c.x).forEach(trackX);
+                            bezierAxisExtrema(rPenY, c.y1, c.y2, c.y).forEach(trackY);
                             rPenX = c.x; rPenY = c.y;
                             rHasGeom = true;
                         }
                     });
                 });
-                return rHasGeom && isFinite(rMinX) && isFinite(rMinY) ? { x: rMinX, y: rMinY } : null;
+                if (!rHasGeom || !isFinite(rMinX) || !isFinite(rMinY) || !isFinite(rMaxX) || !isFinite(rMaxY)) return null;
+                return { minX: rMinX, minY: rMinY, maxX: rMaxX, maxY: rMaxY };
+            };
+            var originFromBBox = function(bb, mode) {
+                if (!bb) return null;
+                if (mode === 'topleft') return { x: bb.minX, y: bb.minY };
+                if (mode === 'center')  return { x: (bb.minX + bb.maxX) / 2, y: (bb.minY + bb.maxY) / 2 };
+                return null;
             };
 
             var fmtCoord = function(n, originVal) {
@@ -2980,8 +3042,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (shapesArr.length === 0) { showToast(t('toast-invalid'), 'error'); return; }
                 var perShapeCmds = shapesArr.map(function(s){ return new SVGParser(s.d).parse(); });
 
-                if (rebaseBox && rebaseBox.checked) {
-                    var rb = computeRebase(perShapeCmds);
+                if (originMode !== 'none') {
+                    var rb = originFromBBox(computeBBox(perShapeCmds), originMode);
                     if (rb) { ox = rb.x; oy = rb.y; }
                 }
 
@@ -3065,8 +3127,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             var assStr = "";
 
-            if (rebaseBox && rebaseBox.checked) {
-                var rb2 = computeRebase([absCommands]);
+            if (originMode !== 'none') {
+                var rb2 = originFromBBox(computeBBox([absCommands]), originMode);
                 if (rb2) { ox = rb2.x; oy = rb2.y; }
             }
 

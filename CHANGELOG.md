@@ -1,5 +1,35 @@
 # Changelog | 更新日志
 
+## v3.13
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **「原点对齐」从勾选项升级为三档下拉**：Step 2 的「原点对齐到 (0,0)」勾选项替换为 `Origin` 下拉，三档可选：
+  - **保持原坐标**（默认）—— 与 v3.11 / v3.12 不勾选时的行为一致，输出按 SVG `viewBox` 原点
+  - **左上角对齐到 (0,0)** —— 等同于旧版勾上的行为，配合 `\an7\pos(x,y)` 让图形左上角精确落在 `(x, y)`
+  - **中心对齐到 (0,0)**（新增）—— 把整张图的包围盒中心移到 `(0, 0)`，配合 `\an5\pos(x,y)` 让中心精确落在 `(x, y)`，省去手动算 `width/2, height/2` 偏移
+- **localStorage 自动迁移**：老用户的 `svg2ass-rebase = '1'` 自动迁移为 `svg2ass-origin = 'topleft'`，老 key 同步清理；未勾选过的用户继续默认 `none`，零回归
+- **重命名说明**：旧名「Set origin to (0,0)」实际含义是「左上角到 (0,0)」，新下拉直接用 `Top-left at (0,0)` / `Center at (0,0)` 表述，去除歧义
+- **i18n**：10 种语言全部新增 `label-origin` + 三个 option 字符串；老的 `label-rebase` 删除
+- 源自 [Issue #3](https://github.com/MontageSubs/svg-to-ass/issues/3)
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **"Origin" upgraded from a checkbox to a 3-way dropdown**: The "Set origin to (0,0)" checkbox in Step 2 is replaced with an `Origin` `<select>` with three options:
+  - **None** (default) — same as v3.11 / v3.12 with the box unchecked: output uses the SVG's `viewBox` origin
+  - **Top-left at (0,0)** — same as the old checkbox checked: pair with `\an7\pos(x,y)` to land the drawing's top-left at `(x, y)` on screen
+  - **Center at (0,0)** (new) — shifts the bounding-box center to `(0, 0)`; pair with `\an5\pos(x,y)` to land the drawing's center at `(x, y)` without doing `width/2, height/2` math
+- **localStorage auto-migration**: Existing users with `svg2ass-rebase = '1'` are migrated to `svg2ass-origin = 'topleft'`, and the old key is cleaned up. Users who never checked the box continue to get `none`, zero regression
+- **Naming clean-up**: The old "Set origin to (0,0)" actually meant "top-left to (0,0)", which was ambiguous. The new dropdown uses `Top-left at (0,0)` / `Center at (0,0)` so the semantics are explicit
+- **i18n**: `label-origin` + three option strings added to all 10 languages; the old `label-rebase` key was removed
+- From [Issue #3](https://github.com/MontageSubs/svg-to-ass/issues/3)
+
+</details>
+
 ## v3.12
 
 <details>
