@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.13">
+<meta name="version" content="3.14">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -2513,20 +2513,86 @@ document.addEventListener('DOMContentLoaded', function() {
                    + ('0'+clamp255(c.b).toString(16)).slice(-2);
     }
 
-    function readStyleProp(el, name) {
+    function parseStyleDeclarations(text) {
+        var out = {};
+        String(text || '').split(';').forEach(function(part) {
+            var idx = part.indexOf(':');
+            if (idx <= 0) return;
+            var key = part.slice(0, idx).trim().toLowerCase();
+            var val = part.slice(idx + 1).trim();
+            if (!key || !val) return;
+            val = val.replace(/\s*!important\s*$/i, '').trim();
+            if (val) out[key] = val;
+        });
+        return out;
+    }
+
+    function extractCssClassStyles(doc) {
+        var map = {};
+        var order = 0;
+        if (!doc.querySelectorAll) return map;
+        doc.querySelectorAll('style').forEach(function(styleEl) {
+            var css = (styleEl.textContent || '').replace(/\/\*[\s\S]*?\*\//g, '');
+            var re = /([^{}]+)\{([^{}]*)\}/g;
+            var m;
+            while ((m = re.exec(css)) !== null) {
+                var decls = parseStyleDeclarations(m[2]);
+                if (Object.keys(decls).length === 0) continue;
+                m[1].split(',').forEach(function(selector) {
+                    selector = selector.trim();
+                    if (!/^(?:[a-zA-Z][\w:-]*)?\.[_a-zA-Z][\w-]*$/.test(selector)) return;
+                    var cls = selector.slice(selector.indexOf('.') + 1);
+                    if (!map[cls]) map[cls] = {};
+                    Object.keys(decls).forEach(function(k) {
+                        map[cls][k] = { value: decls[k], order: order++ };
+                    });
+                });
+            }
+        });
+        return map;
+    }
+
+    function readInlineStyleProp(el, name) {
         var s = el.getAttribute && el.getAttribute('style');
         if (s) {
             var re = new RegExp('(?:^|;)\\s*' + name + '\\s*:\\s*([^;]+)', 'i');
             var m = s.match(re);
             if (m) return m[1].trim();
         }
+        return null;
+    }
+
+    function readPresentationProp(el, name) {
         return el.getAttribute ? el.getAttribute(name) : null;
     }
 
-    function lookupStyle(el, doc, name) {
+    function readStyleProp(el, name) {
+        var v = readInlineStyleProp(el, name);
+        return v !== null ? v : readPresentationProp(el, name);
+    }
+
+    function readClassStyleProp(el, name, cssClassStyles) {
+        if (!cssClassStyles || !el.getAttribute) return null;
+        var classAttr = el.getAttribute('class');
+        if (!classAttr) return null;
+        var winner = null;
+        classAttr.trim().split(/\s+/).forEach(function(cls) {
+            var props = cssClassStyles[cls];
+            if (props && props[name] !== undefined && (!winner || props[name].order >= winner.order)) {
+                winner = props[name];
+            }
+        });
+        return winner ? winner.value : null;
+    }
+
+    function lookupStyle(el, doc, name, cssClassStyles) {
         var n = el;
         while (n && n.nodeType === 1 && n !== doc) {
-            var v = readStyleProp(n, name);
+            var v = readInlineStyleProp(n, name);
+            if (v !== null && v !== undefined && v !== '') return v;
+            v = readClassStyleProp(n, name, cssClassStyles);
+            if (v !== null && v !== undefined && v !== '') return v;
+            v = readPresentationProp(n, name);
             if (v !== null && v !== undefined && v !== '') return v;
             n = n.parentNode;
         }
@@ -2561,14 +2627,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return null;
     }
 
-    function resolveElementStyle(el, doc) {
-        var fillStr = lookupStyle(el, doc, 'fill');
-        var strokeStr = lookupStyle(el, doc, 'stroke');
-        var strokeWStr = lookupStyle(el, doc, 'stroke-width');
-        var fillOpStr = lookupStyle(el, doc, 'fill-opacity');
-        var strokeOpStr = lookupStyle(el, doc, 'stroke-opacity');
-        var opacityStr = lookupStyle(el, doc, 'opacity');
-        var filterStr = lookupStyle(el, doc, 'filter');
+    function resolveElementStyle(el, doc, cssClassStyles) {
+        var fillStr = lookupStyle(el, doc, 'fill', cssClassStyles);
+        var strokeStr = lookupStyle(el, doc, 'stroke', cssClassStyles);
+        var strokeWStr = lookupStyle(el, doc, 'stroke-width', cssClassStyles);
+        var fillOpStr = lookupStyle(el, doc, 'fill-opacity', cssClassStyles);
+        var strokeOpStr = lookupStyle(el, doc, 'stroke-opacity', cssClassStyles);
+        var opacityStr = lookupStyle(el, doc, 'opacity', cssClassStyles);
+        var filterStr = lookupStyle(el, doc, 'filter', cssClassStyles);
 
         var fill;
         if (fillStr === null) {
@@ -2691,6 +2757,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var shapes = [];
         var hasBasicShapes = false;
+        var cssClassStyles = extractCssClassStyles(doc);
 
         var parseSingleTransform = function(str) {
             var m = [1,0,0,1,0,0];
@@ -2778,7 +2845,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var d = el.getAttribute('d');
             if (!d) return;
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('circle').forEach(function(el) {
@@ -2794,7 +2861,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ' C ' + (cx - r) + ' ' + (cy - k*r) + ' ' + (cx - k*r) + ' ' + (cy - r) + ' ' + cx + ' ' + (cy - r) +
                 ' C ' + (cx + k*r) + ' ' + (cy - r) + ' ' + (cx + r) + ' ' + (cy - k*r) + ' ' + (cx + r) + ' ' + cy + ' Z';
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('ellipse').forEach(function(el) {
@@ -2811,7 +2878,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ' C ' + (cx - rx) + ' ' + (cy - k*ry) + ' ' + (cx - k*rx) + ' ' + (cy - ry) + ' ' + cx + ' ' + (cy - ry) +
                 ' C ' + (cx + k*rx) + ' ' + (cy - ry) + ' ' + (cx + rx) + ' ' + (cy - k*ry) + ' ' + (cx + rx) + ' ' + cy + ' Z';
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('rect').forEach(function(el) {
@@ -2843,7 +2910,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ' C ' + x + ' ' + (y+ry-k*ry) + ' ' + (x+rx-k*rx) + ' ' + y + ' ' + (x+rx) + ' ' + y + ' Z';
             }
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('line').forEach(function(el) {
@@ -2854,7 +2921,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var y2 = parseFloat(el.getAttribute('y2') || 0);
             var d = 'M ' + x1 + ' ' + y1 + ' L ' + x2 + ' ' + y2;
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('polyline').forEach(function(el) {
@@ -2864,7 +2931,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var d = 'M ' + pts[0] + ' ' + pts[1];
             for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         doc.querySelectorAll('polygon').forEach(function(el) {
@@ -2875,7 +2942,7 @@ document.addEventListener('DOMContentLoaded', function() {
             for (var i = 2; i < pts.length - 1; i += 2) d += ' L ' + pts[i] + ' ' + pts[i+1];
             d += ' Z';
             var m = getElementMatrix(el);
-            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc) });
+            shapes.push({ d: m ? transformD(d, m) : d, style: resolveElementStyle(el, doc, cssClassStyles) });
         });
 
         if (shapes.length === 0) return null;

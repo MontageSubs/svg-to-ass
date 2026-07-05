@@ -1,5 +1,25 @@
 # Changelog | 更新日志
 
+## v3.14
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **补齐 SVG class 样式颜色解析**：转换器现在会读取 `<style>` 中的简单 class 规则，例如 `.cls-1 { fill: #ff0000; }` 和 `path.cls-1 { stroke: #0000ff; }`，适配 Illustrator / Image Trace 常见导出格式。
+- **保留现有样式优先级**：行内 `style="..."` 优先于 `<style>` class 规则；class 规则优先于 `fill=""` / `stroke=""` 等展示属性；父级 `<g class="...">` 可继续继承到子路径。
+- **转换边界不变**：仍聚焦矢量 path / 基础形状到 ASS 绘图指令，不做位图、复杂选择器或完整 CSS 引擎。
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Added SVG class style color parsing**: The converter now reads simple class rules inside `<style>`, such as `.cls-1 { fill: #ff0000; }` and `path.cls-1 { stroke: #0000ff; }`, matching common Illustrator / Image Trace exports.
+- **Preserved style precedence**: Inline `style="..."` wins over `<style>` class rules; class rules win over presentation attributes like `fill=""` / `stroke=""`; parent `<g class="...">` styles still inherit into child paths.
+- **Conversion scope unchanged**: The tool remains focused on vector paths / basic shapes to ASS drawing commands, without raster image tracing, complex selectors, or a full CSS engine.
+
+</details>
+
 ## v3.13
 
 <details>
@@ -384,4 +404,3 @@
 **Made with ❤️ 用爱打造**
 
 </div>
-
