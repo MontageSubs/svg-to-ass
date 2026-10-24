@@ -21,7 +21,7 @@
 <link rel="alternate" hreflang="ar" href="https://subs.js.org/svg-to-ass/?lang=ar">
 <link rel="alternate" hreflang="x-default" href="https://subs.js.org/svg-to-ass/">
 <link rel="icon" type="image/png" href="icons/icon-256.png">
-<meta name="version" content="3.14">
+<meta name="version" content="3.15">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SVG to ASS Draw Converter · MontageSubs">
 <meta property="og:description" content="Convert SVG vectors from Illustrator and Inkscape into ASS/SSA drawing commands. Features intelligent data cleaning, 8x/16x precision scaling, real-time preview. Browser-based, local processing, free.">
@@ -75,7 +75,6 @@
 
 <style>
 :root {
-  /* "Playground" — SuperHi-inspired, bright & playful */
   --cream:  #F4F1E8;
   --paper:  #FBF8EE;
   --ink:    #0E0E12;
@@ -99,7 +98,6 @@
   --pink:      #F8C3CB;
   --pink-tint: #FCE9EC;
 
-  /* legacy var aliases used throughout the markup */
   --ink2:  var(--ash);
   --ink3:  #8a8a93;
   --canvas:var(--cream);
@@ -123,13 +121,11 @@
   --r-lg:  16px;
   --r-pill:999px;
 
-  /* soft, layered shadows — flat first, glassy second */
   --shadow-hard: 0 1px 0 rgba(27,27,34,0.05), 0 8px 24px -12px rgba(27,27,34,0.18);
   --shadow-med:  0 1px 0 rgba(27,27,34,0.04), 0 4px 14px -8px rgba(27,27,34,0.14);
   --shadow-sm:   0 1px 0 rgba(27,27,34,0.04);
   --shadow-xs:   0 1px 0 rgba(27,27,34,0.03);
   --shadow-pop:  0 12px 32px -10px rgba(27,27,34,0.22), 0 2px 6px -2px rgba(27,27,34,0.08);
-  /* glass */
   --glass-bg: rgba(255,255,255,0.55);
   --glass-bg-strong: rgba(255,255,255,0.7);
   --glass-border: rgba(255,255,255,0.7);
@@ -138,7 +134,6 @@
   --hd-bg: var(--paper);
   --hd-fg: var(--ink);
 
-  /* themed surfaces (light defaults) */
   --bg-base: #F1ECDB;
   --bg-glow-1: rgba(247,210,50,0.55);
   --bg-glow-2: rgba(155,215,232,0.7);
@@ -177,7 +172,6 @@
   --checker-bg: rgba(255,255,255,0.4);
 }
 
-/* ===== DARK MODE ===== */
 html[data-theme="dark"] {
   --cream:  #15161B;
   --paper:  #1C1D24;
@@ -619,7 +613,6 @@ h2.step-title {
   z-index: 0; pointer-events: none;
   transition: background 0.15s;
 }
-/* Dark mode: brighten slider track so it stays visible on dark surfaces */
 html[data-theme="dark"] .slider-group input[type="range"] {
   background: rgba(255,255,255,0.10);
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
@@ -909,7 +902,6 @@ svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible
 }
 
 
-/* === v3.6 rebase checkbox — Liquid-styled === */
 .step-options {
   margin-top: 0.85rem;
   display: flex;
@@ -951,7 +943,6 @@ svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible
   min-width: 0;
 }
 
-/* === v3.7 cross-link button colorway === */
 #btn-reverse:hover { background: var(--tile-3); box-shadow: 0 0 0 1px var(--ring-soft-3), inset 0 1px 0 var(--glass-highlight), 0 4px 12px -4px rgba(248,195,203,0.5); }
 </style>
 </head>
@@ -1166,6 +1157,33 @@ svg.preview-svg { z-index: 1; max-width: 88%; max-height: 88%; overflow: visible
 
 var currentLang = 'en';
 
+var STORAGE_NAMESPACE = 'svg-to-ass';
+function storageKey(name) { return STORAGE_NAMESPACE + ':' + name; }
+var LEGACY_STORAGE_KEYS = {
+  'svg2ass-lang': storageKey('lang'),
+  'svg2ass-bgSlider': storageKey('bg-slider'),
+  'svg2ass-origin': storageKey('origin'),
+  'svg2ass-rebase': storageKey('origin'),
+  'svg2ass-flatMode': storageKey('flat-mode'),
+  'svg2ass-scaleFactor': storageKey('scale-factor'),
+  'svg2ass-extraTags': storageKey('extra-tags')
+};
+var LEGACY_VALUE_MAPPERS = {'svg2ass-rebase': function (value) { return value === '1' ? 'topleft' : null; }};
+var DISCARDED_STORAGE_KEYS = ['theme'];
+(function migrateLegacyStorage() {
+  try {
+    Object.keys(LEGACY_STORAGE_KEYS).forEach(function (legacyKey) {
+      var value = localStorage.getItem(legacyKey);
+      if (value === null) return;
+      var mapper = LEGACY_VALUE_MAPPERS[legacyKey];
+      var migrated = mapper ? mapper(value) : value;
+      var key = LEGACY_STORAGE_KEYS[legacyKey];
+      if (migrated !== null && localStorage.getItem(key) === null) localStorage.setItem(key, migrated);
+      localStorage.removeItem(legacyKey);
+    });
+    DISCARDED_STORAGE_KEYS.forEach(function (key) { localStorage.removeItem(key); });
+  } catch (_) {}
+})();
 (function() {
   function normalizeLang(raw) {
     var s = (raw || '').toLowerCase().trim();
@@ -1193,14 +1211,14 @@ var currentLang = 'en';
       var normalized = normalizeLang(urlLang);
       if (normalized && VALID[normalized]) {
         currentLang = normalized;
-        try { localStorage.setItem('svg2ass-lang', normalized); } catch(e) {}
+        try { localStorage.setItem(storageKey('lang'), normalized); } catch(e) {}
         return;
       }
     }
   } catch(e) {}
 
   try {
-    var saved = localStorage.getItem('svg2ass-lang');
+    var saved = localStorage.getItem(storageKey('lang'));
     if (saved && VALID[saved]) { currentLang = saved; return; }
   } catch(e) {}
 
@@ -1922,7 +1940,7 @@ function t(key, vars) {
 
 function applyLang(lang) {
   currentLang = lang;
-  try { localStorage.setItem('svg2ass-lang', lang); } catch(e) {}
+  try { localStorage.setItem(storageKey('lang'), lang); } catch(e) {}
   const langAttrMap = { 'zh-CN': 'zh-CN', 'zh-TW': 'zh-TW', 'pt-BR': 'pt-BR', en: 'en', ja: 'ja', ko: 'ko', es: 'es', ru: 'ru', ar: 'ar', tr: 'tr' };
   document.documentElement.lang = langAttrMap[lang] || lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
@@ -2009,7 +2027,6 @@ function toggleTheme() {
 }
 
 (function initTheme() {
-  try { localStorage.removeItem('theme'); } catch(_) {}
   if (!window.matchMedia) return;
   var mql = window.matchMedia('(prefers-color-scheme: dark)');
   applyTheme(mql.matches ? 'dark' : 'light');
@@ -2080,12 +2097,12 @@ function applyBgSlider(val) {
 (function initBgSlider() {
   var slider = document.getElementById('bgSlider');
   try {
-    var saved = localStorage.getItem('svg2ass-bgSlider');
+    var saved = localStorage.getItem(storageKey('bg-slider'));
     if (saved !== null) slider.value = saved;
   } catch(_) {}
   slider.addEventListener('input', function(e) {
     applyBgSlider(e.target.value);
-    try { localStorage.setItem('svg2ass-bgSlider', e.target.value); } catch(_) {}
+    try { localStorage.setItem(storageKey('bg-slider'), e.target.value); } catch(_) {}
   });
   applyBgSlider(slider.value);
 })();
@@ -2223,52 +2240,45 @@ document.addEventListener('DOMContentLoaded', function() {
   var originSel = document.getElementById('originMode');
   if (originSel) {
     try {
-      var savedOrigin = localStorage.getItem('svg2ass-origin');
-      if (savedOrigin === null) {
-        // Migrate from the v3.12 boolean key: rebase=1 → topleft; clean up.
-        var legacy = localStorage.getItem('svg2ass-rebase');
-        if (legacy === '1') savedOrigin = 'topleft';
-        if (legacy !== null) localStorage.removeItem('svg2ass-rebase');
-        if (savedOrigin) localStorage.setItem('svg2ass-origin', savedOrigin);
-      }
+      var savedOrigin = localStorage.getItem(storageKey('origin'));
       if (savedOrigin === 'topleft' || savedOrigin === 'center' || savedOrigin === 'none') {
         originSel.value = savedOrigin;
       }
     } catch (e) {}
     originSel.addEventListener('change', function() {
-      try { localStorage.setItem('svg2ass-origin', this.value); } catch (e) {}
+      try { localStorage.setItem(storageKey('origin'), this.value); } catch (e) {}
     });
   }
 
   var flatBox = document.getElementById('flatMode');
   if (flatBox) {
     try {
-      flatBox.checked = localStorage.getItem('svg2ass-flatMode') === '1';
+      flatBox.checked = localStorage.getItem(storageKey('flat-mode')) === '1';
     } catch (e) {}
     flatBox.addEventListener('change', function() {
-      try { localStorage.setItem('svg2ass-flatMode', this.checked ? '1' : '0'); } catch (e) {}
+      try { localStorage.setItem(storageKey('flat-mode'), this.checked ? '1' : '0'); } catch (e) {}
     });
   }
 
   var scaleFactorEl = document.getElementById('scaleFactor');
   if (scaleFactorEl) {
     try {
-      var savedScale = localStorage.getItem('svg2ass-scaleFactor');
+      var savedScale = localStorage.getItem(storageKey('scale-factor'));
       if (savedScale !== null) scaleFactorEl.value = savedScale;
     } catch (e) {}
     scaleFactorEl.addEventListener('change', function() {
-      try { localStorage.setItem('svg2ass-scaleFactor', this.value); } catch (e) {}
+      try { localStorage.setItem(storageKey('scale-factor'), this.value); } catch (e) {}
     });
   }
 
   var extraTagsEl = document.getElementById('extraTags');
   if (extraTagsEl) {
     try {
-      var savedTags = localStorage.getItem('svg2ass-extraTags');
+      var savedTags = localStorage.getItem(storageKey('extra-tags'));
       if (savedTags !== null) extraTagsEl.value = savedTags;
     } catch (e) {}
     extraTagsEl.addEventListener('input', function() {
-      try { localStorage.setItem('svg2ass-extraTags', this.value); } catch (e) {}
+      try { localStorage.setItem(storageKey('extra-tags'), this.value); } catch (e) {}
     });
   }
 

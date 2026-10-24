@@ -12,65 +12,39 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
-      - name: Configure git
-        env:
-          AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
-          AUTHOR_EMAIL: ${{ github.event.head_commit.author.email }}
-        run: |
-          # Fall back to github-actions[bot] when head_commit is absent
-          # (e.g. workflow_dispatch reruns), so the auto-commit step
-          # below still has a valid identity.
-          git config --local user.name  "${AUTHOR_NAME:-github-actions[bot]}"
-          git config --local user.email "${AUTHOR_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
-
-      - name: Update sitemap
-        id: sitemap
-        run: |
-          DATE=$(date +%Y-%m-%d)
-          sed -i "s|<lastmod>.*</lastmod>|<lastmod>$DATE</lastmod>|" app/sitemap.xml
-          if ! git diff --quiet app/sitemap.xml; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Sync version
-        id: version
+      - name: Sync sitemap and cache version
         run: |
           VERSION=$(grep -oP '(?<=<meta name="version" content=")[^"]*' app/index.html)
-          if ! grep -q "svg-to-ass-v$VERSION" app/sw.js; then
-            sed -i "s|const CACHE_NAME = 'svg-to-ass-v[^']*'|const CACHE_NAME = 'svg-to-ass-v$VERSION'|" app/sw.js
-            echo "changed=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push
-        if: steps.sitemap.outputs.changed == 'true' || steps.version.outputs.changed == 'true'
-        env:
-          # Pass commit message via env so special chars (parens, quotes,
-          # backticks, newlines) reach git through $VAR expansion instead
-          # of being interpolated into a bash double-quoted string.
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
-        run: |
-          [ "${{ steps.sitemap.outputs.changed }}" = "true" ] && git add app/sitemap.xml
-          [ "${{ steps.version.outputs.changed }}" = "true" ] && git add app/sw.js
-          # Fall back to a generic message for workflow_dispatch reruns
-          # where head_commit is null and COMMIT_MSG is empty.
-          git commit -m "${COMMIT_MSG:-chore: sync sitemap and sw.js}" --no-verify || true
-          git push origin main || true
+          sed -i "s|<lastmod>.*</lastmod>|<lastmod>$(date +%Y-%m-%d)</lastmod>|" app/sitemap.xml
+          sed -i "s|\(CACHE_PREFIX + 'v\)[^']*'|\1$VERSION'|" app/sw.js
+          git add app/sitemap.xml app/sw.js
+          git diff --cached --quiet && exit 0
+          git config --local user.name "$(git log -1 --format=%an)"
+          git config --local user.email "$(git log -1 --format=%ae)"
+          git commit -C HEAD --no-verify
+          git push origin "HEAD:$GITHUB_REF_NAME" || echo "::warning::Could not push synced files"
 
       - name: Setup Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v4
         with:
-          path: './app'
+          path: ./app
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v5
+        id: deployment
+        uses: actions/deploy-pages@v4

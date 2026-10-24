@@ -1,5 +1,29 @@
 # Changelog | 更新日志
 
+## v3.15
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **本地存储隔离**：所有 localStorage key 改为 `svg-to-ass:` 前缀（`lang`、`bg-slider`、`origin`、`flat-mode`、`scale-factor`、`extra-tags`），旧的 `svg2ass-*` key 在首次加载时自动迁移并清除；同时清理遗留的无前缀 `theme` key。
+- **Service Worker 缓存隔离**：缓存名改为 `svg-to-ass:v3.15`；激活时仅清理本应用前缀（及旧命名）的缓存，不再误删同源下其他应用的缓存。
+- **历史迁移并入统一机制**：v3.12 遗留的 `rebase` 布尔值（`1` → `topleft`）现由同一套迁移逻辑处理，不再单独内联。
+- **部署流程修复**：重写 GitHub Pages 部署 workflow，对齐 ass-subset；提交信息不再被插值进 shell，含引号、括号、反引号时不会再导致同步步骤失败；缓存版本同步适配新的缓存命名；统一为已验证的 Pages action 版本；并修正 sitemap 的 XML 命名空间（`http://`）。
+- **源码整理**：移除内联源码中的注释。
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Local storage isolation**: all localStorage keys now use the `svg-to-ass:` prefix (`lang`、`bg-slider`、`origin`、`flat-mode`、`scale-factor`、`extra-tags`); legacy `svg2ass-*` keys are migrated and removed on first load, and the stray unprefixed `theme` key is cleaned up.
+- **Service Worker cache isolation**: the cache name is now `svg-to-ass:v3.15`; on activation only caches carrying this app's prefix (or its legacy naming) are purged, so other apps' caches on the same origin are no longer deleted.
+- **Legacy migration unified**: the v3.12 `rebase` boolean (`1` → `topleft`) is now handled by the same migration routine instead of a separate inline block.
+- **Deployment fix**: rewrote the GitHub Pages deploy workflow to match ass-subset; the commit message is no longer interpolated into the shell, so quotes, parentheses and backticks no longer break the sync step; cache version sync now matches the new cache naming; Pages actions pinned to the proven versions; and the sitemap XML namespaces were corrected to `http://`.
+- **Source cleanup**: removed inline source comments.
+
+</details>
+
 ## v3.14
 
 <details>
