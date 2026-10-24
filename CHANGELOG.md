@@ -1,5 +1,23 @@
 # Changelog | 更新日志
 
+## v3.16
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **结构化数据增强**：JSON-LD 新增 `browserRequirements` 与 `potentialAction`。
+- **部署流程**：Pages actions 升级至 Node 24 版本（configure-pages v6、upload-pages-artifact v5、deploy-pages v5）。
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Structured data enhancement**: JSON-LD now includes `browserRequirements` and `potentialAction`.
+- **Deployment**: Pages actions upgraded to their Node 24 majors (configure-pages v6, upload-pages-artifact v5, deploy-pages v5).
+
+</details>
+
 ## v3.15
 
 <details>

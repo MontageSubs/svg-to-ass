@@ -2,7 +2,7 @@
 
 const CACHE_PREFIX = 'svg-to-ass:';
 const LEGACY_CACHE_PREFIX = 'svg-to-ass-v';
-const CACHE_NAME = CACHE_PREFIX + 'v3.15';
+const CACHE_NAME = CACHE_PREFIX + 'v3.16';
 const PRECACHE = [
   '/svg-to-ass',
   '/svg-to-ass/',
