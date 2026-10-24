@@ -1,5 +1,23 @@
 # Changelog | 更新日志
 
+## v3.17
+
+<details>
+<summary><strong>中文版</strong></summary>
+
+- **工具推荐调整**：页头推荐改为 ASS to SVG 与「更多工具」（https://subs.js.org/tools/ ），不再单独推荐 ASS Subsetter；移除对应的多语言文案。
+- **代码清理**：移除指向不存在元素的 `#btn-reverse` 悬停样式。
+
+</details>
+
+<details>
+<summary><strong>English</strong></summary>
+
+- **Tool recommendations**: the header now recommends ASS to SVG and "More Tools" (https://subs.js.org/tools/ ) instead of ASS Subsetter; the matching translations were removed.
+- **Code cleanup**: removed `#btn-reverse` hover rules that matched no element.
+
+</details>
+
 ## v3.16
 
 <details>
